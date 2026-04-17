@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package order.v1;
+
+option go_package = "order/api/order/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Order {
+  rpc CreateOrder(CreateOrderRequest) returns (OrderInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/orders"
+      body: "*"
+    };
+  }
+  rpc GetOrder(GetOrderRequest) returns (OrderInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/orders/{id}"
+    };
+  }
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/orders"
+    };
+  }
+  rpc CancelOrder(CancelOrderRequest) returns (OrderInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/{id}/cancel"
+      body: "*"
+    };
+  }
+  rpc PayOrder(PayOrderRequest) returns (PayOrderResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/orders/pay"
+      body: "*"
+    };
+  }
+}
+
+message OrderInfo {
+  uint64 id = 1;
+  string order_no = 2;
+  uint32 user_id = 3;
+  string invite_code = 4;
+  string phone = 5;
+  string name = 6;
+  uint32 product_id = 7;
+  string product_name = 8;
+  double amount = 9;
+  uint32 quantity = 10;
+  int32 status = 11;
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp updated_at = 13;
+}
+
+message CreateOrderRequest {
+  uint32 user_id = 1;
+  uint32 product_id = 2;
+  uint32 quantity = 3;
+  string invite_code = 4;
+}
+
+message GetOrderRequest {
+  oneof identifier {
+    uint64 id = 1;
+    string order_no = 2;
+  }
+}
+
+message ListOrdersRequest {
+  uint32 user_id = 1;
+  int32 status = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListOrdersResponse {
+  repeated OrderInfo orders = 1;
+  uint32 total = 2;
+}
+
+message CancelOrderRequest {
+  uint64 id = 1;
+}
+
+message PayOrderRequest {
+  string order_no = 1;
+  string channel_code = 2;
+}
+
+message PayOrderResponse {
+  string order_no = 1;
+  string pay_url = 2;
+  int32 status = 3;
+}

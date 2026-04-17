@@ -1,0 +1,174 @@
+syntax = "proto3";
+
+package product.v1;
+
+option go_package = "product/api/product/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Product {
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/products"
+    };
+  }
+  rpc GetProduct(GetProductRequest) returns (ProductInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/products/{id}"
+    };
+  }
+  rpc CreateProduct(CreateProductRequest) returns (ProductInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/products"
+      body: "*"
+    };
+  }
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/products/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/products/{id}"
+    };
+  }
+  rpc ListMiningMachines(ListMiningMachinesRequest) returns (ListMiningMachinesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/mining-machines"
+    };
+  }
+  rpc GetTask(GetTaskRequest) returns (TaskInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/tasks/{id}"
+    };
+  }
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/tasks"
+    };
+  }
+  rpc CompleteTask(CompleteTaskRequest) returns (UserTaskInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/tasks/{task_id}/complete"
+      body: "*"
+    };
+  }
+}
+
+message ProductInfo {
+  uint32 id = 1;
+  uint32 machine_id = 2;
+  string name = 3;
+  double price = 4;
+  string description = 5;
+  string type = 6;
+  uint32 cycle = 7;
+  double productivity_rate = 8;
+  int32 status = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+message ListProductsRequest {
+  string type = 1;
+  int32 status = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListProductsResponse {
+  repeated ProductInfo products = 1;
+  uint32 total = 2;
+}
+
+message GetProductRequest {
+  uint32 id = 1;
+}
+
+message CreateProductRequest {
+  uint32 machine_id = 1;
+  string name = 2;
+  double price = 3;
+  string description = 4;
+  string type = 5;
+  uint32 cycle = 6;
+  double productivity_rate = 7;
+}
+
+message UpdateProductRequest {
+  uint32 id = 1;
+  string name = 2;
+  double price = 3;
+  string description = 4;
+  int32 status = 5;
+}
+
+message DeleteProductRequest {
+  uint32 id = 1;
+}
+
+message DeleteProductResponse {
+  bool success = 1;
+}
+
+message MiningMachineInfo {
+  uint32 id = 1;
+  string name = 2;
+  string model = 3;
+  string algorithm = 4;
+  double hashrate = 5;
+  string hashrate_unit = 6;
+  uint32 power_consumption = 7;
+  uint32 duration_days = 8;
+  double price = 9;
+  double daily_reward_estimate = 10;
+  uint32 stock = 11;
+  int32 status = 12;
+}
+
+message ListMiningMachinesRequest {
+  string algorithm = 1;
+  int32 status = 2;
+}
+
+message ListMiningMachinesResponse {
+  repeated MiningMachineInfo machines = 1;
+}
+
+message TaskInfo {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+  double work_points = 4;
+  int32 enabled = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetTaskRequest {
+  uint32 id = 1;
+}
+
+message ListTasksRequest {
+  int32 enabled = 1;
+}
+
+message ListTasksResponse {
+  repeated TaskInfo tasks = 1;
+}
+
+message CompleteTaskRequest {
+  uint32 user_id = 1;
+  uint32 task_id = 2;
+}
+
+message UserTaskInfo {
+  uint32 id = 1;
+  uint32 user_id = 2;
+  uint32 task_id = 3;
+  uint32 completed_times = 4;
+  double total_reward = 5;
+  int32 status = 6;
+  google.protobuf.Timestamp last_completed_at = 7;
+}

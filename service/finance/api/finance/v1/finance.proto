@@ -1,0 +1,203 @@
+syntax = "proto3";
+
+package finance.v1;
+
+option go_package = "finance/api/finance/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Finance {
+  rpc Recharge(RechargeRequest) returns (RechargeInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/finance/recharge"
+      body: "*"
+    };
+  }
+  rpc GetRecharge(GetRechargeRequest) returns (RechargeInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/recharge/{order_no}"
+    };
+  }
+  rpc ListRecharges(ListRechargesRequest) returns (ListRechargesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/recharges"
+    };
+  }
+  rpc Withdraw(WithdrawRequest) returns (WithdrawalInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/finance/withdraw"
+      body: "*"
+    };
+  }
+  rpc GetWithdrawal(GetWithdrawalRequest) returns (WithdrawalInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/withdrawal/{id}"
+    };
+  }
+  rpc ListWithdrawals(ListWithdrawalsRequest) returns (ListWithdrawalsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/withdrawals"
+    };
+  }
+  rpc ListIncomeLogs(ListIncomeLogsRequest) returns (ListIncomeLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/income-logs"
+    };
+  }
+  rpc ListBalanceLogs(ListBalanceLogsRequest) returns (ListBalanceLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/balance-logs"
+    };
+  }
+  rpc CheckIn(CheckInRequest) returns (CheckInResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/finance/checkin"
+      body: "*"
+    };
+  }
+  rpc GetUserBalance(GetUserBalanceRequest) returns (UserBalanceInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/finance/balance/{user_id}"
+    };
+  }
+}
+
+message RechargeInfo {
+  uint64 id = 1;
+  uint32 user_id = 2;
+  string invite_code = 3;
+  string phone = 4;
+  string name = 5;
+  string order_no = 6;
+  double amount = 7;
+  int32 status = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message RechargeRequest {
+  uint32 user_id = 1;
+  double amount = 2;
+  string channel_code = 3;
+}
+
+message GetRechargeRequest {
+  string order_no = 1;
+}
+
+message ListRechargesRequest {
+  uint32 user_id = 1;
+  int32 status = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListRechargesResponse {
+  repeated RechargeInfo recharges = 1;
+  uint32 total = 2;
+}
+
+message WithdrawalInfo {
+  uint64 id = 1;
+  uint32 user_id = 2;
+  string phone = 3;
+  string name = 4;
+  string bank_card = 5;
+  string bank_name = 6;
+  double amount = 7;
+  int32 status = 8;
+  string remark = 9;
+  google.protobuf.Timestamp processed_at = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message WithdrawRequest {
+  uint32 user_id = 1;
+  double amount = 2;
+  string bank_card = 3;
+  string bank_name = 4;
+}
+
+message GetWithdrawalRequest {
+  uint64 id = 1;
+}
+
+message ListWithdrawalsRequest {
+  uint32 user_id = 1;
+  int32 status = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListWithdrawalsResponse {
+  repeated WithdrawalInfo withdrawals = 1;
+  uint32 total = 2;
+}
+
+message IncomeLogInfo {
+  uint64 id = 1;
+  uint32 user_id = 2;
+  string phone = 3;
+  string name = 4;
+  string source = 5;
+  int32 source_type = 6;
+  double amount = 7;
+  uint32 related_id = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message ListIncomeLogsRequest {
+  uint32 user_id = 1;
+  int32 source_type = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListIncomeLogsResponse {
+  repeated IncomeLogInfo income_logs = 1;
+  uint32 total = 2;
+}
+
+message BalanceLogInfo {
+  uint64 id = 1;
+  uint32 user_id = 2;
+  int32 type = 3;
+  double amount = 4;
+  double before_balance = 5;
+  double after_balance = 6;
+  string remark = 7;
+  uint32 related_id = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message ListBalanceLogsRequest {
+  uint32 user_id = 1;
+  int32 type = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message ListBalanceLogsResponse {
+  repeated BalanceLogInfo balance_logs = 1;
+  uint32 total = 2;
+}
+
+message CheckInRequest {
+  uint32 user_id = 1;
+}
+
+message CheckInResponse {
+  bool success = 1;
+  uint32 consecutive_days = 2;
+  double reward_points = 3;
+}
+
+message UserBalanceInfo {
+  uint32 user_id = 1;
+  double balance = 2;
+  double work_points = 3;
+}
+
+message GetUserBalanceRequest {
+  uint32 user_id = 1;
+}

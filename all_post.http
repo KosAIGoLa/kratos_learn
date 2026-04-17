@@ -1,0 +1,548 @@
+### ============================================
+### Content Service (8101)
+### ============================================
+
+### 獲取橫幅列表
+GET http://localhost:8101/api/v1/content/banners?type=home&position=top&status=1
+
+### 創建橫幅
+POST http://localhost:8101/api/v1/content/banners
+Content-Type: application/json
+
+{
+  "title": "測試橫幅",
+  "imageUrl": "https://example.com/banner.jpg",
+  "linkUrl": "https://example.com",
+  "type": "home",
+  "position": "top",
+  "sort": 1,
+  "status": 1
+}
+
+### 更新橫幅
+PUT http://localhost:8101/api/v1/content/banners/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "更新後的橫幅",
+  "imageUrl": "https://example.com/banner2.jpg",
+  "status": 1
+}
+
+### 刪除橫幅
+DELETE http://localhost:8101/api/v1/content/banners/1
+
+### 橫幅點擊統計
+POST http://localhost:8101/api/v1/content/banners/1/click
+
+### 獲取新聞列表
+GET http://localhost:8101/api/v1/content/news?page=1&pageSize=10&category=announcement
+
+### 創建新聞
+POST http://localhost:8101/api/v1/content/news
+Content-Type: application/json
+
+{
+  "title": "測試新聞標題",
+  "summary": "測試新聞摘要",
+  "content": "測試新聞內容",
+  "coverImage": "https://example.com/cover.jpg",
+  "category": "announcement",
+  "type": "normal",
+  "status": 1
+}
+
+### 獲取新聞詳情
+GET http://localhost:8101/api/v1/content/news/1
+
+### 更新新聞
+PUT http://localhost:8101/api/v1/content/news/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "更新後的新聞標題",
+  "content": "更新後的新聞內容",
+  "status": 1
+}
+
+### 刪除新聞
+DELETE http://localhost:8101/api/v1/content/news/1
+
+### ============================================
+### User Service (8107)
+### ============================================
+
+### 用戶註冊（返回 user, token, refresh_token）
+POST http://localhost:8107/api/v1/user/register
+Content-Type: application/json
+
+{
+  "username": "testuser4",
+  "password": "password123",
+  "phone": "13800138004",
+  "inviteCode": "QisS0y"
+}
+
+### 用戶登錄（返回 user, token, refresh_token）
+POST http://localhost:8107/api/v1/user/login
+Content-Type: application/json
+
+{
+  "phone": "13800138004",
+  "password": "password123"
+}
+
+### 刷新 Token（使用 refresh_token 獲取新的 token）
+POST http://localhost:8107/api/v1/user/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "your-refresh-token-here"
+}
+
+### 獲取用戶信息（需要 token）
+GET http://localhost:8107/api/v1/user/1
+Authorization: Bearer your-token-here
+
+### 更新用戶信息
+PUT http://localhost:8107/api/v1/user/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nickname": "新昵稱",
+  "avatar": "https://example.com/avatar.jpg"
+}
+
+### 刪除用戶
+DELETE http://localhost:8107/api/v1/user/1
+
+### 提交 KYC 認證
+POST http://localhost:8107/api/v1/user/kyc
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "name": "張三",
+  "idCard": "110101199001011234",
+  "idCardFront": "https://example.com/front.jpg",
+  "idCardBack": "https://example.com/back.jpg"
+}
+
+### 獲取 KYC 狀態
+GET http://localhost:8107/api/v1/user/kyc/1
+
+### 更新 KYC 狀態
+PUT http://localhost:8107/api/v1/user/kyc/1
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "status": 1,
+  "remark": "審核通過"
+}
+
+### 獲取團隊信息
+GET http://localhost:8107/api/v1/user/team/1
+
+### 獲取團隊成員列表
+GET http://localhost:8107/api/v1/user/team/1/members?page=1&pageSize=10
+
+### ============================================
+### Product Service (8105)
+### ============================================
+
+### 獲取礦機列表
+GET http://localhost:8105/api/v1/mining-machines?page=1&pageSize=10
+
+### 創建礦機
+POST http://localhost:8105/api/v1/mining-machines
+Content-Type: application/json
+
+{
+  "name": "比特幣礦機 S19",
+  "model": "S19",
+  "algorithm": "SHA256",
+  "hashrate": 110.00,
+  "hashrateUnit": "TH/s",
+  "powerConsumption": 3250,
+  "durationDays": 365,
+  "price": 15000.00,
+  "stock": 100
+}
+
+### 獲取產品列表
+GET http://localhost:8105/api/v1/products?page=1&pageSize=10&type=mining
+
+### 創建產品
+POST http://localhost:8105/api/v1/products
+Content-Type: application/json
+
+{
+  "machineId": 1,
+  "name": "測試產品",
+  "price": 999.99,
+  "description": "這是一個測試產品",
+  "type": "mining",
+  "cycle": 30,
+  "productivityRate": 0.01,
+  "status": 1
+}
+
+### 獲取產品詳情
+GET http://localhost:8105/api/v1/products/1
+
+### 更新產品
+PUT http://localhost:8105/api/v1/products/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "更新後的產品名稱",
+  "price": 1299.99,
+  "status": 1
+}
+
+### 刪除產品
+DELETE http://localhost:8105/api/v1/products/1
+
+### 獲取任務列表
+GET http://localhost:8105/api/v1/tasks
+
+### 創建任務
+POST http://localhost:8105/api/v1/tasks
+Content-Type: application/json
+
+{
+  "name": "每日簽到",
+  "code": "daily_checkin",
+  "workPoints": 10.00,
+  "enabled": 1
+}
+
+### 獲取任務詳情
+GET http://localhost:8105/api/v1/tasks/1
+
+### 更新任務
+PUT http://localhost:8105/api/v1/tasks/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "workPoints": 15.00,
+  "enabled": 1
+}
+
+### 刪除任務
+DELETE http://localhost:8105/api/v1/tasks/1
+
+### 完成任務
+POST http://localhost:8105/api/v1/tasks/1/complete
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "taskId": 1
+}
+
+### ============================================
+### Order Service (8103)
+### ============================================
+
+### 獲取訂單列表
+GET http://localhost:8103/api/v1/orders?page=1&pageSize=10&userId=1
+
+### 創建訂單
+POST http://localhost:8103/api/v1/orders
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "productId": 1,
+  "quantity": 2,
+  "amount": 1999.98
+}
+
+### 獲取訂單詳情
+GET http://localhost:8103/api/v1/orders/1
+
+### 更新訂單
+PUT http://localhost:8103/api/v1/orders/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "status": 1
+}
+
+### 取消訂單
+POST http://localhost:8103/api/v1/orders/1/cancel
+
+### 支付訂單
+POST http://localhost:8103/api/v1/orders/pay
+Content-Type: application/json
+
+{
+  "orderId": 1,
+  "paymentMethod": "alipay"
+}
+
+### ============================================
+### Finance Service (8102)
+### ============================================
+
+### 獲取用戶餘額
+GET http://localhost:8102/api/v1/finance/balance/1
+
+### 獲取餘額變動記錄
+GET http://localhost:8102/api/v1/finance/balance-logs?userId=1&page=1&pageSize=10
+
+### 獲取收益明細
+GET http://localhost:8102/api/v1/finance/income-logs?userId=1&page=1&pageSize=10&sourceType=1
+
+### 獲取充值列表
+GET http://localhost:8102/api/v1/finance/recharges?page=1&pageSize=10&userId=1
+
+### 創建充值訂單
+POST http://localhost:8102/api/v1/finance/recharge
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "amount": 1000.00,
+  "paymentMethod": "alipay"
+}
+
+### 根據訂單號獲取充值
+GET http://localhost:8102/api/v1/finance/recharge/RCH20240417001
+
+### 獲取提現列表
+GET http://localhost:8102/api/v1/finance/withdrawals?page=1&pageSize=10&userId=1&status=0
+
+### 創建提現申請
+POST http://localhost:8102/api/v1/finance/withdraw
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "amount": 500.00,
+  "bankCard": "6222021234567890123",
+  "bankName": "中國銀行"
+}
+
+### 審核提現
+PUT http://localhost:8102/api/v1/finance/withdrawal/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "status": 1,
+  "remark": "審核通過"
+}
+
+### 簽到
+POST http://localhost:8102/api/v1/finance/checkin
+Content-Type: application/json
+
+{
+  "userId": 1
+}
+
+### ============================================
+### Payment Service (8104)
+### ============================================
+
+### 獲取支付渠道列表
+GET http://localhost:8104/api/v1/payment/channels?page=1&pageSize=10
+
+### 創建支付渠道
+POST http://localhost:8104/api/v1/payment/channels
+Content-Type: application/json
+
+{
+  "name": "支付寶",
+  "code": "alipay",
+  "config": {
+    "appId": "2021001234567890",
+    "privateKey": "MIIEvQIBADANBg..."
+  },
+  "status": 1
+}
+
+### 更新支付渠道
+PUT http://localhost:8104/api/v1/payment/channels/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "支付寶",
+  "status": 1
+}
+
+### 刪除支付渠道
+DELETE http://localhost:8104/api/v1/payment/channels/1
+
+### 處理支付
+POST http://localhost:8104/api/v1/payment/process
+Content-Type: application/json
+
+{
+  "orderNo": "ORD20240417001",
+  "amount": 1999.98,
+  "channelCode": "alipay",
+  "returnUrl": "https://example.com/return",
+  "notifyUrl": "https://example.com/notify"
+}
+
+### 查詢支付狀態
+GET http://localhost:8104/api/v1/payment/query/ORD20240417001
+
+### 支付回調
+POST http://localhost:8104/api/v1/payment/callback
+Content-Type: application/json
+
+{
+  "orderNo": "ORD20240417001",
+  "status": "success",
+  "transactionId": "2024041712345678",
+  "channelCode": "alipay"
+}
+
+### 獲取 API 調用日誌
+GET http://localhost:8104/api/v1/payment/logs?page=1&pageSize=10&orderNo=ORD20240417001
+
+### ============================================
+### System Service (8106)
+### ============================================
+
+### 獲取配置列表
+GET http://localhost:8106/api/v1/system/configs?category=withdrawal
+
+### 獲取單個配置
+GET http://localhost:8106/api/v1/system/config/withdrawal.min_amount
+
+### 設置系統配置
+POST http://localhost:8106/api/v1/system/config
+Content-Type: application/json
+
+{
+  "key": "withdrawal.min_amount",
+  "value": "100",
+  "description": "最小提現金額",
+  "category": "withdrawal"
+}
+
+### 獲取分潤規則列表
+GET http://localhost:8106/api/v1/system/profit-sharing-rules?type=order
+
+### 創建分潤規則
+POST http://localhost:8106/api/v1/system/profit-sharing-rules
+Content-Type: application/json
+
+{
+  "name": "一級推薦獎勵",
+  "type": "order",
+  "level": 1,
+  "rate": 0.05,
+  "fixedAmount": 0.00,
+  "rewardType": "balance",
+  "enabled": 1
+}
+
+### 更新分潤規則
+PUT http://localhost:8106/api/v1/system/profit-sharing-rules/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "rate": 0.08,
+  "enabled": 1
+}
+
+### 刪除分潤規則
+DELETE http://localhost:8106/api/v1/system/profit-sharing-rules/1
+
+### 獲取風控規則
+GET http://localhost:8106/api/v1/system/risk-controls
+
+### 創建風控規則
+POST http://localhost:8106/api/v1/system/risk-controls
+Content-Type: application/json
+
+{
+  "name": "單日提現次數限制",
+  "code": "daily_withdrawal_limit",
+  "ruleType": "limit",
+  "ruleValue": "3",
+  "action": "reject",
+  "enabled": 1
+}
+
+### 更新風控規則
+PUT http://localhost:8106/api/v1/system/risk-controls/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "ruleValue": "5",
+  "enabled": 1
+}
+
+### 檢查風控
+POST http://localhost:8106/api/v1/system/check-risk
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "action": "withdrawal",
+  "amount": 500.00
+}
+
+### 獲取域名列表
+GET http://localhost:8106/api/v1/system/domains
+
+### 添加域名
+POST http://localhost:8106/api/v1/system/domains
+Content-Type: application/json
+
+{
+  "domain": "example.com",
+  "status": 1
+}
+
+### 檢查白名單
+POST http://localhost:8106/api/v1/system/check-whitelist
+Content-Type: application/json
+
+{
+  "ip": "192.168.1.100"
+}
+
+### ============================================
+### Swagger UI 訪問地址
+### ============================================
+
+### Content Service Swagger
+# http://localhost:8101/q/
+
+### Finance Service Swagger
+# http://localhost:8102/q/
+
+### Order Service Swagger
+# http://localhost:8103/q/
+
+### Payment Service Swagger
+# http://localhost:8104/q/
+
+### Product Service Swagger
+# http://localhost:8105/q/
+
+### System Service Swagger
+# http://localhost:8106/q/
+
+### User Service Swagger
+# http://localhost:8107/q/
+
+###

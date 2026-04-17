@@ -1,0 +1,171 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "user/api/user/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service User {
+  rpc Register(RegisterRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user/register"
+      body: "*"
+    };
+  }
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user/login"
+      body: "*"
+    };
+  }
+  rpc RefreshToken(RefreshTokenRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/user/refresh-token"
+      body: "*"
+    };
+  }
+  rpc GetUser(GetUserRequest) returns (UserInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/user/{id}"
+    };
+  }
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/user/{id}"
+    };
+  }
+  rpc UpdateUser(UpdateUserRequest) returns (UserInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/user/{id}"
+      body: "*"
+    };
+  }
+  rpc SubmitKYC(SubmitKYCRequest) returns (KYCInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/user/kyc"
+      body: "*"
+    };
+  }
+  rpc GetKYC(GetKYCRequest) returns (KYCInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/user/kyc/{user_id}"
+    };
+  }
+  rpc GetTeamRelation(GetTeamRequest) returns (TeamRelationInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/user/team/{user_id}"
+    };
+  }
+  rpc GetTeamMembers(GetTeamMembersRequest) returns (TeamMembersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user/team/{user_id}/members"
+    };
+  }
+}
+
+message UserInfo {
+  uint32 id = 1;
+  string username = 2;
+  string invite_code = 3;
+  string phone = 4;
+  string name = 5;
+  string id_card = 6;
+  uint32 parent_id = 7;
+  double balance = 8;
+  double work_points = 9;
+  int32 status = 10;
+  google.protobuf.Timestamp created_at = 11;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string phone = 2;
+  string password = 3;
+  string invite_code = 4;
+}
+
+message LoginRequest {
+  string phone = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  UserInfo user = 1;
+  string token = 2;
+  string refresh_token = 3;
+}
+
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message GetUserRequest {
+  uint32 id = 1;
+}
+
+message DeleteUserRequest {
+  uint32 id = 1;
+}
+
+message DeleteUserResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message UpdateUserRequest {
+  uint32 id = 1;
+  string name = 2;
+  string id_card = 3;
+}
+
+message KYCInfo {
+  uint32 id = 1;
+  uint32 user_id = 2;
+  string name = 3;
+  string id_card = 4;
+  string id_card_front = 5;
+  string id_card_back = 6;
+  int32 status = 7;
+  string remark = 8;
+  google.protobuf.Timestamp verified_at = 9;
+  google.protobuf.Timestamp created_at = 10;
+}
+
+message SubmitKYCRequest {
+  uint32 user_id = 1;
+  string name = 2;
+  string id_card = 3;
+  string id_card_front = 4;
+  string id_card_back = 5;
+}
+
+message GetKYCRequest {
+  uint32 user_id = 1;
+}
+
+message TeamRelationInfo {
+  uint32 id = 1;
+  uint32 user_id = 2;
+  uint32 parent_id = 3;
+  string path = 4;
+  uint32 level = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetTeamRequest {
+  uint32 user_id = 1;
+}
+
+message GetTeamMembersRequest {
+  uint32 user_id = 1;
+  int32 level = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+message TeamMembersResponse {
+  repeated UserInfo members = 1;
+  uint32 total = 2;
+}

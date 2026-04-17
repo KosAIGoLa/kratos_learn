@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package payment.v1;
+
+option go_package = "payment/api/payment/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Payment {
+  rpc ListChannels(ListChannelsRequest) returns (ListChannelsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/payment/channels"
+    };
+  }
+  rpc GetChannel(GetChannelRequest) returns (ChannelInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/payment/channels/{id}"
+    };
+  }
+  rpc CreateChannel(CreateChannelRequest) returns (ChannelInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/payment/channels"
+      body: "*"
+    };
+  }
+  rpc UpdateChannel(UpdateChannelRequest) returns (ChannelInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/payment/channels/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/payment/channels/{id}"
+    };
+  }
+  rpc ProcessPayment(ProcessPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/payment/process"
+      body: "*"
+    };
+  }
+  rpc QueryPayment(QueryPaymentRequest) returns (PaymentResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/payment/query/{order_no}"
+    };
+  }
+  rpc ListApiLogs(ListApiLogsRequest) returns (ListApiLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/payment/logs"
+    };
+  }
+  rpc HandleCallback(HandleCallbackRequest) returns (HandleCallbackResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/payment/callback"
+      body: "*"
+    };
+  }
+}
+
+message ChannelInfo {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+  string type = 4;
+  string api_url = 5;
+  string merchant_id = 6;
+  string app_id = 7;
+  string notify_url = 8;
+  string return_url = 9;
+  double min_amount = 10;
+  double max_amount = 11;
+  int32 sort = 12;
+  int32 is_default = 13;
+  int32 status = 14;
+  google.protobuf.Timestamp created_at = 15;
+}
+
+message ListChannelsRequest {
+  string type = 1;
+  int32 status = 2;
+}
+
+message ListChannelsResponse {
+  repeated ChannelInfo channels = 1;
+}
+
+message GetChannelRequest {
+  uint32 id = 1;
+}
+
+message CreateChannelRequest {
+  string name = 1;
+  string code = 2;
+  string type = 3;
+  string api_url = 4;
+  string api_key = 5;
+  string api_secret = 6;
+  string merchant_id = 7;
+  string app_id = 8;
+  string notify_url = 9;
+  string return_url = 10;
+  double min_amount = 11;
+  double max_amount = 12;
+}
+
+message UpdateChannelRequest {
+  uint32 id = 1;
+  string name = 2;
+  string api_url = 3;
+  int32 status = 4;
+}
+
+message DeleteChannelRequest {
+  uint32 id = 1;
+}
+
+message DeleteChannelResponse {
+  bool success = 1;
+}
+
+message ProcessPaymentRequest {
+  string order_no = 1;
+  double amount = 2;
+  string channel_code = 3;
+  string user_ip = 4;
+  string return_url = 5;
+}
+
+message PaymentResponse {
+  string order_no = 1;
+  string channel_order_no = 2;
+  double amount = 3;
+  int32 status = 4;
+  string pay_url = 5;
+  string message = 6;
+}
+
+message QueryPaymentRequest {
+  string order_no = 1;
+  string channel_code = 2;
+}
+
+message ApiLogInfo {
+  uint64 id = 1;
+  string order_no = 2;
+  uint32 channel_id = 3;
+  int32 channel_code = 4;
+  int32 action = 5;
+  string request_url = 6;
+  int32 status = 7;
+  string error_msg = 8;
+  google.protobuf.Timestamp request_time = 9;
+  google.protobuf.Timestamp response_time = 10;
+}
+
+message ListApiLogsRequest {
+  string order_no = 1;
+  uint32 channel_id = 2;
+  int32 action = 3;
+  int32 status = 4;
+  uint32 page = 5;
+  uint32 page_size = 6;
+}
+
+message ListApiLogsResponse {
+  repeated ApiLogInfo logs = 1;
+  uint32 total = 2;
+}
+
+message HandleCallbackRequest {
+  string channel_code = 1;
+  string order_no = 2;
+  string sign = 3;
+  bytes body = 4;
+}
+
+message HandleCallbackResponse {
+  bool success = 1;
+  string message = 2;
+}

@@ -1,0 +1,258 @@
+syntax = "proto3";
+
+package validate;
+
+option go_package = "github.com/envoyproxy/protoc-gen-validate/validate";
+option java_package = "io.envoyproxy.pgv.validate";
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+extend google.protobuf.FieldOptions {
+  FieldRules rules = 1071;
+}
+
+message FieldRules {
+  oneof type {
+    FloatRules float = 1;
+    DoubleRules double = 2;
+    Int32Rules int32 = 3;
+    Int64Rules int64 = 4;
+    UInt32Rules uint32 = 5;
+    UInt64Rules uint64 = 6;
+    SInt32Rules sint32 = 7;
+    SInt64Rules sint64 = 8;
+    Fixed32Rules fixed32 = 9;
+    Fixed64Rules fixed64 = 10;
+    SFixed32Rules sfixed32 = 11;
+    SFixed64Rules sfixed64 = 12;
+    BoolRules bool = 13;
+    StringRules string = 14;
+    BytesRules bytes = 15;
+    EnumRules enum = 16;
+    RepeatedRules repeated = 18;
+    MapRules map = 19;
+    AnyRules any = 20;
+    DurationRules duration = 21;
+    TimestampRules timestamp = 22;
+  }
+  string const = 23;
+  bool ignore_empty = 24;
+}
+
+message FloatRules {
+  float const = 1;
+  float lt = 2;
+  float lte = 3;
+  float gt = 4;
+  float gte = 5;
+  bool ignore_empty = 6;
+}
+
+message DoubleRules {
+  double const = 1;
+  double lt = 2;
+  double lte = 3;
+  double gt = 4;
+  double gte = 5;
+  bool ignore_empty = 6;
+}
+
+message Int32Rules {
+  int32 const = 1;
+  int32 lt = 2;
+  int32 lte = 3;
+  int32 gt = 4;
+  int32 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message Int64Rules {
+  int64 const = 1;
+  int64 lt = 2;
+  int64 lte = 3;
+  int64 gt = 4;
+  int64 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message UInt32Rules {
+  uint32 const = 1;
+  uint32 lt = 2;
+  uint32 lte = 3;
+  uint32 gt = 4;
+  uint32 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message UInt64Rules {
+  uint64 const = 1;
+  uint64 lt = 2;
+  uint64 lte = 3;
+  uint64 gt = 4;
+  uint64 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message SInt32Rules {
+  int32 const = 1;
+  int32 lt = 2;
+  int32 lte = 3;
+  int32 gt = 4;
+  int32 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message SInt64Rules {
+  int64 const = 1;
+  int64 lt = 2;
+  int64 lte = 3;
+  int64 gt = 4;
+  int64 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message Fixed32Rules {
+  uint32 const = 1;
+  uint32 lt = 2;
+  uint32 lte = 3;
+  uint32 gt = 4;
+  uint32 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message Fixed64Rules {
+  uint64 const = 1;
+  uint64 lt = 2;
+  uint64 lte = 3;
+  uint64 gt = 4;
+  uint64 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message SFixed32Rules {
+  int32 const = 1;
+  int32 lt = 2;
+  int32 lte = 3;
+  int32 gt = 4;
+  int32 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message SFixed64Rules {
+  int64 const = 1;
+  int64 lt = 2;
+  int64 lte = 3;
+  int64 gt = 4;
+  int64 gte = 5;
+  bool ignore_empty = 6;
+}
+
+message BoolRules {
+  bool const = 1;
+}
+
+message StringRules {
+  string const = 1;
+  uint64 len = 2;
+  uint64 min_len = 3;
+  uint64 max_len = 4;
+  uint64 len_bytes = 5;
+  uint64 min_bytes = 6;
+  uint64 max_bytes = 7;
+  string pattern = 8;
+  string prefix = 9;
+  string suffix = 10;
+  string contains = 11;
+  string not_contains = 23;
+  bool ignore_empty = 12;
+  bool email = 13;
+  bool hostname = 14;
+  bool ip = 15;
+  bool ipv4 = 16;
+  bool ipv6 = 17;
+  bool uri = 18;
+  bool uri_ref = 19;
+  bool address = 21;
+  bool uuid = 22;
+  repeated string in = 24;
+  repeated string not_in = 25;
+  WellKnownRegex well_known_regex = 26;
+  string strict = 27;
+}
+
+enum WellKnownRegex {
+  UNKNOWN = 0;
+  HTTP_HEADER_NAME = 1;
+  HTTP_HEADER_VALUE = 2;
+  HEADER_STRING = 3;
+}
+
+message BytesRules {
+  bytes const = 1;
+  uint64 len = 2;
+  uint64 min_len = 3;
+  uint64 max_len = 4;
+  bytes pattern = 5;
+  bytes prefix = 6;
+  bytes suffix = 7;
+  bytes contains = 8;
+  bytes not_contains = 13;
+  bool ignore_empty = 9;
+  bool ip = 10;
+  bool ipv4 = 11;
+  bool ipv6 = 12;
+}
+
+message EnumRules {
+  int32 const = 1;
+  bool defined_only = 2;
+  repeated int32 in = 3;
+  repeated int32 not_in = 4;
+}
+
+message RepeatedRules {
+  uint64 min_items = 1;
+  uint64 max_items = 2;
+  bool unique = 3;
+  FieldRules items = 4;
+  bool ignore_empty = 5;
+}
+
+message MapRules {
+  uint64 min_pairs = 1;
+  uint64 max_pairs = 2;
+  bool no_sparse = 3;
+  FieldRules keys = 4;
+  FieldRules values = 5;
+  bool ignore_empty = 6;
+}
+
+message AnyRules {
+  bool required = 1;
+  repeated string in = 2;
+  repeated string not_in = 3;
+}
+
+message DurationRules {
+  google.protobuf.Duration const = 1;
+  google.protobuf.Duration lt = 2;
+  google.protobuf.Duration lte = 3;
+  google.protobuf.Duration gt = 4;
+  google.protobuf.Duration gte = 5;
+  bool in = 6;
+  bool not_in = 7;
+  bool ignore_empty = 8;
+}
+
+message TimestampRules {
+  google.protobuf.Timestamp const = 1;
+  google.protobuf.Timestamp lt = 2;
+  google.protobuf.Timestamp lte = 3;
+  google.protobuf.Timestamp gt = 4;
+  google.protobuf.Timestamp gte = 5;
+  google.protobuf.Timestamp lt_now = 6;
+  google.protobuf.Timestamp gt_now = 7;
+  bool ignore_empty = 8;
+}

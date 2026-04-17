@@ -1,0 +1,250 @@
+syntax = "proto3";
+
+package system.v1;
+
+option go_package = "system/api/system/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service System {
+  rpc GetConfig(GetConfigRequest) returns (ConfigInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/system/config/{key}"
+    };
+  }
+  rpc SetConfig(SetConfigRequest) returns (ConfigInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/system/config"
+      body: "*"
+    };
+  }
+  rpc ListConfigs(ListConfigsRequest) returns (ListConfigsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/system/configs"
+    };
+  }
+  rpc GetProfitSharingRules(GetProfitSharingRulesRequest) returns (GetProfitSharingRulesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/system/profit-sharing-rules"
+    };
+  }
+  rpc CreateProfitSharingRule(CreateProfitSharingRuleRequest) returns (ProfitSharingRuleInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/system/profit-sharing-rules"
+      body: "*"
+    };
+  }
+  rpc UpdateProfitSharingRule(UpdateProfitSharingRuleRequest) returns (ProfitSharingRuleInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/system/profit-sharing-rules/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteProfitSharingRule(DeleteProfitSharingRuleRequest) returns (DeleteRuleResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/system/profit-sharing-rules/{id}"
+    };
+  }
+  rpc GetRiskControls(GetRiskControlsRequest) returns (GetRiskControlsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/system/risk-controls"
+    };
+  }
+  rpc CreateRiskControl(CreateRiskControlRequest) returns (RiskControlInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/system/risk-controls"
+      body: "*"
+    };
+  }
+  rpc UpdateRiskControl(UpdateRiskControlRequest) returns (RiskControlInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/system/risk-controls/{id}"
+      body: "*"
+    };
+  }
+  rpc CheckRisk(CheckRiskRequest) returns (CheckRiskResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/system/check-risk"
+      body: "*"
+    };
+  }
+  rpc GetDomains(GetDomainsRequest) returns (GetDomainsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/system/domains"
+    };
+  }
+  rpc AddDomain(AddDomainRequest) returns (DomainInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/system/domains"
+      body: "*"
+    };
+  }
+  rpc CheckWhitelist(CheckWhitelistRequest) returns (CheckWhitelistResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/system/check-whitelist"
+      body: "*"
+    };
+  }
+}
+
+message ConfigInfo {
+  uint32 id = 1;
+  string key = 2;
+  string value = 3;
+  string description = 4;
+  string group = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetConfigRequest {
+  string key = 1;
+}
+
+message SetConfigRequest {
+  string key = 1;
+  string value = 2;
+  string description = 3;
+  string group = 4;
+}
+
+message ListConfigsRequest {
+  string group = 1;
+}
+
+message ListConfigsResponse {
+  repeated ConfigInfo configs = 1;
+}
+
+message ProfitSharingRuleInfo {
+  uint32 id = 1;
+  string name = 2;
+  string type = 3;
+  int32 level = 4;
+  double ratio = 5;
+  double fixed_amount = 6;
+  string unit = 7;
+  double min_amount = 8;
+  double max_amount = 9;
+  int32 sort = 10;
+  int32 enabled = 11;
+  string description = 12;
+}
+
+message GetProfitSharingRulesRequest {
+  string type = 1;
+  int32 enabled = 2;
+}
+
+message GetProfitSharingRulesResponse {
+  repeated ProfitSharingRuleInfo rules = 1;
+}
+
+message CreateProfitSharingRuleRequest {
+  string name = 1;
+  string type = 2;
+  int32 level = 3;
+  double ratio = 4;
+  double fixed_amount = 5;
+  string unit = 6;
+  double min_amount = 7;
+  double max_amount = 8;
+  string description = 9;
+}
+
+message UpdateProfitSharingRuleRequest {
+  uint32 id = 1;
+  string name = 2;
+  double ratio = 3;
+  int32 enabled = 4;
+}
+
+message DeleteProfitSharingRuleRequest {
+  uint32 id = 1;
+}
+
+message DeleteRuleResponse {
+  bool success = 1;
+}
+
+message RiskControlInfo {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+  string type = 4;
+  string level = 5;
+  string action = 6;
+  uint32 limit_value = 7;
+  uint32 time_window = 8;
+  int32 enabled = 9;
+  string description = 10;
+}
+
+message GetRiskControlsRequest {
+  string type = 1;
+  int32 enabled = 2;
+}
+
+message GetRiskControlsResponse {
+  repeated RiskControlInfo controls = 1;
+}
+
+message CreateRiskControlRequest {
+  string name = 1;
+  string code = 2;
+  string type = 3;
+  string level = 4;
+  string trigger_condition = 5;
+  string action = 6;
+  uint32 limit_value = 7;
+  uint32 time_window = 8;
+  string description = 9;
+}
+
+message UpdateRiskControlRequest {
+  uint32 id = 1;
+  string name = 2;
+  int32 enabled = 3;
+}
+
+message CheckRiskRequest {
+  string type = 1;
+  uint32 user_id = 2;
+  string ip = 3;
+  string device = 4;
+  double amount = 5;
+}
+
+message CheckRiskResponse {
+  bool pass = 1;
+  string level = 2;
+  string action = 3;
+  string message = 4;
+}
+
+message DomainInfo {
+  uint32 id = 1;
+  string domain = 2;
+  int32 enabled = 3;
+}
+
+message GetDomainsRequest {
+  int32 enabled = 1;
+}
+
+message GetDomainsResponse {
+  repeated DomainInfo domains = 1;
+}
+
+message AddDomainRequest {
+  string domain = 1;
+}
+
+message CheckWhitelistRequest {
+  string ip = 1;
+  string type = 2;
+}
+
+message CheckWhitelistResponse {
+  bool whitelisted = 1;
+}

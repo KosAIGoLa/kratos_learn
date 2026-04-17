@@ -1,0 +1,369 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: User API
+    version: 0.0.1
+paths:
+    /api/v1/user/kyc:
+        post:
+            tags:
+                - User
+            operationId: User_SubmitKYC
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.SubmitKYCRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.KYCInfo'
+    /api/v1/user/kyc/{userId}:
+        get:
+            tags:
+                - User
+            operationId: User_GetKYC
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.KYCInfo'
+    /api/v1/user/login:
+        post:
+            tags:
+                - User
+            operationId: User_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.LoginResponse'
+    /api/v1/user/refresh-token:
+        post:
+            tags:
+                - User
+            operationId: User_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.RefreshTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.LoginResponse'
+    /api/v1/user/register:
+        post:
+            tags:
+                - User
+            operationId: User_Register
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.RegisterRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.LoginResponse'
+    /api/v1/user/team/{userId}:
+        get:
+            tags:
+                - User
+            operationId: User_GetTeamRelation
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.TeamRelationInfo'
+    /api/v1/user/team/{userId}/members:
+        get:
+            tags:
+                - User
+            operationId: User_GetTeamMembers
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: level
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.TeamMembersResponse'
+    /api/v1/user/{id}:
+        get:
+            tags:
+                - User
+            operationId: User_GetUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserInfo'
+        put:
+            tags:
+                - User
+            operationId: User_UpdateUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.UpdateUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserInfo'
+        delete:
+            tags:
+                - User
+            operationId: User_DeleteUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.DeleteUserResponse'
+components:
+    schemas:
+        user.v1.DeleteUserResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+        user.v1.KYCInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                userId:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                idCard:
+                    type: string
+                idCardFront:
+                    type: string
+                idCardBack:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+                remark:
+                    type: string
+                verifiedAt:
+                    type: string
+                    format: date-time
+                createdAt:
+                    type: string
+                    format: date-time
+        user.v1.LoginRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+                password:
+                    type: string
+        user.v1.LoginResponse:
+            type: object
+            properties:
+                user:
+                    $ref: '#/components/schemas/user.v1.UserInfo'
+                token:
+                    type: string
+                refreshToken:
+                    type: string
+        user.v1.RefreshTokenRequest:
+            type: object
+            properties:
+                refreshToken:
+                    type: string
+        user.v1.RegisterRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                phone:
+                    type: string
+                password:
+                    type: string
+                inviteCode:
+                    type: string
+        user.v1.SubmitKYCRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                idCard:
+                    type: string
+                idCardFront:
+                    type: string
+                idCardBack:
+                    type: string
+        user.v1.TeamMembersResponse:
+            type: object
+            properties:
+                members:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/user.v1.UserInfo'
+                total:
+                    type: integer
+                    format: uint32
+        user.v1.TeamRelationInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                userId:
+                    type: integer
+                    format: uint32
+                parentId:
+                    type: integer
+                    format: uint32
+                path:
+                    type: string
+                level:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+        user.v1.UpdateUserRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                idCard:
+                    type: string
+        user.v1.UserInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                username:
+                    type: string
+                inviteCode:
+                    type: string
+                phone:
+                    type: string
+                name:
+                    type: string
+                idCard:
+                    type: string
+                parentId:
+                    type: integer
+                    format: uint32
+                balance:
+                    type: number
+                    format: double
+                workPoints:
+                    type: number
+                    format: double
+                status:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+tags:
+    - name: User

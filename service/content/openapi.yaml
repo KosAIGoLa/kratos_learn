@@ -1,0 +1,454 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Content API
+    version: 0.0.1
+paths:
+    /api/v1/content/banners:
+        get:
+            tags:
+                - Content
+            operationId: Content_ListBanners
+            parameters:
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: position
+                  in: query
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.ListBannersResponse'
+        post:
+            tags:
+                - Content
+            operationId: Content_CreateBanner
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.CreateBannerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.BannerInfo'
+    /api/v1/content/banners/{bannerId}/click:
+        post:
+            tags:
+                - Content
+            operationId: Content_RecordClick
+            parameters:
+                - name: bannerId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.RecordClickRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.RecordClickResponse'
+    /api/v1/content/banners/{id}:
+        get:
+            tags:
+                - Content
+            operationId: Content_GetBanner
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.BannerInfo'
+        put:
+            tags:
+                - Content
+            operationId: Content_UpdateBanner
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.UpdateBannerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.BannerInfo'
+        delete:
+            tags:
+                - Content
+            operationId: Content_DeleteBanner
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.DeleteBannerResponse'
+    /api/v1/content/news:
+        get:
+            tags:
+                - Content
+            operationId: Content_ListNews
+            parameters:
+                - name: category
+                  in: query
+                  schema:
+                    type: string
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.ListNewsResponse'
+        post:
+            tags:
+                - Content
+            operationId: Content_CreateNews
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.CreateNewsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.NewsInfo'
+    /api/v1/content/news/{id}:
+        get:
+            tags:
+                - Content
+            operationId: Content_GetNews
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.NewsInfo'
+        put:
+            tags:
+                - Content
+            operationId: Content_UpdateNews
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.UpdateNewsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.NewsInfo'
+        delete:
+            tags:
+                - Content
+            operationId: Content_DeleteNews
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.DeleteNewsResponse'
+components:
+    schemas:
+        content.v1.BannerInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                image:
+                    type: string
+                link:
+                    type: string
+                type:
+                    type: string
+                position:
+                    type: string
+                sort:
+                    type: integer
+                    format: int32
+                status:
+                    type: integer
+                    format: int32
+                startTime:
+                    type: string
+                    format: date-time
+                endTime:
+                    type: string
+                    format: date-time
+                clickCount:
+                    type: integer
+                    format: uint32
+        content.v1.CreateBannerRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                image:
+                    type: string
+                link:
+                    type: string
+                type:
+                    type: string
+                position:
+                    type: string
+                sort:
+                    type: integer
+                    format: int32
+                startTime:
+                    type: string
+                    format: date-time
+                endTime:
+                    type: string
+                    format: date-time
+        content.v1.CreateNewsRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                summary:
+                    type: string
+                content:
+                    type: string
+                coverImage:
+                    type: string
+                category:
+                    type: string
+                type:
+                    type: string
+                author:
+                    type: string
+                adminId:
+                    type: integer
+                    format: uint32
+                sort:
+                    type: integer
+                    format: int32
+                isTop:
+                    type: integer
+                    format: int32
+                publishTime:
+                    type: string
+                    format: date-time
+                expireTime:
+                    type: string
+                    format: date-time
+        content.v1.DeleteBannerResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        content.v1.DeleteNewsResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        content.v1.ListBannersResponse:
+            type: object
+            properties:
+                banners:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/content.v1.BannerInfo'
+        content.v1.ListNewsResponse:
+            type: object
+            properties:
+                news:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/content.v1.NewsInfo'
+                total:
+                    type: integer
+                    format: uint32
+        content.v1.NewsInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                summary:
+                    type: string
+                content:
+                    type: string
+                coverImage:
+                    type: string
+                category:
+                    type: string
+                type:
+                    type: string
+                author:
+                    type: string
+                viewCount:
+                    type: integer
+                    format: uint32
+                sort:
+                    type: integer
+                    format: int32
+                status:
+                    type: integer
+                    format: int32
+                isTop:
+                    type: integer
+                    format: int32
+                publishTime:
+                    type: string
+                    format: date-time
+                expireTime:
+                    type: string
+                    format: date-time
+        content.v1.RecordClickRequest:
+            type: object
+            properties:
+                bannerId:
+                    type: integer
+                    format: uint32
+        content.v1.RecordClickResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        content.v1.UpdateBannerRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                image:
+                    type: string
+                link:
+                    type: string
+                sort:
+                    type: integer
+                    format: int32
+                status:
+                    type: integer
+                    format: int32
+        content.v1.UpdateNewsRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                title:
+                    type: string
+                summary:
+                    type: string
+                content:
+                    type: string
+                coverImage:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+                isTop:
+                    type: integer
+                    format: int32
+tags:
+    - name: Content

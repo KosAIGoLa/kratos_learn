@@ -1,0 +1,533 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: System API
+    version: 0.0.1
+paths:
+    /api/v1/system/check-risk:
+        post:
+            tags:
+                - System
+            operationId: System_CheckRisk
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CheckRiskRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.CheckRiskResponse'
+    /api/v1/system/check-whitelist:
+        post:
+            tags:
+                - System
+            operationId: System_CheckWhitelist
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CheckWhitelistRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.CheckWhitelistResponse'
+    /api/v1/system/config:
+        post:
+            tags:
+                - System
+            operationId: System_SetConfig
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.SetConfigRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ConfigInfo'
+    /api/v1/system/config/{key}:
+        get:
+            tags:
+                - System
+            operationId: System_GetConfig
+            parameters:
+                - name: key
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ConfigInfo'
+    /api/v1/system/configs:
+        get:
+            tags:
+                - System
+            operationId: System_ListConfigs
+            parameters:
+                - name: group
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ListConfigsResponse'
+    /api/v1/system/domains:
+        get:
+            tags:
+                - System
+            operationId: System_GetDomains
+            parameters:
+                - name: enabled
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.GetDomainsResponse'
+        post:
+            tags:
+                - System
+            operationId: System_AddDomain
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.AddDomainRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.DomainInfo'
+    /api/v1/system/profit-sharing-rules:
+        get:
+            tags:
+                - System
+            operationId: System_GetProfitSharingRules
+            parameters:
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: enabled
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.GetProfitSharingRulesResponse'
+        post:
+            tags:
+                - System
+            operationId: System_CreateProfitSharingRule
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CreateProfitSharingRuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ProfitSharingRuleInfo'
+    /api/v1/system/profit-sharing-rules/{id}:
+        put:
+            tags:
+                - System
+            operationId: System_UpdateProfitSharingRule
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.UpdateProfitSharingRuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ProfitSharingRuleInfo'
+        delete:
+            tags:
+                - System
+            operationId: System_DeleteProfitSharingRule
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.DeleteRuleResponse'
+    /api/v1/system/risk-controls:
+        get:
+            tags:
+                - System
+            operationId: System_GetRiskControls
+            parameters:
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: enabled
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.GetRiskControlsResponse'
+        post:
+            tags:
+                - System
+            operationId: System_CreateRiskControl
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CreateRiskControlRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.RiskControlInfo'
+    /api/v1/system/risk-controls/{id}:
+        put:
+            tags:
+                - System
+            operationId: System_UpdateRiskControl
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.UpdateRiskControlRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.RiskControlInfo'
+components:
+    schemas:
+        system.v1.AddDomainRequest:
+            type: object
+            properties:
+                domain:
+                    type: string
+        system.v1.CheckRiskRequest:
+            type: object
+            properties:
+                type:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                ip:
+                    type: string
+                device:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+        system.v1.CheckRiskResponse:
+            type: object
+            properties:
+                pass:
+                    type: boolean
+                level:
+                    type: string
+                action:
+                    type: string
+                message:
+                    type: string
+        system.v1.CheckWhitelistRequest:
+            type: object
+            properties:
+                ip:
+                    type: string
+                type:
+                    type: string
+        system.v1.CheckWhitelistResponse:
+            type: object
+            properties:
+                whitelisted:
+                    type: boolean
+        system.v1.ConfigInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                key:
+                    type: string
+                value:
+                    type: string
+                description:
+                    type: string
+                group:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+        system.v1.CreateProfitSharingRuleRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                type:
+                    type: string
+                level:
+                    type: integer
+                    format: int32
+                ratio:
+                    type: number
+                    format: double
+                fixedAmount:
+                    type: number
+                    format: double
+                unit:
+                    type: string
+                minAmount:
+                    type: number
+                    format: double
+                maxAmount:
+                    type: number
+                    format: double
+                description:
+                    type: string
+        system.v1.CreateRiskControlRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                code:
+                    type: string
+                type:
+                    type: string
+                level:
+                    type: string
+                triggerCondition:
+                    type: string
+                action:
+                    type: string
+                limitValue:
+                    type: integer
+                    format: uint32
+                timeWindow:
+                    type: integer
+                    format: uint32
+                description:
+                    type: string
+        system.v1.DeleteRuleResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        system.v1.DomainInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                domain:
+                    type: string
+                enabled:
+                    type: integer
+                    format: int32
+        system.v1.GetDomainsResponse:
+            type: object
+            properties:
+                domains:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.DomainInfo'
+        system.v1.GetProfitSharingRulesResponse:
+            type: object
+            properties:
+                rules:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.ProfitSharingRuleInfo'
+        system.v1.GetRiskControlsResponse:
+            type: object
+            properties:
+                controls:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.RiskControlInfo'
+        system.v1.ListConfigsResponse:
+            type: object
+            properties:
+                configs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.ConfigInfo'
+        system.v1.ProfitSharingRuleInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                type:
+                    type: string
+                level:
+                    type: integer
+                    format: int32
+                ratio:
+                    type: number
+                    format: double
+                fixedAmount:
+                    type: number
+                    format: double
+                unit:
+                    type: string
+                minAmount:
+                    type: number
+                    format: double
+                maxAmount:
+                    type: number
+                    format: double
+                sort:
+                    type: integer
+                    format: int32
+                enabled:
+                    type: integer
+                    format: int32
+                description:
+                    type: string
+        system.v1.RiskControlInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                code:
+                    type: string
+                type:
+                    type: string
+                level:
+                    type: string
+                action:
+                    type: string
+                limitValue:
+                    type: integer
+                    format: uint32
+                timeWindow:
+                    type: integer
+                    format: uint32
+                enabled:
+                    type: integer
+                    format: int32
+                description:
+                    type: string
+        system.v1.SetConfigRequest:
+            type: object
+            properties:
+                key:
+                    type: string
+                value:
+                    type: string
+                description:
+                    type: string
+                group:
+                    type: string
+        system.v1.UpdateProfitSharingRuleRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                ratio:
+                    type: number
+                    format: double
+                enabled:
+                    type: integer
+                    format: int32
+        system.v1.UpdateRiskControlRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                enabled:
+                    type: integer
+                    format: int32
+tags:
+    - name: System

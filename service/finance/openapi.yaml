@@ -1,0 +1,455 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Finance API
+    version: 0.0.1
+paths:
+    /api/v1/finance/balance-logs:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_ListBalanceLogs
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: type
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.ListBalanceLogsResponse'
+    /api/v1/finance/balance/{userId}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetUserBalance
+            parameters:
+                - name: userId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.UserBalanceInfo'
+    /api/v1/finance/checkin:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_CheckIn
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.CheckInRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.CheckInResponse'
+    /api/v1/finance/income-logs:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_ListIncomeLogs
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: sourceType
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.ListIncomeLogsResponse'
+    /api/v1/finance/recharge:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_Recharge
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.RechargeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.RechargeInfo'
+    /api/v1/finance/recharge/{orderNo}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetRecharge
+            parameters:
+                - name: orderNo
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.RechargeInfo'
+    /api/v1/finance/recharges:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_ListRecharges
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.ListRechargesResponse'
+    /api/v1/finance/withdraw:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_Withdraw
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.WithdrawRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.WithdrawalInfo'
+    /api/v1/finance/withdrawal/{id}:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_GetWithdrawal
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.WithdrawalInfo'
+    /api/v1/finance/withdrawals:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_ListWithdrawals
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.ListWithdrawalsResponse'
+components:
+    schemas:
+        finance.v1.BalanceLogInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                type:
+                    type: integer
+                    format: int32
+                amount:
+                    type: number
+                    format: double
+                beforeBalance:
+                    type: number
+                    format: double
+                afterBalance:
+                    type: number
+                    format: double
+                remark:
+                    type: string
+                relatedId:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+        finance.v1.CheckInRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+        finance.v1.CheckInResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                consecutiveDays:
+                    type: integer
+                    format: uint32
+                rewardPoints:
+                    type: number
+                    format: double
+        finance.v1.IncomeLogInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                phone:
+                    type: string
+                name:
+                    type: string
+                source:
+                    type: string
+                sourceType:
+                    type: integer
+                    format: int32
+                amount:
+                    type: number
+                    format: double
+                relatedId:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+        finance.v1.ListBalanceLogsResponse:
+            type: object
+            properties:
+                balanceLogs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/finance.v1.BalanceLogInfo'
+                total:
+                    type: integer
+                    format: uint32
+        finance.v1.ListIncomeLogsResponse:
+            type: object
+            properties:
+                incomeLogs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/finance.v1.IncomeLogInfo'
+                total:
+                    type: integer
+                    format: uint32
+        finance.v1.ListRechargesResponse:
+            type: object
+            properties:
+                recharges:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/finance.v1.RechargeInfo'
+                total:
+                    type: integer
+                    format: uint32
+        finance.v1.ListWithdrawalsResponse:
+            type: object
+            properties:
+                withdrawals:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/finance.v1.WithdrawalInfo'
+                total:
+                    type: integer
+                    format: uint32
+        finance.v1.RechargeInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                inviteCode:
+                    type: string
+                phone:
+                    type: string
+                name:
+                    type: string
+                orderNo:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                status:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+        finance.v1.RechargeRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                amount:
+                    type: number
+                    format: double
+                channelCode:
+                    type: string
+        finance.v1.UserBalanceInfo:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                balance:
+                    type: number
+                    format: double
+                workPoints:
+                    type: number
+                    format: double
+        finance.v1.WithdrawRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                amount:
+                    type: number
+                    format: double
+                bankCard:
+                    type: string
+                bankName:
+                    type: string
+        finance.v1.WithdrawalInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                phone:
+                    type: string
+                name:
+                    type: string
+                bankCard:
+                    type: string
+                bankName:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                status:
+                    type: integer
+                    format: int32
+                remark:
+                    type: string
+                processedAt:
+                    type: string
+                    format: date-time
+                createdAt:
+                    type: string
+                    format: date-time
+tags:
+    - name: Finance

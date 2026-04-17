@@ -1,0 +1,208 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Order API
+    version: 0.0.1
+paths:
+    /api/v1/orders:
+        get:
+            tags:
+                - Order
+            operationId: Order_ListOrders
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/order.v1.ListOrdersResponse'
+        post:
+            tags:
+                - Order
+            operationId: Order_CreateOrder
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/order.v1.CreateOrderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/order.v1.OrderInfo'
+    /api/v1/orders/pay:
+        post:
+            tags:
+                - Order
+            operationId: Order_PayOrder
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/order.v1.PayOrderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/order.v1.PayOrderResponse'
+    /api/v1/orders/{id}:
+        get:
+            tags:
+                - Order
+            operationId: Order_GetOrder
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: orderNo
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/order.v1.OrderInfo'
+    /api/v1/orders/{id}/cancel:
+        post:
+            tags:
+                - Order
+            operationId: Order_CancelOrder
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/order.v1.CancelOrderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/order.v1.OrderInfo'
+components:
+    schemas:
+        order.v1.CancelOrderRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+        order.v1.CreateOrderRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                productId:
+                    type: integer
+                    format: uint32
+                quantity:
+                    type: integer
+                    format: uint32
+                inviteCode:
+                    type: string
+        order.v1.ListOrdersResponse:
+            type: object
+            properties:
+                orders:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/order.v1.OrderInfo'
+                total:
+                    type: integer
+                    format: uint32
+        order.v1.OrderInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                orderNo:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                inviteCode:
+                    type: string
+                phone:
+                    type: string
+                name:
+                    type: string
+                productId:
+                    type: integer
+                    format: uint32
+                productName:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                quantity:
+                    type: integer
+                    format: uint32
+                status:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+        order.v1.PayOrderRequest:
+            type: object
+            properties:
+                orderNo:
+                    type: string
+                channelCode:
+                    type: string
+        order.v1.PayOrderResponse:
+            type: object
+            properties:
+                orderNo:
+                    type: string
+                payUrl:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+tags:
+    - name: Order

@@ -1,0 +1,395 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Payment API
+    version: 0.0.1
+paths:
+    /api/v1/payment/callback:
+        post:
+            tags:
+                - Payment
+            operationId: Payment_HandleCallback
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/payment.v1.HandleCallbackRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.HandleCallbackResponse'
+    /api/v1/payment/channels:
+        get:
+            tags:
+                - Payment
+            operationId: Payment_ListChannels
+            parameters:
+                - name: type
+                  in: query
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.ListChannelsResponse'
+        post:
+            tags:
+                - Payment
+            operationId: Payment_CreateChannel
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/payment.v1.CreateChannelRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.ChannelInfo'
+    /api/v1/payment/channels/{id}:
+        get:
+            tags:
+                - Payment
+            operationId: Payment_GetChannel
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.ChannelInfo'
+        put:
+            tags:
+                - Payment
+            operationId: Payment_UpdateChannel
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/payment.v1.UpdateChannelRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.ChannelInfo'
+        delete:
+            tags:
+                - Payment
+            operationId: Payment_DeleteChannel
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.DeleteChannelResponse'
+    /api/v1/payment/logs:
+        get:
+            tags:
+                - Payment
+            operationId: Payment_ListApiLogs
+            parameters:
+                - name: orderNo
+                  in: query
+                  schema:
+                    type: string
+                - name: channelId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: action
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.ListApiLogsResponse'
+    /api/v1/payment/process:
+        post:
+            tags:
+                - Payment
+            operationId: Payment_ProcessPayment
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/payment.v1.ProcessPaymentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.PaymentResponse'
+    /api/v1/payment/query/{orderNo}:
+        get:
+            tags:
+                - Payment
+            operationId: Payment_QueryPayment
+            parameters:
+                - name: orderNo
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: channelCode
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/payment.v1.PaymentResponse'
+components:
+    schemas:
+        payment.v1.ApiLogInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                orderNo:
+                    type: string
+                channelId:
+                    type: integer
+                    format: uint32
+                channelCode:
+                    type: integer
+                    format: int32
+                action:
+                    type: integer
+                    format: int32
+                requestUrl:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+                errorMsg:
+                    type: string
+                requestTime:
+                    type: string
+                    format: date-time
+                responseTime:
+                    type: string
+                    format: date-time
+        payment.v1.ChannelInfo:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                code:
+                    type: string
+                type:
+                    type: string
+                apiUrl:
+                    type: string
+                merchantId:
+                    type: string
+                appId:
+                    type: string
+                notifyUrl:
+                    type: string
+                returnUrl:
+                    type: string
+                minAmount:
+                    type: number
+                    format: double
+                maxAmount:
+                    type: number
+                    format: double
+                sort:
+                    type: integer
+                    format: int32
+                isDefault:
+                    type: integer
+                    format: int32
+                status:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+        payment.v1.CreateChannelRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                code:
+                    type: string
+                type:
+                    type: string
+                apiUrl:
+                    type: string
+                apiKey:
+                    type: string
+                apiSecret:
+                    type: string
+                merchantId:
+                    type: string
+                appId:
+                    type: string
+                notifyUrl:
+                    type: string
+                returnUrl:
+                    type: string
+                minAmount:
+                    type: number
+                    format: double
+                maxAmount:
+                    type: number
+                    format: double
+        payment.v1.DeleteChannelResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+        payment.v1.HandleCallbackRequest:
+            type: object
+            properties:
+                channelCode:
+                    type: string
+                orderNo:
+                    type: string
+                sign:
+                    type: string
+                body:
+                    type: string
+                    format: bytes
+        payment.v1.HandleCallbackResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+        payment.v1.ListApiLogsResponse:
+            type: object
+            properties:
+                logs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/payment.v1.ApiLogInfo'
+                total:
+                    type: integer
+                    format: uint32
+        payment.v1.ListChannelsResponse:
+            type: object
+            properties:
+                channels:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/payment.v1.ChannelInfo'
+        payment.v1.PaymentResponse:
+            type: object
+            properties:
+                orderNo:
+                    type: string
+                channelOrderNo:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                status:
+                    type: integer
+                    format: int32
+                payUrl:
+                    type: string
+                message:
+                    type: string
+        payment.v1.ProcessPaymentRequest:
+            type: object
+            properties:
+                orderNo:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                channelCode:
+                    type: string
+                userIp:
+                    type: string
+                returnUrl:
+                    type: string
+        payment.v1.UpdateChannelRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                name:
+                    type: string
+                apiUrl:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+tags:
+    - name: Payment
