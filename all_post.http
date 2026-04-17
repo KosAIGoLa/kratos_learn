@@ -521,6 +521,119 @@ Content-Type: application/json
 }
 
 ### ============================================
+### Admin Service (8108)
+### ============================================
+
+### 管理員登錄
+POST http://localhost:8108/api/v1/admin/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 獲取管理員列表
+GET http://localhost:8108/api/v1/admin/admins?page=1&pageSize=10
+
+### 創建管理員
+POST http://localhost:8108/api/v1/admin/admins
+Content-Type: application/json
+
+{
+  "username": "newadmin",
+  "password": "password123",
+  "nickname": "新管理員",
+  "roles": ["admin", "editor"]
+}
+
+### 獲取管理員詳情
+GET http://localhost:8108/api/v1/admin/admins/1
+
+### 更新管理員
+PUT http://localhost:8108/api/v1/admin/admins/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nickname": "更新後的昵稱",
+  "status": 1,
+  "roles": ["admin"]
+}
+
+### 刪除管理員
+DELETE http://localhost:8108/api/v1/admin/admins/2
+
+### 獲取菜單列表
+GET http://localhost:8108/api/v1/admin/menus?status=1
+
+### 創建菜單
+POST http://localhost:8108/api/v1/admin/menus
+Content-Type: application/json
+
+{
+  "parentId": 0,
+  "name": "系統管理",
+  "path": "/system",
+  "component": "Layout",
+  "permission": "system:view",
+  "icon": "Setting",
+  "type": 1,
+  "sort": 1
+}
+
+### 獲取菜單詳情
+GET http://localhost:8108/api/v1/admin/menus/1
+
+### 更新菜單
+PUT http://localhost:8108/api/v1/admin/menus/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "更新後的菜單名",
+  "status": 1,
+  "sort": 2
+}
+
+### 刪除菜單
+DELETE http://localhost:8108/api/v1/admin/menus/1
+
+### 獲取角色列表
+GET http://localhost:8108/api/v1/admin/roles?status=1
+
+### 創建角色
+POST http://localhost:8108/api/v1/admin/roles
+Content-Type: application/json
+
+{
+  "name": "超級管理員",
+  "code": "super_admin",
+  "description": "擁有所有權限",
+  "menuIds": [1, 2, 3]
+}
+
+### 獲取角色詳情
+GET http://localhost:8108/api/v1/admin/roles/1
+
+### 更新角色
+PUT http://localhost:8108/api/v1/admin/roles/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "更新後的角色名",
+  "status": 1,
+  "menuIds": [1, 2]
+}
+
+### 刪除角色
+DELETE http://localhost:8108/api/v1/admin/roles/1
+
+### 獲取操作日誌列表
+GET http://localhost:8108/api/v1/admin/logs?page=1&pageSize=10&adminId=1
+
+### ============================================
 ### Swagger UI 訪問地址
 ### ============================================
 
@@ -544,5 +657,8 @@ Content-Type: application/json
 
 ### User Service Swagger
 # http://localhost:8107/q/
+
+### Admin Service Swagger
+# http://localhost:8108/q/
 
 ###

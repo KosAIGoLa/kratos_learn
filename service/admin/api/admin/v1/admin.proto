@@ -1,0 +1,313 @@
+syntax = "proto3";
+
+package admin.v1;
+
+option go_package = "admin/api/admin/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+// AdminService 管理服务
+service Admin {
+  // 登录相关
+  rpc Login(AdminLoginRequest) returns (AdminLoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/login"
+      body: "*"
+    };
+  }
+
+  // 管理员管理
+  rpc CreateAdmin(CreateAdminRequest) returns (AdminInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/admins"
+      body: "*"
+    };
+  }
+  rpc GetAdmin(GetAdminRequest) returns (AdminInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/admins/{id}"
+    };
+  }
+  rpc UpdateAdmin(UpdateAdminRequest) returns (AdminInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/admin/admins/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteAdmin(DeleteAdminRequest) returns (DeleteAdminResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/admin/admins/{id}"
+    };
+  }
+  rpc ListAdmins(ListAdminsRequest) returns (ListAdminsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/admins"
+    };
+  }
+
+  // 菜单管理
+  rpc CreateMenu(CreateMenuRequest) returns (MenuInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/menus"
+      body: "*"
+    };
+  }
+  rpc GetMenu(GetMenuRequest) returns (MenuInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/menus/{id}"
+    };
+  }
+  rpc UpdateMenu(UpdateMenuRequest) returns (MenuInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/admin/menus/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteMenu(DeleteMenuRequest) returns (DeleteMenuResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/admin/menus/{id}"
+    };
+  }
+  rpc ListMenus(ListMenusRequest) returns (ListMenusResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/menus"
+    };
+  }
+
+  // 角色管理
+  rpc CreateRole(CreateRoleRequest) returns (RoleInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/admin/roles"
+      body: "*"
+    };
+  }
+  rpc GetRole(GetRoleRequest) returns (RoleInfo) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/roles/{id}"
+    };
+  }
+  rpc UpdateRole(UpdateRoleRequest) returns (RoleInfo) {
+    option (google.api.http) = {
+      put: "/api/v1/admin/roles/{id}"
+      body: "*"
+    };
+  }
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/admin/roles/{id}"
+    };
+  }
+  rpc ListRoles(ListRolesRequest) returns (ListRolesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/roles"
+    };
+  }
+
+  // 日志管理
+  rpc ListAdminLogs(ListAdminLogsRequest) returns (ListAdminLogsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/admin/logs"
+    };
+  }
+}
+
+// ============ Admin 管理员相关消息 ============
+
+message AdminInfo {
+  uint32 id = 1;
+  string username = 2;
+  string nickname = 3;
+  google.protobuf.Timestamp last_login_at = 4;
+  int32 status = 5;
+  repeated string roles = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message AdminLoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AdminLoginResponse {
+  AdminInfo admin = 1;
+  string token = 2;
+  string refresh_token = 3;
+}
+
+message CreateAdminRequest {
+  string username = 1;
+  string password = 2;
+  string nickname = 3;
+  repeated string roles = 4;
+}
+
+message GetAdminRequest {
+  uint32 id = 1;
+}
+
+message UpdateAdminRequest {
+  uint32 id = 1;
+  string nickname = 2;
+  string password = 3;
+  int32 status = 4;
+  repeated string roles = 5;
+}
+
+message DeleteAdminRequest {
+  uint32 id = 1;
+}
+
+message DeleteAdminResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListAdminsRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message ListAdminsResponse {
+  int64 total = 1;
+  repeated AdminInfo admins = 2;
+}
+
+// ============ Menu 菜单相关消息 ============
+
+message MenuInfo {
+  uint32 id = 1;
+  uint32 parent_id = 2;
+  string name = 3;
+  string path = 4;
+  string component = 5;
+  string permission = 6;
+  string icon = 7;
+  int32 type = 8;
+  uint32 sort = 9;
+  int32 status = 10;
+  repeated MenuInfo children = 11;
+}
+
+message CreateMenuRequest {
+  uint32 parent_id = 1;
+  string name = 2;
+  string path = 3;
+  string component = 4;
+  string permission = 5;
+  string icon = 6;
+  int32 type = 7;
+  uint32 sort = 8;
+}
+
+message GetMenuRequest {
+  uint32 id = 1;
+}
+
+message UpdateMenuRequest {
+  uint32 id = 1;
+  uint32 parent_id = 2;
+  string name = 3;
+  string path = 4;
+  string component = 5;
+  string permission = 6;
+  string icon = 7;
+  int32 type = 8;
+  uint32 sort = 9;
+  int32 status = 10;
+}
+
+message DeleteMenuRequest {
+  uint32 id = 1;
+}
+
+message DeleteMenuResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListMenusRequest {
+  int32 status = 1;
+}
+
+message ListMenusResponse {
+  repeated MenuInfo menus = 1;
+}
+
+// ============ Role 角色相关消息 ============
+
+message RoleInfo {
+  uint32 id = 1;
+  string name = 2;
+  string code = 3;
+  string description = 4;
+  int32 status = 5;
+  repeated uint32 menu_ids = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message CreateRoleRequest {
+  string name = 1;
+  string code = 2;
+  string description = 3;
+  repeated uint32 menu_ids = 4;
+}
+
+message GetRoleRequest {
+  uint32 id = 1;
+}
+
+message UpdateRoleRequest {
+  uint32 id = 1;
+  string name = 2;
+  string description = 3;
+  int32 status = 4;
+  repeated uint32 menu_ids = 5;
+}
+
+message DeleteRoleRequest {
+  uint32 id = 1;
+}
+
+message DeleteRoleResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ListRolesRequest {
+  int32 status = 1;
+}
+
+message ListRolesResponse {
+  repeated RoleInfo roles = 1;
+}
+
+// ============ AdminLog 日志相关消息 ============
+
+message LogInfo {
+  uint32 id = 1;
+  uint32 admin_id = 2;
+  string admin_username = 3;
+  string action = 4;
+  string module = 5;
+  string description = 6;
+  string request_method = 7;
+  string request_url = 8;
+  int32 response_code = 9;
+  string ip = 10;
+  int32 status = 11;
+  string fail_reason = 12;
+  google.protobuf.Timestamp created_at = 13;
+}
+
+message ListAdminLogsRequest {
+  uint32 admin_id = 1;
+  string module = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message ListAdminLogsResponse {
+  int64 total = 1;
+  repeated LogInfo logs = 2;
+}
