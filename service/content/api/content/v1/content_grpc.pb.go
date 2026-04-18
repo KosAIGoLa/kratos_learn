@@ -30,6 +30,7 @@ const (
 	Content_UpdateBanner_FullMethodName = "/content.v1.Content/UpdateBanner"
 	Content_DeleteBanner_FullMethodName = "/content.v1.Content/DeleteBanner"
 	Content_RecordClick_FullMethodName  = "/content.v1.Content/RecordClick"
+	Content_UploadImage_FullMethodName  = "/content.v1.Content/UploadImage"
 )
 
 // ContentClient is the client API for Content service.
@@ -47,6 +48,8 @@ type ContentClient interface {
 	UpdateBanner(ctx context.Context, in *UpdateBannerRequest, opts ...grpc.CallOption) (*BannerInfo, error)
 	DeleteBanner(ctx context.Context, in *DeleteBannerRequest, opts ...grpc.CallOption) (*DeleteBannerResponse, error)
 	RecordClick(ctx context.Context, in *RecordClickRequest, opts ...grpc.CallOption) (*RecordClickResponse, error)
+	// 上传图片
+	UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error)
 }
 
 type contentClient struct {
@@ -167,6 +170,16 @@ func (c *contentClient) RecordClick(ctx context.Context, in *RecordClickRequest,
 	return out, nil
 }
 
+func (c *contentClient) UploadImage(ctx context.Context, in *UploadImageRequest, opts ...grpc.CallOption) (*UploadImageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadImageResponse)
+	err := c.cc.Invoke(ctx, Content_UploadImage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContentServer is the server API for Content service.
 // All implementations must embed UnimplementedContentServer
 // for forward compatibility.
@@ -182,6 +195,8 @@ type ContentServer interface {
 	UpdateBanner(context.Context, *UpdateBannerRequest) (*BannerInfo, error)
 	DeleteBanner(context.Context, *DeleteBannerRequest) (*DeleteBannerResponse, error)
 	RecordClick(context.Context, *RecordClickRequest) (*RecordClickResponse, error)
+	// 上传图片
+	UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error)
 	mustEmbedUnimplementedContentServer()
 }
 
@@ -224,6 +239,9 @@ func (UnimplementedContentServer) DeleteBanner(context.Context, *DeleteBannerReq
 }
 func (UnimplementedContentServer) RecordClick(context.Context, *RecordClickRequest) (*RecordClickResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RecordClick not implemented")
+}
+func (UnimplementedContentServer) UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadImage not implemented")
 }
 func (UnimplementedContentServer) mustEmbedUnimplementedContentServer() {}
 func (UnimplementedContentServer) testEmbeddedByValue()                 {}
@@ -444,6 +462,24 @@ func _Content_RecordClick_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Content_UploadImage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadImageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContentServer).UploadImage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Content_UploadImage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContentServer).UploadImage(ctx, req.(*UploadImageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Content_ServiceDesc is the grpc.ServiceDesc for Content service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -494,6 +530,10 @@ var Content_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RecordClick",
 			Handler:    _Content_RecordClick_Handler,
+		},
+		{
+			MethodName: "UploadImage",
+			Handler:    _Content_UploadImage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

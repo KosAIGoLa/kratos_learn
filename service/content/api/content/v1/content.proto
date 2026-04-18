@@ -68,6 +68,14 @@ service Content {
       body: "*"
     };
   }
+
+  // 上传图片
+  rpc UploadImage(UploadImageRequest) returns (UploadImageResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/content/upload/image"
+      body: "*"
+    };
+  }
 }
 
 message NewsInfo {
@@ -199,4 +207,28 @@ message RecordClickRequest {
 
 message RecordClickResponse {
   bool success = 1;
+}
+
+// ============ 图片上传相关消息 ============
+
+message UploadImageRequest {
+  // 图片文件内容 (multipart/form-data 会自动处理)
+  bytes file = 1;
+  // 文件夹类型: banner, news, avatar 等
+  string folder = 2;
+}
+
+message UploadImageResponse {
+  // 上传是否成功
+  bool success = 1;
+  // 图片访问 URL
+  string url = 2;
+  // 原文件名
+  string original_name = 3;
+  // 生成的文件名
+  string file_name = 4;
+  // 文件大小 (bytes)
+  int64 file_size = 5;
+  // 错误信息
+  string message = 6;
 }

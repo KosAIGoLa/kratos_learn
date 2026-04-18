@@ -5,28 +5,42 @@
 ### 獲取橫幅列表
 GET http://localhost:8101/api/v1/content/banners?type=home&position=top&status=1
 
-### 創建橫幅
+### 上傳圖片 (獲取圖片 URL 後用於創建橫幅)
+POST http://localhost:8101/api/v1/content/upload/image
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="folder"
+
+banners
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="banner.jpg"
+Content-Type: image/jpeg
+
+< ./banner.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 創建橫幅 (使用已上傳的圖片 URL)
 POST http://localhost:8101/api/v1/content/banners
 Content-Type: application/json
 
 {
   "title": "測試橫幅",
-  "imageUrl": "https://example.com/banner.jpg",
-  "linkUrl": "https://example.com",
+  "image": "http://localhost:8101/uploads/banners/1699999999999999999.jpg",
+  "link": "https://example.com",
   "type": "home",
   "position": "top",
-  "sort": 1,
-  "status": 1
+  "sort": 1
 }
 
-### 更新橫幅
+### 更新橫幅 (使用新的圖片 URL)
 PUT http://localhost:8101/api/v1/content/banners/1
 Content-Type: application/json
 
 {
   "id": 1,
   "title": "更新後的橫幅",
-  "imageUrl": "https://example.com/banner2.jpg",
+  "image": "http://localhost:8101/uploads/banners/1699999999999999999.jpg",
   "status": 1
 }
 

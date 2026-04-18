@@ -249,6 +249,25 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/content.v1.DeleteNewsResponse'
+    /api/v1/content/upload/image:
+        post:
+            tags:
+                - Content
+            description: 上传图片
+            operationId: Content_UploadImage
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/content.v1.UploadImageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/content.v1.UploadImageResponse'
 components:
     schemas:
         content.v1.BannerInfo:
@@ -450,5 +469,36 @@ components:
                 isTop:
                     type: integer
                     format: int32
+        content.v1.UploadImageRequest:
+            type: object
+            properties:
+                file:
+                    type: string
+                    description: 图片文件内容 (multipart/form-data 会自动处理)
+                    format: bytes
+                folder:
+                    type: string
+                    description: '文件夹类型: banner, news, avatar 等'
+        content.v1.UploadImageResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    description: 上传是否成功
+                url:
+                    type: string
+                    description: 图片访问 URL
+                originalName:
+                    type: string
+                    description: 原文件名
+                fileName:
+                    type: string
+                    description: 生成的文件名
+                fileSize:
+                    type: string
+                    description: 文件大小 (bytes)
+                message:
+                    type: string
+                    description: 错误信息
 tags:
     - name: Content

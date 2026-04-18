@@ -4,6 +4,9 @@ import (
 	v1 "content/api/content/v1"
 	"content/internal/biz"
 	"context"
+	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -13,15 +16,31 @@ import (
 // ContentService 内容服务
 type ContentService struct {
 	v1.UnimplementedContentServer
-	uc  *biz.ContentUsecase
-	log *log.Helper
+	uc         *biz.ContentUsecase
+	log        *log.Helper
+	uploadPath string
+	baseURL    string
 }
 
 // NewContentService 创建内容服务
 func NewContentService(uc *biz.ContentUsecase, logger log.Logger) *ContentService {
+	uploadPath := os.Getenv("UPLOAD_PATH")
+	if uploadPath == "" {
+		uploadPath = "./uploads"
+	}
+	baseURL := os.Getenv("BASE_URL")
+	if baseURL == "" {
+		baseURL = "http://localhost:8101"
+	}
+	// 确保上传目录存在
+	if err := os.MkdirAll(uploadPath, 0755); err != nil {
+		log.NewHelper(logger).Warnf("创建上传目录失败: %v", err)
+	}
 	return &ContentService{
-		uc:  uc,
-		log: log.NewHelper(logger),
+		uc:         uc,
+		log:        log.NewHelper(logger),
+		uploadPath: uploadPath,
+		baseURL:    baseURL,
 	}
 }
 
@@ -234,4 +253,94 @@ func (s *ContentService) toProtoBanner(b *biz.Banner) *v1.BannerInfo {
 		}(),
 		ClickCount: b.ClickCount,
 	}
+}
+
+// UploadImage 上传图片
+func (s *ContentService) UploadImage(ctx context.Context, req *v1.UploadImageRequest) (*v1.UploadImageResponse, error) {
+	// 从 context 中获取 multipart 文件 (Kratos HTTP 传输层会处理 multipart)
+	// 这里 req.File 已经包含文件内容
+	if len(req.File) == 0 {
+		return &v1.UploadImageResponse{
+			Success: false,
+			Message: "请选择要上传的文件",
+		}, nil
+	}
+
+	// 确定文件夹
+	folder := req.Folder
+	if folder == "" {
+		folder = "images"
+	}
+
+	// 生成文件名
+	ext := s.getFileExtension(req.File)
+	if ext == "" {
+		ext = ".jpg"
+	}
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
+
+	// 创建文件夹
+	dir := filepath.Join(s.uploadPath, folder)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		s.log.Errorf("创建目录失败: %v", err)
+		return &v1.UploadImageResponse{
+			Success: false,
+			Message: "创建目录失败: " + err.Error(),
+		}, nil
+	}
+
+	// 保存文件
+	filepath := filepath.Join(dir, filename)
+	file, err := os.Create(filepath)
+	if err != nil {
+		s.log.Errorf("创建文件失败: %v", err)
+		return &v1.UploadImageResponse{
+			Success: false,
+			Message: "创建文件失败: " + err.Error(),
+		}, nil
+	}
+	defer file.Close()
+
+	if _, err := file.Write(req.File); err != nil {
+		s.log.Errorf("写入文件失败: %v", err)
+		return &v1.UploadImageResponse{
+			Success: false,
+			Message: "写入文件失败: " + err.Error(),
+		}, nil
+	}
+
+	// 返回文件 URL
+	fileURL := fmt.Sprintf("%s/uploads/%s/%s", s.baseURL, folder, filename)
+
+	s.log.Infof("图片上传成功: %s", fileURL)
+
+	return &v1.UploadImageResponse{
+		Success:      true,
+		Url:          fileURL,
+		OriginalName: "", // 可以从 multipart 中获取
+		FileName:     filename,
+		FileSize:     int64(len(req.File)),
+		Message:      "上传成功",
+	}, nil
+}
+
+// getFileExtension 根据文件内容判断扩展名
+func (s *ContentService) getFileExtension(data []byte) string {
+	if len(data) < 4 {
+		return ""
+	}
+	// 检查文件头
+	if data[0] == 0xFF && data[1] == 0xD8 {
+		return ".jpg"
+	}
+	if data[0] == 0x89 && data[1] == 0x50 && data[2] == 0x4E && data[3] == 0x47 {
+		return ".png"
+	}
+	if data[0] == 0x47 && data[1] == 0x49 && data[2] == 0x46 {
+		return ".gif"
+	}
+	if data[0] == 0x52 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x46 {
+		return ".webp"
+	}
+	return ".bin"
 }

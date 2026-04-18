@@ -1287,6 +1287,150 @@ func (x *RecordClickResponse) GetSuccess() bool {
 	return false
 }
 
+type UploadImageRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 图片文件内容 (multipart/form-data 会自动处理)
+	File []byte `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
+	// 文件夹类型: banner, news, avatar 等
+	Folder        string `protobuf:"bytes,2,opt,name=folder,proto3" json:"folder,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadImageRequest) Reset() {
+	*x = UploadImageRequest{}
+	mi := &file_content_v1_content_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadImageRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadImageRequest) ProtoMessage() {}
+
+func (x *UploadImageRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadImageRequest.ProtoReflect.Descriptor instead.
+func (*UploadImageRequest) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *UploadImageRequest) GetFile() []byte {
+	if x != nil {
+		return x.File
+	}
+	return nil
+}
+
+func (x *UploadImageRequest) GetFolder() string {
+	if x != nil {
+		return x.Folder
+	}
+	return ""
+}
+
+type UploadImageResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 上传是否成功
+	Success bool `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	// 图片访问 URL
+	Url string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	// 原文件名
+	OriginalName string `protobuf:"bytes,3,opt,name=original_name,json=originalName,proto3" json:"original_name,omitempty"`
+	// 生成的文件名
+	FileName string `protobuf:"bytes,4,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
+	// 文件大小 (bytes)
+	FileSize int64 `protobuf:"varint,5,opt,name=file_size,json=fileSize,proto3" json:"file_size,omitempty"`
+	// 错误信息
+	Message       string `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UploadImageResponse) Reset() {
+	*x = UploadImageResponse{}
+	mi := &file_content_v1_content_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UploadImageResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UploadImageResponse) ProtoMessage() {}
+
+func (x *UploadImageResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_content_v1_content_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UploadImageResponse.ProtoReflect.Descriptor instead.
+func (*UploadImageResponse) Descriptor() ([]byte, []int) {
+	return file_content_v1_content_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *UploadImageResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *UploadImageResponse) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *UploadImageResponse) GetOriginalName() string {
+	if x != nil {
+		return x.OriginalName
+	}
+	return ""
+}
+
+func (x *UploadImageResponse) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *UploadImageResponse) GetFileSize() int64 {
+	if x != nil {
+		return x.FileSize
+	}
+	return 0
+}
+
+func (x *UploadImageResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_content_v1_content_proto protoreflect.FileDescriptor
 
 const file_content_v1_content_proto_rawDesc = "" +
@@ -1400,7 +1544,18 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\x12RecordClickRequest\x12\x1b\n" +
 	"\tbanner_id\x18\x01 \x01(\rR\bbannerId\"/\n" +
 	"\x13RecordClickResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xc4\t\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"@\n" +
+	"\x12UploadImageRequest\x12\x12\n" +
+	"\x04file\x18\x01 \x01(\fR\x04file\x12\x16\n" +
+	"\x06folder\x18\x02 \x01(\tR\x06folder\"\xba\x01\n" +
+	"\x13UploadImageResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x10\n" +
+	"\x03url\x18\x02 \x01(\tR\x03url\x12#\n" +
+	"\roriginal_name\x18\x03 \x01(\tR\foriginalName\x12\x1b\n" +
+	"\tfile_name\x18\x04 \x01(\tR\bfileName\x12\x1b\n" +
+	"\tfile_size\x18\x05 \x01(\x03R\bfileSize\x12\x18\n" +
+	"\amessage\x18\x06 \x01(\tR\amessage2\xbd\n" +
+	"\n" +
 	"\aContent\x12c\n" +
 	"\bListNews\x12\x1b.content.v1.ListNewsRequest\x1a\x1c.content.v1.ListNewsResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/v1/content/news\x12^\n" +
 	"\aGetNews\x12\x1a.content.v1.GetNewsRequest\x1a\x14.content.v1.NewsInfo\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/v1/content/news/{id}\x12b\n" +
@@ -1415,7 +1570,8 @@ const file_content_v1_content_proto_rawDesc = "" +
 	"\fCreateBanner\x12\x1f.content.v1.CreateBannerRequest\x1a\x16.content.v1.BannerInfo\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/content/banners\x12p\n" +
 	"\fUpdateBanner\x12\x1f.content.v1.UpdateBannerRequest\x1a\x16.content.v1.BannerInfo\"'\x82\xd3\xe4\x93\x02!:\x01*\x1a\x1c/api/v1/content/banners/{id}\x12w\n" +
 	"\fDeleteBanner\x12\x1f.content.v1.DeleteBannerRequest\x1a .content.v1.DeleteBannerResponse\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/api/v1/content/banners/{id}\x12\x84\x01\n" +
-	"\vRecordClick\x12\x1e.content.v1.RecordClickRequest\x1a\x1f.content.v1.RecordClickResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/api/v1/content/banners/{banner_id}/clickB\x1bZ\x19content/api/content/v1;v1b\x06proto3"
+	"\vRecordClick\x12\x1e.content.v1.RecordClickRequest\x1a\x1f.content.v1.RecordClickResponse\"4\x82\xd3\xe4\x93\x02.:\x01*\")/api/v1/content/banners/{banner_id}/click\x12w\n" +
+	"\vUploadImage\x12\x1e.content.v1.UploadImageRequest\x1a\x1f.content.v1.UploadImageResponse\"'\x82\xd3\xe4\x93\x02!:\x01*\"\x1c/api/v1/content/upload/imageB\x1bZ\x19content/api/content/v1;v1b\x06proto3"
 
 var (
 	file_content_v1_content_proto_rawDescOnce sync.Once
@@ -1429,7 +1585,7 @@ func file_content_v1_content_proto_rawDescGZIP() []byte {
 	return file_content_v1_content_proto_rawDescData
 }
 
-var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_content_v1_content_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_content_v1_content_proto_goTypes = []any{
 	(*NewsInfo)(nil),              // 0: content.v1.NewsInfo
 	(*ListNewsRequest)(nil),       // 1: content.v1.ListNewsRequest
@@ -1449,19 +1605,21 @@ var file_content_v1_content_proto_goTypes = []any{
 	(*DeleteBannerResponse)(nil),  // 15: content.v1.DeleteBannerResponse
 	(*RecordClickRequest)(nil),    // 16: content.v1.RecordClickRequest
 	(*RecordClickResponse)(nil),   // 17: content.v1.RecordClickResponse
-	(*timestamppb.Timestamp)(nil), // 18: google.protobuf.Timestamp
+	(*UploadImageRequest)(nil),    // 18: content.v1.UploadImageRequest
+	(*UploadImageResponse)(nil),   // 19: content.v1.UploadImageResponse
+	(*timestamppb.Timestamp)(nil), // 20: google.protobuf.Timestamp
 }
 var file_content_v1_content_proto_depIdxs = []int32{
-	18, // 0: content.v1.NewsInfo.publish_time:type_name -> google.protobuf.Timestamp
-	18, // 1: content.v1.NewsInfo.expire_time:type_name -> google.protobuf.Timestamp
+	20, // 0: content.v1.NewsInfo.publish_time:type_name -> google.protobuf.Timestamp
+	20, // 1: content.v1.NewsInfo.expire_time:type_name -> google.protobuf.Timestamp
 	0,  // 2: content.v1.ListNewsResponse.news:type_name -> content.v1.NewsInfo
-	18, // 3: content.v1.CreateNewsRequest.publish_time:type_name -> google.protobuf.Timestamp
-	18, // 4: content.v1.CreateNewsRequest.expire_time:type_name -> google.protobuf.Timestamp
-	18, // 5: content.v1.BannerInfo.start_time:type_name -> google.protobuf.Timestamp
-	18, // 6: content.v1.BannerInfo.end_time:type_name -> google.protobuf.Timestamp
+	20, // 3: content.v1.CreateNewsRequest.publish_time:type_name -> google.protobuf.Timestamp
+	20, // 4: content.v1.CreateNewsRequest.expire_time:type_name -> google.protobuf.Timestamp
+	20, // 5: content.v1.BannerInfo.start_time:type_name -> google.protobuf.Timestamp
+	20, // 6: content.v1.BannerInfo.end_time:type_name -> google.protobuf.Timestamp
 	8,  // 7: content.v1.ListBannersResponse.banners:type_name -> content.v1.BannerInfo
-	18, // 8: content.v1.CreateBannerRequest.start_time:type_name -> google.protobuf.Timestamp
-	18, // 9: content.v1.CreateBannerRequest.end_time:type_name -> google.protobuf.Timestamp
+	20, // 8: content.v1.CreateBannerRequest.start_time:type_name -> google.protobuf.Timestamp
+	20, // 9: content.v1.CreateBannerRequest.end_time:type_name -> google.protobuf.Timestamp
 	1,  // 10: content.v1.Content.ListNews:input_type -> content.v1.ListNewsRequest
 	3,  // 11: content.v1.Content.GetNews:input_type -> content.v1.GetNewsRequest
 	4,  // 12: content.v1.Content.CreateNews:input_type -> content.v1.CreateNewsRequest
@@ -1473,19 +1631,21 @@ var file_content_v1_content_proto_depIdxs = []int32{
 	13, // 18: content.v1.Content.UpdateBanner:input_type -> content.v1.UpdateBannerRequest
 	14, // 19: content.v1.Content.DeleteBanner:input_type -> content.v1.DeleteBannerRequest
 	16, // 20: content.v1.Content.RecordClick:input_type -> content.v1.RecordClickRequest
-	2,  // 21: content.v1.Content.ListNews:output_type -> content.v1.ListNewsResponse
-	0,  // 22: content.v1.Content.GetNews:output_type -> content.v1.NewsInfo
-	0,  // 23: content.v1.Content.CreateNews:output_type -> content.v1.NewsInfo
-	0,  // 24: content.v1.Content.UpdateNews:output_type -> content.v1.NewsInfo
-	7,  // 25: content.v1.Content.DeleteNews:output_type -> content.v1.DeleteNewsResponse
-	10, // 26: content.v1.Content.ListBanners:output_type -> content.v1.ListBannersResponse
-	8,  // 27: content.v1.Content.GetBanner:output_type -> content.v1.BannerInfo
-	8,  // 28: content.v1.Content.CreateBanner:output_type -> content.v1.BannerInfo
-	8,  // 29: content.v1.Content.UpdateBanner:output_type -> content.v1.BannerInfo
-	15, // 30: content.v1.Content.DeleteBanner:output_type -> content.v1.DeleteBannerResponse
-	17, // 31: content.v1.Content.RecordClick:output_type -> content.v1.RecordClickResponse
-	21, // [21:32] is the sub-list for method output_type
-	10, // [10:21] is the sub-list for method input_type
+	18, // 21: content.v1.Content.UploadImage:input_type -> content.v1.UploadImageRequest
+	2,  // 22: content.v1.Content.ListNews:output_type -> content.v1.ListNewsResponse
+	0,  // 23: content.v1.Content.GetNews:output_type -> content.v1.NewsInfo
+	0,  // 24: content.v1.Content.CreateNews:output_type -> content.v1.NewsInfo
+	0,  // 25: content.v1.Content.UpdateNews:output_type -> content.v1.NewsInfo
+	7,  // 26: content.v1.Content.DeleteNews:output_type -> content.v1.DeleteNewsResponse
+	10, // 27: content.v1.Content.ListBanners:output_type -> content.v1.ListBannersResponse
+	8,  // 28: content.v1.Content.GetBanner:output_type -> content.v1.BannerInfo
+	8,  // 29: content.v1.Content.CreateBanner:output_type -> content.v1.BannerInfo
+	8,  // 30: content.v1.Content.UpdateBanner:output_type -> content.v1.BannerInfo
+	15, // 31: content.v1.Content.DeleteBanner:output_type -> content.v1.DeleteBannerResponse
+	17, // 32: content.v1.Content.RecordClick:output_type -> content.v1.RecordClickResponse
+	19, // 33: content.v1.Content.UploadImage:output_type -> content.v1.UploadImageResponse
+	22, // [22:34] is the sub-list for method output_type
+	10, // [10:22] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name
 	10, // [10:10] is the sub-list for extension extendee
 	0,  // [0:10] is the sub-list for field type_name
@@ -1502,7 +1662,7 @@ func file_content_v1_content_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_content_v1_content_proto_rawDesc), len(file_content_v1_content_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

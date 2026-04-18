@@ -30,6 +30,7 @@ const OperationContentListNews = "/content.v1.Content/ListNews"
 const OperationContentRecordClick = "/content.v1.Content/RecordClick"
 const OperationContentUpdateBanner = "/content.v1.Content/UpdateBanner"
 const OperationContentUpdateNews = "/content.v1.Content/UpdateNews"
+const OperationContentUploadImage = "/content.v1.Content/UploadImage"
 
 type ContentHTTPServer interface {
 	CreateBanner(context.Context, *CreateBannerRequest) (*BannerInfo, error)
@@ -43,6 +44,8 @@ type ContentHTTPServer interface {
 	RecordClick(context.Context, *RecordClickRequest) (*RecordClickResponse, error)
 	UpdateBanner(context.Context, *UpdateBannerRequest) (*BannerInfo, error)
 	UpdateNews(context.Context, *UpdateNewsRequest) (*NewsInfo, error)
+	// UploadImage 上传图片
+	UploadImage(context.Context, *UploadImageRequest) (*UploadImageResponse, error)
 }
 
 func RegisterContentHTTPServer(s *http.Server, srv ContentHTTPServer) {
@@ -58,6 +61,7 @@ func RegisterContentHTTPServer(s *http.Server, srv ContentHTTPServer) {
 	r.PUT("/api/v1/content/banners/{id}", _Content_UpdateBanner0_HTTP_Handler(srv))
 	r.DELETE("/api/v1/content/banners/{id}", _Content_DeleteBanner0_HTTP_Handler(srv))
 	r.POST("/api/v1/content/banners/{banner_id}/click", _Content_RecordClick0_HTTP_Handler(srv))
+	r.POST("/api/v1/content/upload/image", _Content_UploadImage0_HTTP_Handler(srv))
 }
 
 func _Content_ListNews0_HTTP_Handler(srv ContentHTTPServer) func(ctx http.Context) error {
@@ -305,6 +309,28 @@ func _Content_RecordClick0_HTTP_Handler(srv ContentHTTPServer) func(ctx http.Con
 	}
 }
 
+func _Content_UploadImage0_HTTP_Handler(srv ContentHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in UploadImageRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationContentUploadImage)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UploadImage(ctx, req.(*UploadImageRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UploadImageResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type ContentHTTPClient interface {
 	CreateBanner(ctx context.Context, req *CreateBannerRequest, opts ...http.CallOption) (rsp *BannerInfo, err error)
 	CreateNews(ctx context.Context, req *CreateNewsRequest, opts ...http.CallOption) (rsp *NewsInfo, err error)
@@ -317,6 +343,7 @@ type ContentHTTPClient interface {
 	RecordClick(ctx context.Context, req *RecordClickRequest, opts ...http.CallOption) (rsp *RecordClickResponse, err error)
 	UpdateBanner(ctx context.Context, req *UpdateBannerRequest, opts ...http.CallOption) (rsp *BannerInfo, err error)
 	UpdateNews(ctx context.Context, req *UpdateNewsRequest, opts ...http.CallOption) (rsp *NewsInfo, err error)
+	UploadImage(ctx context.Context, req *UploadImageRequest, opts ...http.CallOption) (rsp *UploadImageResponse, err error)
 }
 
 type ContentHTTPClientImpl struct {
@@ -464,6 +491,19 @@ func (c *ContentHTTPClientImpl) UpdateNews(ctx context.Context, in *UpdateNewsRe
 	opts = append(opts, http.Operation(OperationContentUpdateNews))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *ContentHTTPClientImpl) UploadImage(ctx context.Context, in *UploadImageRequest, opts ...http.CallOption) (*UploadImageResponse, error) {
+	var out UploadImageResponse
+	pattern := "/api/v1/content/upload/image"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationContentUploadImage))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

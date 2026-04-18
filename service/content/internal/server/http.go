@@ -3,6 +3,7 @@ package server
 import (
 	stdhttp "net/http"
 	_ "net/http/pprof"
+	"os"
 
 	v1 "content/api/content/v1"
 	"content/internal/conf"
@@ -36,6 +37,15 @@ func NewHTTPServer(c *conf.Server, content *service.ContentService, logger log.L
 	v1.RegisterContentHTTPServer(srv, content)
 	openAPIHandler := openapiv2.NewHandler()
 	srv.HandlePrefix("/q/", openAPIHandler)
+
+	// 静态文件服务 - 提供上传文件的访问
+	uploadPath := os.Getenv("UPLOAD_PATH")
+	if uploadPath == "" {
+		uploadPath = "./uploads"
+	}
+	fs := stdhttp.FileServer(stdhttp.Dir(uploadPath))
+	srv.HandlePrefix("/uploads/", stdhttp.StripPrefix("/uploads/", fs))
+
 	// pprof endpoints
 	srv.HandlePrefix("/debug/pprof/", stdhttp.DefaultServeMux)
 	return srv
