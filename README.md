@@ -29,8 +29,7 @@
 | product | 8105 | 9105 | 產品管理（礦機、算力產品） |
 | system | 8106 | 9106 | 系統配置（分潤規則、風控、域名） |
 | user | 8107 | 9107 | 用戶管理（註冊、登錄、KYC、團隊） |
-| admin | 8000 | 9000 | 管理員後台 |
-| menu | 8000 | 9000 | 菜單服務 |
+| admin | 8000 | 9000 | 管理員後台（管理員、角色、菜單、日誌） |
 
 ---
 
@@ -54,8 +53,7 @@ my-front-app/
 │   ├── product/               # 產品服務
 │   ├── system/                # 系統服務
 │   ├── user/                  # 用戶服務
-│   ├── admin/                 # 管理員服務
-│   └── menu/                  # 菜單服務
+│   └── admin/                 # 管理員服務（含菜單、角色、日誌管理）
 ├── third_party/               # 第三方 proto 文件
 ├── schema.sql                 # 數據庫結構
 ├── all_post.http              # HTTP 測試請求集合
@@ -143,6 +141,7 @@ all_post.http
 ├── Finance Service (8102)     # 充值、提現、收益
 ├── Payment Service (8104)     # 支付渠道、回調
 ├── System Service (8106)      # 配置、分潤、風控
+├── Admin Service (8000)       # 管理員、角色、菜單、日誌
 └── Swagger UI 訪問地址        # http://localhost:{port}/q/
 ```
 
@@ -154,6 +153,7 @@ all_post.http
 - Product: http://localhost:8105/q/
 - System: http://localhost:8106/q/
 - User: http://localhost:8107/q/
+- Admin: http://localhost:8000/q/
 
 ---
 
@@ -210,3 +210,10 @@ all_post.http
 - 分潤規則配置
 - 風控規則
 - 域名白名單
+
+### 管理員系統
+- 管理員登錄（JWT Token）
+- 管理員管理（創建、編輯、刪除）
+- 角色管理（角色創建、權限分配）
+- 菜單管理（菜單結構、權限標識）
+- 操作日誌查詢
