@@ -57,6 +57,7 @@ my-front-app/
 ├── third_party/               # 第三方 proto 文件
 ├── schema.sql                 # 數據庫結構
 ├── all_post.http              # HTTP 測試請求集合
+├── test_grpc.sh              # gRPC 測試腳本
 └── go.mod                     # Go 依賴管理
 ```
 
@@ -154,6 +155,45 @@ all_post.http
 - System: http://localhost:8106/q/
 - User: http://localhost:8107/q/
 - Admin: http://localhost:8000/q/
+
+### gRPC 測試
+
+項目提供 `test_grpc.sh` 腳本用於測試 gRPC 服務：
+
+**安裝 grpcurl：**
+```bash
+brew install grpcurl
+```
+
+**使用方法：**
+```bash
+# 測試所有服務健康狀態
+./test_grpc.sh all
+
+# 列出所有服務與方法
+./test_grpc.sh list
+
+# 測試指定服務（帶示例請求）
+./test_grpc.sh user
+./test_grpc.sh content
+./test_grpc.sh admin
+
+# 調用指定方法
+./test_grpc.sh user Login '{"phone": "13800138000", "password": "123456"}'
+./test_grpc.sh admin Login '{"username": "admin", "password": "admin123"}'
+./test_grpc.sh content ListBanners '{"type": "home", "status": 1}'
+./test_grpc.sh product ListProducts '{"status": 1, "page": 1, "page_size": 10}'
+```
+
+**gRPC 端口：**
+- Content: `localhost:9101`
+- Finance: `localhost:9102`
+- Order: `localhost:9103`
+- Payment: `localhost:9104`
+- Product: `localhost:9105`
+- System: `localhost:9106`
+- User: `localhost:9107`
+- Admin: `localhost:9108`
 
 ---
 
