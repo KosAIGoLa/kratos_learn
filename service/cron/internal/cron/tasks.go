@@ -266,6 +266,8 @@ func (tm *TaskManager) ListTasks() []TaskInfo {
 
 // memberDailyReset 会员每日重置
 // 每天凌晨执行，重置当日任务完成状态、工分/积分
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) memberDailyReset() {
 	today := time.Now().Format("2006-01-02")
 	tm.log.Infof("执行会员每日重置任务 [%s]...", today)
@@ -296,6 +298,8 @@ func (tm *TaskManager) memberDailyReset() {
 }
 
 // resetDailyTasks 重置会员当日任务
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) resetDailyTasks(member *Member) {
 	// 重置所有每日任务的完成状态
 	member.DailyTasks = []DailyTaskStatus{}
@@ -303,6 +307,8 @@ func (tm *TaskManager) resetDailyTasks(member *Member) {
 }
 
 // resetDailyPoints 重置会员当日工分/积分
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) resetDailyPoints(member *Member) {
 	// 将当日积分累加到本月积分
 	member.MonthlyPoints += member.DailyPoints
@@ -315,6 +321,8 @@ func (tm *TaskManager) resetDailyPoints(member *Member) {
 
 // memberBenefitsCleanup 清理过期会员权益
 // 每天执行，清理当日已过期的会员权益
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) memberBenefitsCleanup() {
 	today := time.Now().Format("2006-01-02")
 	tm.log.Infof("执行会员权益清理任务 [%s]...", today)
@@ -352,6 +360,8 @@ func (tm *TaskManager) memberBenefitsCleanup() {
 
 // memberLevelCheck 会员等级检查
 // 每天执行，检查是否需要更新会员等级
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) memberLevelCheck() {
 	today := time.Now().Format("2006-01-02")
 	tm.log.Infof("执行会员等级检查任务 [%s]...", today)
@@ -389,6 +399,8 @@ func (tm *TaskManager) memberLevelCheck() {
 
 // expiredMembersCleanup 清理过期会员
 // 每天执行，清理已过期的临时/试用会员
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) expiredMembersCleanup() {
 	today := time.Now().Format("2006-01-02")
 	tm.log.Infof("执行过期会员清理任务 [%s]...", today)
@@ -424,6 +436,8 @@ func (tm *TaskManager) expiredMembersCleanup() {
 
 // memberMonthlySettlement 会员月度结算
 // 每月 1 号执行，结算上月工分/积分，准备新的月度周期
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) memberMonthlySettlement() {
 	lastMonth := time.Now().AddDate(0, -1, 0).Format("2006-01")
 	tm.log.Infof("执行会员月度结算任务 [%s]...", lastMonth)
@@ -454,6 +468,8 @@ func (tm *TaskManager) memberMonthlySettlement() {
 }
 
 // generateMemberMonthlyReport 生成会员月度结算报告
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) generateMemberMonthlyReport(member *Member, month string) {
 	tm.log.Infof("会员 [%s] %s 月度结算: 本月工分 %d, 累计总工分 %d",
 		member.ID, month, member.MonthlyPoints, member.TotalPoints)
@@ -506,6 +522,8 @@ type MemberMonthlyStat struct {
 // ==================== 会员相关辅助方法 ====================
 
 // getAllMembers 获取所有会员（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) getAllMembers() []*Member {
 	// 实际实现：从数据库查询所有会员
 	return []*Member{
@@ -515,6 +533,8 @@ func (tm *TaskManager) getAllMembers() []*Member {
 }
 
 // getAllActiveMembers 获取所有活跃会员（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) getAllActiveMembers() []*Member {
 	// 实际实现：从数据库查询所有活跃会员（未过期、未冻结的会员）
 	return []*Member{
@@ -545,6 +565,8 @@ func (tm *TaskManager) getAllActiveMembers() []*Member {
 }
 
 // getMembersWithBenefits 获取有权益的会员（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) getMembersWithBenefits() []*Member {
 	// 实际实现：从数据库查询有权益的会员
 	return []*Member{
@@ -559,6 +581,8 @@ func (tm *TaskManager) getMembersWithBenefits() []*Member {
 }
 
 // getMemberMonthlyStats 获取会员月度消费统计（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) getMemberMonthlyStats(month string) []*MemberMonthlyStat {
 	// 实际实现：从数据库查询上月消费统计
 	return []*MemberMonthlyStat{
@@ -568,6 +592,8 @@ func (tm *TaskManager) getMemberMonthlyStats(month string) []*MemberMonthlyStat 
 }
 
 // getExpiredMembers 获取过期会员（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) getExpiredMembers() []*Member {
 	// 实际实现：从数据库查询过期会员
 	return []*Member{
@@ -577,6 +603,8 @@ func (tm *TaskManager) getExpiredMembers() []*Member {
 }
 
 // calculateMemberLevel 根据消费金额计算会员等级
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) calculateMemberLevel(spending float64) string {
 	switch {
 	case spending >= 10000:
@@ -793,7 +821,6 @@ func (tm *TaskManager) dailyTaskReward() {
 		tm.recordTaskReward(user.ID, "daily_checkin", totalReward, today)
 
 		rewardCount++
-		totalReward += totalReward
 	}
 
 	tm.log.Infof("每日任务奖励发放完成，共发放 %d 位用户，总奖励: %.2f 工分", rewardCount, totalReward)
@@ -1222,6 +1249,8 @@ func (tm *TaskManager) updateUserDailyStats(userID int, dailyPoints, monthlyPoin
 // ==================== 会员数据更新辅助方法 ====================
 
 // updateMember 更新会员信息（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) updateMember(member *Member) error {
 	tm.log.Infof("更新会员 [%s] 信息 - 等级[%s] 当日工分[%d] 当月工分[%d] 总工分[%d]",
 		member.ID, member.Level, member.DailyPoints, member.MonthlyPoints, member.TotalPoints)
@@ -1229,30 +1258,40 @@ func (tm *TaskManager) updateMember(member *Member) error {
 }
 
 // updateMemberBenefits 更新会员权益（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) updateMemberBenefits(memberID string, benefits []MemberBenefit) error {
 	tm.log.Infof("更新会员 [%s] 权益，共 %d 项", memberID, len(benefits))
 	return nil
 }
 
 // updateMemberLevel 更新会员等级（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) updateMemberLevel(memberID string, level string) error {
 	tm.log.Infof("更新会员 [%s] 等级为 [%s]", memberID, level)
 	return nil
 }
 
 // markMemberAsExpired 标记会员为过期（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) markMemberAsExpired(memberID string) error {
 	tm.log.Infof("标记会员 [%s] 为过期状态", memberID)
 	return nil
 }
 
 // archiveAndDeleteMember 归档并删除会员（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) archiveAndDeleteMember(member *Member) error {
 	tm.log.Infof("归档并删除会员 [%s]", member.ID)
 	return nil
 }
 
 // sendLevelChangeNotification 发送等级变更通知（模拟实现）
+//
+//nolint:unused // 预留功能，待后续启用
 func (tm *TaskManager) sendLevelChangeNotification(member *Member, oldLevel, newLevel string) {
 	tm.log.Infof("发送等级变更通知 - 会员[%s] 从[%s]升级到[%s]", member.ID, oldLevel, newLevel)
 }

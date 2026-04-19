@@ -366,11 +366,11 @@ func BenchmarkListTasks(b *testing.B) {
 	// 添加一些任务
 	for i := 0; i < 100; i++ {
 		name := fmt.Sprintf("benchmark_task_%d", i)
-		scheduler.AddTask(name, "0 0 * * * *", func() {})
+		_ = scheduler.AddTask(name, "0 0 * * * *", func() {})
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		service.ListTasks(context.Background(), nil)
+		_, _ = service.ListTasks(context.Background(), nil)
 	}
 }
