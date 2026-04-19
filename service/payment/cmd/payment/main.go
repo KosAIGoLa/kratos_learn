@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"payment/internal/conf"
@@ -63,7 +64,11 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			fmt.Printf("failed to close config: %v", err)
+		}
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)

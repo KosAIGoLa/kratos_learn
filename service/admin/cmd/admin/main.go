@@ -63,7 +63,11 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			_ = logger.Log(log.LevelError, "msg", "failed to close config", "err", err)
+		}
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)

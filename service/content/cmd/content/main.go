@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	stdlog "log"
 	"os"
 
 	"content/internal/conf"
@@ -63,7 +64,11 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			stdlog.Printf("failed to close config: %v", err)
+		}
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)
