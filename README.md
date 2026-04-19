@@ -13,6 +13,7 @@
 | 數據庫 | MySQL + GORM |
 | 文檔數據庫 | MongoDB |
 | 緩存 | Redis |
+| 消息隊列 | RabbitMQ |
 | 配置 | Protobuf + YAML |
 | 依賴注入 | Google Wire |
 | API 文檔 | Swagger/OpenAPI v2 |
@@ -72,6 +73,7 @@ my-front-app/
 - MySQL 8.0+
 - MongoDB 5.0+
 - Redis 6.0+
+- RabbitMQ 3.8+
 - Protobuf 編譯器
 
 ### 1. 安裝依賴
@@ -231,10 +233,22 @@ brew install grpcurl
 - 任務系統
 
 ### 財務系統
-- 充值/提現
+- 充值/提現（提現基於 RabbitMQ 異步處理）
 - 收益計算與發放
 - 餘額變動記錄
 - 每日簽到
+
+#### 提現流程（異步處理）
+```
+用戶發起提現 → API 接收請求 → 推送 RabbitMQ → 返回「處理中」
+                                              ↓
+                                       消費者異步處理
+                                              ↓
+                                       創建提現記錄（MySQL）
+```
+- **隊列**: `withdrawal.queue`
+- **交換器**: `finance.exchange`
+- **路由鍵**: `withdrawal`
 
 ### 訂單系統
 - 產品購買

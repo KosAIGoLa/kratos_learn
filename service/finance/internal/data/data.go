@@ -1,6 +1,8 @@
 package data
 
 import (
+	"context"
+	"finance/internal/biz"
 	"finance/internal/conf"
 	slog "log"
 	"os"
@@ -18,20 +20,41 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewDB, NewRedis, NewRechargeRepo, NewWithdrawalRepo, NewIncomeLogRepo, NewBalanceLogRepo, NewCheckInRepo)
+var ProviderSet = wire.NewSet(
+	NewData, NewDB, NewRedis, NewRabbitMQClient,
+	NewRechargeRepo, NewWithdrawalRepo, NewIncomeLogRepo, NewBalanceLogRepo, NewCheckInRepo,
+	// 绑定 RabbitMQClient 到 biz.WithdrawalMessageQueue 接口
+	wire.Bind(new(biz.WithdrawalMessageQueue), new(*RabbitMQClient)),
+)
 
 // Data .
 type Data struct {
-	db  *gorm.DB
-	rdb *redis.Client
+	db       *gorm.DB
+	rdb      *redis.Client
+	rabbitmq *RabbitMQClient
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client) (*Data, func(), error) {
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, rabbitmq *RabbitMQClient) (*Data, func(), error) {
+	data := &Data{db: db, rdb: rdb, rabbitmq: rabbitmq}
+
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
+		if rabbitmq != nil {
+			rabbitmq.Close()
+		}
 	}
-	return &Data{db: db, rdb: rdb}, cleanup, nil
+
+	// 启动 RabbitMQ 消费者
+	if rabbitmq != nil {
+		consumer := NewWithdrawalConsumer(data, logger)
+		if err := consumer.Start(context.Background()); err != nil {
+			cleanup()
+			return nil, nil, err
+		}
+	}
+
+	return data, cleanup, nil
 }
 
 // NewDB .

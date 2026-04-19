@@ -26,8 +26,13 @@ import (
 func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client)
+	rabbitMQClient, cleanup, err := data.NewRabbitMQClient(confData, logger)
 	if err != nil {
+		return nil, nil, err
+	}
+	dataData, cleanup2, err := data.NewData(confData, logger, db, client, rabbitMQClient)
+	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	rechargeRepo := data.NewRechargeRepo(dataData, logger)
@@ -35,12 +40,13 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	incomeLogRepo := data.NewIncomeLogRepo(dataData, logger)
 	balanceLogRepo := data.NewBalanceLogRepo(dataData, logger)
 	checkInRepo := data.NewCheckInRepo(dataData, logger)
-	financeUsecase := biz.NewFinanceUsecase(rechargeRepo, withdrawalRepo, incomeLogRepo, balanceLogRepo, checkInRepo, logger)
+	financeUsecase := biz.NewFinanceUsecase(rechargeRepo, withdrawalRepo, rabbitMQClient, incomeLogRepo, balanceLogRepo, checkInRepo, logger)
 	financeService := service.NewFinanceService(financeUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, financeService, logger)
 	httpServer := server.NewHTTPServer(confServer, financeService, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }

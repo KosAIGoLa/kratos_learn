@@ -85,6 +85,11 @@ type WithdrawalRepo interface {
 	ListWithdrawals(ctx context.Context, userID uint32, status int32, page, pageSize uint32) ([]*Withdrawal, uint32, error)
 }
 
+// WithdrawalMessageQueue 提现消息队列接口
+type WithdrawalMessageQueue interface {
+	PublishWithdrawal(ctx context.Context, w *Withdrawal) error
+}
+
 // IncomeLogRepo 收益存储接口
 type IncomeLogRepo interface {
 	ListIncomeLogs(ctx context.Context, userID uint32, sourceType int32, page, pageSize uint32) ([]*IncomeLog, uint32, error)
@@ -103,30 +108,33 @@ type CheckInRepo interface {
 
 // FinanceUsecase 财务用例
 type FinanceUsecase struct {
-	rechargeRepo   RechargeRepo
-	withdrawalRepo WithdrawalRepo
-	incomeLogRepo  IncomeLogRepo
-	balanceLogRepo BalanceLogRepo
-	checkInRepo    CheckInRepo
-	log            *log.Helper
+	rechargeRepo           RechargeRepo
+	withdrawalRepo         WithdrawalRepo
+	withdrawalMessageQueue WithdrawalMessageQueue
+	incomeLogRepo          IncomeLogRepo
+	balanceLogRepo         BalanceLogRepo
+	checkInRepo            CheckInRepo
+	log                    *log.Helper
 }
 
 // NewFinanceUsecase 创建财务用例
 func NewFinanceUsecase(
 	rechargeRepo RechargeRepo,
 	withdrawalRepo WithdrawalRepo,
+	withdrawalMessageQueue WithdrawalMessageQueue,
 	incomeLogRepo IncomeLogRepo,
 	balanceLogRepo BalanceLogRepo,
 	checkInRepo CheckInRepo,
 	logger log.Logger,
 ) *FinanceUsecase {
 	return &FinanceUsecase{
-		rechargeRepo:   rechargeRepo,
-		withdrawalRepo: withdrawalRepo,
-		incomeLogRepo:  incomeLogRepo,
-		balanceLogRepo: balanceLogRepo,
-		checkInRepo:    checkInRepo,
-		log:            log.NewHelper(logger),
+		rechargeRepo:           rechargeRepo,
+		withdrawalRepo:         withdrawalRepo,
+		withdrawalMessageQueue: withdrawalMessageQueue,
+		incomeLogRepo:          incomeLogRepo,
+		balanceLogRepo:         balanceLogRepo,
+		checkInRepo:            checkInRepo,
+		log:                    log.NewHelper(logger),
 	}
 }
 
@@ -135,9 +143,25 @@ func (uc *FinanceUsecase) Recharge(ctx context.Context, r *Recharge) (*Recharge,
 	return uc.rechargeRepo.CreateRecharge(ctx, r)
 }
 
-// Withdraw 提现
+// Withdraw 提现 - 推送到消息队列进行异步处理
 func (uc *FinanceUsecase) Withdraw(ctx context.Context, w *Withdrawal) (*Withdrawal, error) {
-	return uc.withdrawalRepo.CreateWithdrawal(ctx, w)
+	// 推送到 RabbitMQ 消息队列
+	if err := uc.withdrawalMessageQueue.PublishWithdrawal(ctx, w); err != nil {
+		return nil, err
+	}
+	uc.log.Infof("withdrawal request queued: user_id=%d, amount=%.2f", w.UserID, w.Amount)
+
+	// 返回一个临时状态，实际记录由消费者创建
+	return &Withdrawal{
+		UserID:    w.UserID,
+		Amount:    w.Amount,
+		BankCard:  w.BankCard,
+		BankName:  w.BankName,
+		Phone:     w.Phone,
+		Name:      w.Name,
+		Status:    0, // 待处理
+		CreatedAt: time.Now(),
+	}, nil
 }
 
 // GetRechargeByOrderNo 根据订单号获取充值记录

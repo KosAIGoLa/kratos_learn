@@ -16,3 +16,8 @@ data:
     dial_timeout: 0.2s
     db: 0
     password: ""
+  rabbitmq:
+    addr: amqp://guest:guest@127.0.0.1:5672/
+    exchange: finance.exchange
+    queue: withdrawal.queue
+    routing_key: withdrawal
