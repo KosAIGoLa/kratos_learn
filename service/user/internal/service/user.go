@@ -106,7 +106,7 @@ func (s *UserService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.Logi
 // RefreshToken 刷新 token
 func (s *UserService) RefreshToken(ctx context.Context, req *v1.RefreshTokenRequest) (*v1.LoginResponse, error) {
 	// 解析 refresh_token
-	claims, err := s.jwtManager.ParseToken(req.RefreshToken)
+	claims, err := s.jwtManager.ParseRefreshToken(req.RefreshToken)
 	if err != nil {
 		return nil, err
 	}

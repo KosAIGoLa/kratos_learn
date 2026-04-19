@@ -6,6 +6,7 @@ import (
 
 	v1 "admin/api/admin/v1"
 	"admin/internal/conf"
+	"admin/internal/pkg/jwt"
 	"admin/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -15,10 +16,11 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, admin *service.AdminService, logger log.Logger) *http.Server {
+func NewHTTPServer(c *conf.Server, admin *service.AdminService, jwtManager *jwt.JWTManager, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),
+			JWTAuth(jwtManager),
 		),
 	}
 	if c.Http.Network != "" {

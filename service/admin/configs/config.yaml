@@ -13,3 +13,7 @@ data:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+jwt:
+  secret: "your-admin-secret-key-change-in-production"
+  access_token_expire: 86400s
+  refresh_token_expire: 604800s

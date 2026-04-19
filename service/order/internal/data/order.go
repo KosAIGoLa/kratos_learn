@@ -85,6 +85,13 @@ func (r *orderRepo) ListOrders(ctx context.Context, userID uint32, statusFilter 
 	var orders []Order
 	var total int64
 
+	if page == 0 {
+		page = 1
+	}
+	if pageSize == 0 {
+		pageSize = 10
+	}
+
 	query := r.data.db.Model(&Order{})
 	if userID > 0 {
 		query = query.Where("user_id = ?", userID)
@@ -93,7 +100,9 @@ func (r *orderRepo) ListOrders(ctx context.Context, userID uint32, statusFilter 
 		query = query.Where("status = ?", statusFilter)
 	}
 
-	query.Count(&total)
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
+	}
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&orders).Error; err != nil {
 		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())

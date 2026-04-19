@@ -10,8 +10,14 @@ type Claims struct {
 	UserID   uint32 `json:"user_id"`
 	Username string `json:"username"`
 	Phone    string `json:"phone"`
+	Type     string `json:"type"`
 	jwt.RegisteredClaims
 }
+
+const (
+	AccessTokenType  = "access"
+	RefreshTokenType = "refresh"
+)
 
 // JWTManager JWT 管理器
 type JWTManager struct {
@@ -31,34 +37,23 @@ func NewJWTManager(secret string, accessTokenExpire, refreshTokenExpire time.Dur
 
 // GenerateToken 生成訪問 token
 func (j *JWTManager) GenerateToken(userID uint32, username, phone string) (string, error) {
-	nowTime := time.Now()
-	expireTime := nowTime.Add(j.accessTokenExpire)
-
-	claims := Claims{
-		UserID:   userID,
-		Username: username,
-		Phone:    phone,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expireTime),
-			IssuedAt:  jwt.NewNumericDate(nowTime),
-			NotBefore: jwt.NewNumericDate(nowTime),
-		},
-	}
-
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := tokenClaims.SignedString(j.secret)
-	return token, err
+	return j.generateToken(AccessTokenType, userID, username, phone, j.accessTokenExpire)
 }
 
 // GenerateRefreshToken 生成刷新 token
 func (j *JWTManager) GenerateRefreshToken(userID uint32, username, phone string) (string, error) {
+	return j.generateToken(RefreshTokenType, userID, username, phone, j.refreshTokenExpire)
+}
+
+func (j *JWTManager) generateToken(tokenType string, userID uint32, username, phone string, expireAfter time.Duration) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(j.refreshTokenExpire)
+	expireTime := nowTime.Add(expireAfter)
 
 	claims := Claims{
 		UserID:   userID,
 		Username: username,
 		Phone:    phone,
+		Type:     tokenType,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireTime),
 			IssuedAt:  jwt.NewNumericDate(nowTime),
@@ -74,6 +69,9 @@ func (j *JWTManager) GenerateRefreshToken(userID uint32, username, phone string)
 // ParseToken 解析 token
 func (j *JWTManager) ParseToken(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, jwt.ErrSignatureInvalid
+		}
 		return j.secret, nil
 	})
 
@@ -86,4 +84,25 @@ func (j *JWTManager) ParseToken(tokenString string) (*Claims, error) {
 	}
 
 	return nil, jwt.ErrSignatureInvalid
+}
+
+// ParseAccessToken 解析访问 token
+func (j *JWTManager) ParseAccessToken(tokenString string) (*Claims, error) {
+	return j.parseTokenByType(tokenString, AccessTokenType)
+}
+
+// ParseRefreshToken 解析刷新 token
+func (j *JWTManager) ParseRefreshToken(tokenString string) (*Claims, error) {
+	return j.parseTokenByType(tokenString, RefreshTokenType)
+}
+
+func (j *JWTManager) parseTokenByType(tokenString, expectedType string) (*Claims, error) {
+	claims, err := j.ParseToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+	if claims.Type != expectedType {
+		return nil, jwt.ErrTokenInvalidClaims
+	}
+	return claims, nil
 }

@@ -3,6 +3,7 @@ package server
 import (
 	v1 "admin/api/admin/v1"
 	"admin/internal/conf"
+	"admin/internal/pkg/jwt"
 	"admin/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -11,10 +12,11 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, admin *service.AdminService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, admin *service.AdminService, jwtManager *jwt.JWTManager, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
+			JWTAuth(jwtManager),
 		),
 	}
 	if c.Grpc.Network != "" {

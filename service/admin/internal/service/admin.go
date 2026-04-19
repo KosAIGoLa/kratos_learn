@@ -5,6 +5,7 @@ import (
 
 	v1 "admin/api/admin/v1"
 	"admin/internal/biz"
+	"admin/internal/pkg/jwt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -17,16 +18,18 @@ type AdminService struct {
 	menuUC     *biz.MenuUsecase
 	roleUC     *biz.RoleUsecase
 	adminLogUC *biz.AdminLogUsecase
+	jwtManager *jwt.JWTManager
 	log        *log.Helper
 }
 
 // NewAdminService 创建管理服务
-func NewAdminService(adminUC *biz.AdminUsecase, menuUC *biz.MenuUsecase, roleUC *biz.RoleUsecase, adminLogUC *biz.AdminLogUsecase, logger log.Logger) *AdminService {
+func NewAdminService(adminUC *biz.AdminUsecase, menuUC *biz.MenuUsecase, roleUC *biz.RoleUsecase, adminLogUC *biz.AdminLogUsecase, jwtManager *jwt.JWTManager, logger log.Logger) *AdminService {
 	return &AdminService{
 		adminUC:    adminUC,
 		menuUC:     menuUC,
 		roleUC:     roleUC,
 		adminLogUC: adminLogUC,
+		jwtManager: jwtManager,
 		log:        log.NewHelper(logger),
 	}
 }
@@ -38,9 +41,14 @@ func (s *AdminService) Login(ctx context.Context, req *v1.AdminLoginRequest) (*v
 		return nil, errors.New(400, "LOGIN_FAILED", "用户名或密码错误")
 	}
 
-	// TODO: 实现JWT token生成
-	token := "mock_token"
-	refreshToken := "mock_refresh_token"
+	token, err := s.jwtManager.GenerateToken(admin.ID, admin.Username)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := s.jwtManager.GenerateRefreshToken(admin.ID, admin.Username)
+	if err != nil {
+		return nil, err
+	}
 
 	return &v1.AdminLoginResponse{
 		Admin:        s.toProtoAdmin(admin),

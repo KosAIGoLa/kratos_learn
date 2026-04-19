@@ -28,6 +28,7 @@ type Bootstrap struct {
 
 	Server *Server `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
 	Data   *Data   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Jwt    *Jwt    `protobuf:"bytes,3,opt,name=jwt,proto3" json:"jwt,omitempty"`
 }
 
 func (x *Bootstrap) Reset() {
@@ -72,6 +73,13 @@ func (x *Bootstrap) GetServer() *Server {
 func (x *Bootstrap) GetData() *Data {
 	if x != nil {
 		return x.Data
+	}
+	return nil
+}
+
+func (x *Bootstrap) GetJwt() *Jwt {
+	if x != nil {
+		return x.Jwt
 	}
 	return nil
 }
@@ -182,6 +190,33 @@ func (x *Data) GetDatabase() *Data_Database {
 func (x *Data) GetRedis() *Data_Redis {
 	if x != nil {
 		return x.Redis
+	}
+	return nil
+}
+
+type Jwt struct {
+	Secret             string               `protobuf:"bytes,1,opt,name=secret,proto3" json:"secret,omitempty"`
+	AccessTokenExpire  *durationpb.Duration `protobuf:"bytes,2,opt,name=access_token_expire,json=accessTokenExpire,proto3" json:"access_token_expire,omitempty"`
+	RefreshTokenExpire *durationpb.Duration `protobuf:"bytes,3,opt,name=refresh_token_expire,json=refreshTokenExpire,proto3" json:"refresh_token_expire,omitempty"`
+}
+
+func (x *Jwt) GetSecret() string {
+	if x != nil {
+		return x.Secret
+	}
+	return ""
+}
+
+func (x *Jwt) GetAccessTokenExpire() *durationpb.Duration {
+	if x != nil {
+		return x.AccessTokenExpire
+	}
+	return nil
+}
+
+func (x *Jwt) GetRefreshTokenExpire() *durationpb.Duration {
+	if x != nil {
+		return x.RefreshTokenExpire
 	}
 	return nil
 }

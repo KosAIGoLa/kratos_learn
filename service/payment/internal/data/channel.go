@@ -108,7 +108,7 @@ func (r *channelRepo) UpdateChannel(ctx context.Context, c *biz.PaymentChannel) 
 	if c.APIURL != "" {
 		updates["api_url"] = c.APIURL
 	}
-	if c.Status != 0 {
+	if c.Status == 0 || c.Status == 1 {
 		updates["status"] = c.Status
 	}
 	if err := r.data.db.Model(&PaymentChannel{}).Where("id = ?", c.ID).Updates(updates).Error; err != nil {
