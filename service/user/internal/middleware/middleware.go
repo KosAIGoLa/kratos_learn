@@ -52,13 +52,14 @@ func ErrorEncoder() khttp.EncodeErrorFunc {
 
 		// 根據錯誤碼設置 HTTP 狀態碼
 		httpStatus := http.StatusInternalServerError
-		if se.Code == 400 {
+		switch se.Code {
+		case 400:
 			httpStatus = http.StatusBadRequest
-		} else if se.Code == 404 {
+		case 404:
 			httpStatus = http.StatusNotFound
-		} else if se.Code == 401 {
+		case 401:
 			httpStatus = http.StatusUnauthorized
-		} else if se.Code == 403 {
+		case 403:
 			httpStatus = http.StatusForbidden
 		}
 
@@ -67,6 +68,6 @@ func ErrorEncoder() khttp.EncodeErrorFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(httpStatus)
-		w.Write(data)
+		_, _ = w.Write(data)
 	}
 }

@@ -299,7 +299,7 @@ func (s *ContentService) UploadImage(ctx context.Context, req *v1.UploadImageReq
 			Message: "创建文件失败: " + err.Error(),
 		}, nil
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	if _, err := file.Write(req.File); err != nil {
 		s.log.Errorf("写入文件失败: %v", err)
