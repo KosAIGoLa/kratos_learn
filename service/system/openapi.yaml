@@ -130,6 +130,85 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/system.v1.DomainInfo'
+    /api/v1/system/logs:
+        get:
+            tags:
+                - System
+            description: 系统日志 (存 MongoDB)
+            operationId: System_ListSystemLogs
+            parameters:
+                - name: level
+                  in: query
+                  schema:
+                    type: string
+                - name: module
+                  in: query
+                  schema:
+                    type: string
+                - name: operatorId
+                  in: query
+                  schema:
+                    type: string
+                - name: startTime
+                  in: query
+                  schema:
+                    type: string
+                - name: endTime
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ListSystemLogsResponse'
+        post:
+            tags:
+                - System
+            operationId: System_CreateSystemLog
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CreateSystemLogRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.SystemLogInfo'
+    /api/v1/system/logs/{id}:
+        get:
+            tags:
+                - System
+            operationId: System_GetSystemLog
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.SystemLogInfo'
     /api/v1/system/profit-sharing-rules:
         get:
             tags:
@@ -276,6 +355,86 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/system.v1.RiskControlInfo'
+    /api/v1/system/user-logs:
+        get:
+            tags:
+                - System
+            description: 用户日志 (存 MongoDB)
+            operationId: System_ListUserLogs
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: action
+                  in: query
+                  schema:
+                    type: string
+                - name: module
+                  in: query
+                  schema:
+                    type: string
+                - name: startTime
+                  in: query
+                  schema:
+                    type: string
+                - name: endTime
+                  in: query
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.ListUserLogsResponse'
+        post:
+            tags:
+                - System
+            operationId: System_CreateUserLog
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/system.v1.CreateUserLogRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.UserLogInfo'
+    /api/v1/system/user-logs/{id}:
+        get:
+            tags:
+                - System
+            operationId: System_GetUserLog
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/system.v1.UserLogInfo'
 components:
     schemas:
         system.v1.AddDomainRequest:
@@ -387,6 +546,51 @@ components:
                     format: uint32
                 description:
                     type: string
+        system.v1.CreateSystemLogRequest:
+            type: object
+            properties:
+                level:
+                    type: string
+                module:
+                    type: string
+                action:
+                    type: string
+                message:
+                    type: string
+                operatorId:
+                    type: string
+                operatorName:
+                    type: string
+                ipAddress:
+                    type: string
+                userAgent:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+        system.v1.CreateUserLogRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                username:
+                    type: string
+                action:
+                    type: string
+                module:
+                    type: string
+                description:
+                    type: string
+                ipAddress:
+                    type: string
+                deviceInfo:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
         system.v1.DeleteRuleResponse:
             type: object
             properties:
@@ -431,6 +635,38 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/system.v1.ConfigInfo'
+        system.v1.ListSystemLogsResponse:
+            type: object
+            properties:
+                logs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.SystemLogInfo'
+                total:
+                    type: integer
+                    format: int32
+                page:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
+        system.v1.ListUserLogsResponse:
+            type: object
+            properties:
+                logs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/system.v1.UserLogInfo'
+                total:
+                    type: integer
+                    format: int32
+                page:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
         system.v1.ProfitSharingRuleInfo:
             type: object
             properties:
@@ -504,6 +740,34 @@ components:
                     type: string
                 group:
                     type: string
+        system.v1.SystemLogInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                level:
+                    type: string
+                module:
+                    type: string
+                action:
+                    type: string
+                message:
+                    type: string
+                operatorId:
+                    type: string
+                operatorName:
+                    type: string
+                ipAddress:
+                    type: string
+                userAgent:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+                createdAt:
+                    type: string
+                    format: date-time
         system.v1.UpdateProfitSharingRuleRequest:
             type: object
             properties:
@@ -529,5 +793,32 @@ components:
                 enabled:
                     type: integer
                     format: int32
+        system.v1.UserLogInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                username:
+                    type: string
+                action:
+                    type: string
+                module:
+                    type: string
+                description:
+                    type: string
+                ipAddress:
+                    type: string
+                deviceInfo:
+                    type: string
+                metadata:
+                    type: object
+                    additionalProperties:
+                        type: string
+                createdAt:
+                    type: string
+                    format: date-time
 tags:
     - name: System

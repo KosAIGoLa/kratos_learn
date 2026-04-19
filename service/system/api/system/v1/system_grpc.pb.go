@@ -33,6 +33,12 @@ const (
 	System_GetDomains_FullMethodName              = "/system.v1.System/GetDomains"
 	System_AddDomain_FullMethodName               = "/system.v1.System/AddDomain"
 	System_CheckWhitelist_FullMethodName          = "/system.v1.System/CheckWhitelist"
+	System_ListSystemLogs_FullMethodName          = "/system.v1.System/ListSystemLogs"
+	System_GetSystemLog_FullMethodName            = "/system.v1.System/GetSystemLog"
+	System_CreateSystemLog_FullMethodName         = "/system.v1.System/CreateSystemLog"
+	System_ListUserLogs_FullMethodName            = "/system.v1.System/ListUserLogs"
+	System_GetUserLog_FullMethodName              = "/system.v1.System/GetUserLog"
+	System_CreateUserLog_FullMethodName           = "/system.v1.System/CreateUserLog"
 )
 
 // SystemClient is the client API for System service.
@@ -53,6 +59,14 @@ type SystemClient interface {
 	GetDomains(ctx context.Context, in *GetDomainsRequest, opts ...grpc.CallOption) (*GetDomainsResponse, error)
 	AddDomain(ctx context.Context, in *AddDomainRequest, opts ...grpc.CallOption) (*DomainInfo, error)
 	CheckWhitelist(ctx context.Context, in *CheckWhitelistRequest, opts ...grpc.CallOption) (*CheckWhitelistResponse, error)
+	// 系统日志 (存 MongoDB)
+	ListSystemLogs(ctx context.Context, in *ListSystemLogsRequest, opts ...grpc.CallOption) (*ListSystemLogsResponse, error)
+	GetSystemLog(ctx context.Context, in *GetSystemLogRequest, opts ...grpc.CallOption) (*SystemLogInfo, error)
+	CreateSystemLog(ctx context.Context, in *CreateSystemLogRequest, opts ...grpc.CallOption) (*SystemLogInfo, error)
+	// 用户日志 (存 MongoDB)
+	ListUserLogs(ctx context.Context, in *ListUserLogsRequest, opts ...grpc.CallOption) (*ListUserLogsResponse, error)
+	GetUserLog(ctx context.Context, in *GetUserLogRequest, opts ...grpc.CallOption) (*UserLogInfo, error)
+	CreateUserLog(ctx context.Context, in *CreateUserLogRequest, opts ...grpc.CallOption) (*UserLogInfo, error)
 }
 
 type systemClient struct {
@@ -203,6 +217,66 @@ func (c *systemClient) CheckWhitelist(ctx context.Context, in *CheckWhitelistReq
 	return out, nil
 }
 
+func (c *systemClient) ListSystemLogs(ctx context.Context, in *ListSystemLogsRequest, opts ...grpc.CallOption) (*ListSystemLogsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSystemLogsResponse)
+	err := c.cc.Invoke(ctx, System_ListSystemLogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemClient) GetSystemLog(ctx context.Context, in *GetSystemLogRequest, opts ...grpc.CallOption) (*SystemLogInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SystemLogInfo)
+	err := c.cc.Invoke(ctx, System_GetSystemLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemClient) CreateSystemLog(ctx context.Context, in *CreateSystemLogRequest, opts ...grpc.CallOption) (*SystemLogInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SystemLogInfo)
+	err := c.cc.Invoke(ctx, System_CreateSystemLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemClient) ListUserLogs(ctx context.Context, in *ListUserLogsRequest, opts ...grpc.CallOption) (*ListUserLogsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserLogsResponse)
+	err := c.cc.Invoke(ctx, System_ListUserLogs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemClient) GetUserLog(ctx context.Context, in *GetUserLogRequest, opts ...grpc.CallOption) (*UserLogInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserLogInfo)
+	err := c.cc.Invoke(ctx, System_GetUserLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *systemClient) CreateUserLog(ctx context.Context, in *CreateUserLogRequest, opts ...grpc.CallOption) (*UserLogInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserLogInfo)
+	err := c.cc.Invoke(ctx, System_CreateUserLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SystemServer is the server API for System service.
 // All implementations must embed UnimplementedSystemServer
 // for forward compatibility.
@@ -221,6 +295,14 @@ type SystemServer interface {
 	GetDomains(context.Context, *GetDomainsRequest) (*GetDomainsResponse, error)
 	AddDomain(context.Context, *AddDomainRequest) (*DomainInfo, error)
 	CheckWhitelist(context.Context, *CheckWhitelistRequest) (*CheckWhitelistResponse, error)
+	// 系统日志 (存 MongoDB)
+	ListSystemLogs(context.Context, *ListSystemLogsRequest) (*ListSystemLogsResponse, error)
+	GetSystemLog(context.Context, *GetSystemLogRequest) (*SystemLogInfo, error)
+	CreateSystemLog(context.Context, *CreateSystemLogRequest) (*SystemLogInfo, error)
+	// 用户日志 (存 MongoDB)
+	ListUserLogs(context.Context, *ListUserLogsRequest) (*ListUserLogsResponse, error)
+	GetUserLog(context.Context, *GetUserLogRequest) (*UserLogInfo, error)
+	CreateUserLog(context.Context, *CreateUserLogRequest) (*UserLogInfo, error)
 	mustEmbedUnimplementedSystemServer()
 }
 
@@ -272,6 +354,24 @@ func (UnimplementedSystemServer) AddDomain(context.Context, *AddDomainRequest) (
 }
 func (UnimplementedSystemServer) CheckWhitelist(context.Context, *CheckWhitelistRequest) (*CheckWhitelistResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckWhitelist not implemented")
+}
+func (UnimplementedSystemServer) ListSystemLogs(context.Context, *ListSystemLogsRequest) (*ListSystemLogsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSystemLogs not implemented")
+}
+func (UnimplementedSystemServer) GetSystemLog(context.Context, *GetSystemLogRequest) (*SystemLogInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSystemLog not implemented")
+}
+func (UnimplementedSystemServer) CreateSystemLog(context.Context, *CreateSystemLogRequest) (*SystemLogInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSystemLog not implemented")
+}
+func (UnimplementedSystemServer) ListUserLogs(context.Context, *ListUserLogsRequest) (*ListUserLogsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUserLogs not implemented")
+}
+func (UnimplementedSystemServer) GetUserLog(context.Context, *GetUserLogRequest) (*UserLogInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUserLog not implemented")
+}
+func (UnimplementedSystemServer) CreateUserLog(context.Context, *CreateUserLogRequest) (*UserLogInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateUserLog not implemented")
 }
 func (UnimplementedSystemServer) mustEmbedUnimplementedSystemServer() {}
 func (UnimplementedSystemServer) testEmbeddedByValue()                {}
@@ -546,6 +646,114 @@ func _System_CheckWhitelist_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _System_ListSystemLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSystemLogsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).ListSystemLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_ListSystemLogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).ListSystemLogs(ctx, req.(*ListSystemLogsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _System_GetSystemLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSystemLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).GetSystemLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_GetSystemLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).GetSystemLog(ctx, req.(*GetSystemLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _System_CreateSystemLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSystemLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).CreateSystemLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_CreateSystemLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).CreateSystemLog(ctx, req.(*CreateSystemLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _System_ListUserLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserLogsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).ListUserLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_ListUserLogs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).ListUserLogs(ctx, req.(*ListUserLogsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _System_GetUserLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).GetUserLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_GetUserLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).GetUserLog(ctx, req.(*GetUserLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _System_CreateUserLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServer).CreateUserLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: System_CreateUserLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServer).CreateUserLog(ctx, req.(*CreateUserLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // System_ServiceDesc is the grpc.ServiceDesc for System service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -608,6 +816,30 @@ var System_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckWhitelist",
 			Handler:    _System_CheckWhitelist_Handler,
+		},
+		{
+			MethodName: "ListSystemLogs",
+			Handler:    _System_ListSystemLogs_Handler,
+		},
+		{
+			MethodName: "GetSystemLog",
+			Handler:    _System_GetSystemLog_Handler,
+		},
+		{
+			MethodName: "CreateSystemLog",
+			Handler:    _System_CreateSystemLog_Handler,
+		},
+		{
+			MethodName: "ListUserLogs",
+			Handler:    _System_ListUserLogs_Handler,
+		},
+		{
+			MethodName: "GetUserLog",
+			Handler:    _System_GetUserLog_Handler,
+		},
+		{
+			MethodName: "CreateUserLog",
+			Handler:    _System_CreateUserLog_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

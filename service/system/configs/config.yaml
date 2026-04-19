@@ -13,3 +13,11 @@ data:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+  mongodb:
+    uri: mongodb://localhost:27017
+    database: system_logs
+    username: admin
+    password: secret123
+    connect_timeout: 10s
+    max_pool_size: 100
+    min_pool_size: 10

@@ -11,6 +11,7 @@
 | 框架 | [Kratos](https://go-kratos.dev/) v2.7.2 |
 | 通信 | gRPC + HTTP/REST |
 | 數據庫 | MySQL + GORM |
+| 文檔數據庫 | MongoDB |
 | 緩存 | Redis |
 | 配置 | Protobuf + YAML |
 | 依賴注入 | Google Wire |
@@ -69,6 +70,7 @@ my-front-app/
 
 - Go 1.21+
 - MySQL 8.0+
+- MongoDB 5.0+
 - Redis 6.0+
 - Protobuf 編譯器
 

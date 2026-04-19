@@ -1611,6 +1611,862 @@ func (x *CheckWhitelistResponse) GetWhitelisted() bool {
 	return false
 }
 
+type SystemLogInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                                                        // MongoDB ObjectID
+	Level         string                 `protobuf:"bytes,2,opt,name=level,proto3" json:"level,omitempty"`                                                                                  // debug/info/warn/error/fatal
+	Module        string                 `protobuf:"bytes,3,opt,name=module,proto3" json:"module,omitempty"`                                                                                // 模块名称
+	Action        string                 `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`                                                                                // 操作类型
+	Message       string                 `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`                                                                              // 日志内容
+	OperatorId    string                 `protobuf:"bytes,6,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`                                                      // 操作者ID (管理员ID)
+	OperatorName  string                 `protobuf:"bytes,7,opt,name=operator_name,json=operatorName,proto3" json:"operator_name,omitempty"`                                                // 操作者名称
+	IpAddress     string                 `protobuf:"bytes,8,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`                                                         // IP地址
+	UserAgent     string                 `protobuf:"bytes,9,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`                                                         // 用户代理
+	Metadata      map[string]string      `protobuf:"bytes,10,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 额外元数据
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SystemLogInfo) Reset() {
+	*x = SystemLogInfo{}
+	mi := &file_system_v1_system_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SystemLogInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SystemLogInfo) ProtoMessage() {}
+
+func (x *SystemLogInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SystemLogInfo.ProtoReflect.Descriptor instead.
+func (*SystemLogInfo) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *SystemLogInfo) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetOperatorId() string {
+	if x != nil {
+		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetOperatorName() string {
+	if x != nil {
+		return x.OperatorName
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetUserAgent() string {
+	if x != nil {
+		return x.UserAgent
+	}
+	return ""
+}
+
+func (x *SystemLogInfo) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *SystemLogInfo) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type ListSystemLogsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Level         string                 `protobuf:"bytes,1,opt,name=level,proto3" json:"level,omitempty"`                             // 日志级别筛选
+	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`                           // 模块筛选
+	OperatorId    string                 `protobuf:"bytes,3,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"` // 操作者筛选
+	StartTime     string                 `protobuf:"bytes,4,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`    // 开始时间 (ISO8601)
+	EndTime       string                 `protobuf:"bytes,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`          // 结束时间 (ISO8601)
+	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`                              // 页码
+	PageSize      int32                  `protobuf:"varint,7,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`      // 每页数量
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSystemLogsRequest) Reset() {
+	*x = ListSystemLogsRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSystemLogsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSystemLogsRequest) ProtoMessage() {}
+
+func (x *ListSystemLogsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSystemLogsRequest.ProtoReflect.Descriptor instead.
+func (*ListSystemLogsRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ListSystemLogsRequest) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *ListSystemLogsRequest) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *ListSystemLogsRequest) GetOperatorId() string {
+	if x != nil {
+		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *ListSystemLogsRequest) GetStartTime() string {
+	if x != nil {
+		return x.StartTime
+	}
+	return ""
+}
+
+func (x *ListSystemLogsRequest) GetEndTime() string {
+	if x != nil {
+		return x.EndTime
+	}
+	return ""
+}
+
+func (x *ListSystemLogsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListSystemLogsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type ListSystemLogsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Logs          []*SystemLogInfo       `protobuf:"bytes,1,rep,name=logs,proto3" json:"logs,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListSystemLogsResponse) Reset() {
+	*x = ListSystemLogsResponse{}
+	mi := &file_system_v1_system_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListSystemLogsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListSystemLogsResponse) ProtoMessage() {}
+
+func (x *ListSystemLogsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListSystemLogsResponse.ProtoReflect.Descriptor instead.
+func (*ListSystemLogsResponse) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *ListSystemLogsResponse) GetLogs() []*SystemLogInfo {
+	if x != nil {
+		return x.Logs
+	}
+	return nil
+}
+
+func (x *ListSystemLogsResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *ListSystemLogsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListSystemLogsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GetSystemLogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSystemLogRequest) Reset() {
+	*x = GetSystemLogRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSystemLogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSystemLogRequest) ProtoMessage() {}
+
+func (x *GetSystemLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSystemLogRequest.ProtoReflect.Descriptor instead.
+func (*GetSystemLogRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *GetSystemLogRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type CreateSystemLogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Level         string                 `protobuf:"bytes,1,opt,name=level,proto3" json:"level,omitempty"`
+	Module        string                 `protobuf:"bytes,2,opt,name=module,proto3" json:"module,omitempty"`
+	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	OperatorId    string                 `protobuf:"bytes,5,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	OperatorName  string                 `protobuf:"bytes,6,opt,name=operator_name,json=operatorName,proto3" json:"operator_name,omitempty"`
+	IpAddress     string                 `protobuf:"bytes,7,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
+	UserAgent     string                 `protobuf:"bytes,8,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
+	Metadata      map[string]string      `protobuf:"bytes,9,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateSystemLogRequest) Reset() {
+	*x = CreateSystemLogRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateSystemLogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateSystemLogRequest) ProtoMessage() {}
+
+func (x *CreateSystemLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateSystemLogRequest.ProtoReflect.Descriptor instead.
+func (*CreateSystemLogRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *CreateSystemLogRequest) GetLevel() string {
+	if x != nil {
+		return x.Level
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetOperatorId() string {
+	if x != nil {
+		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetOperatorName() string {
+	if x != nil {
+		return x.OperatorName
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetUserAgent() string {
+	if x != nil {
+		return x.UserAgent
+	}
+	return ""
+}
+
+func (x *CreateSystemLogRequest) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type UserLogInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                                                       // MongoDB ObjectID
+	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                                                                // 用户ID
+	Username      string                 `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`                                                                           // 用户名
+	Action        string                 `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`                                                                               // 操作类型
+	Module        string                 `protobuf:"bytes,5,opt,name=module,proto3" json:"module,omitempty"`                                                                               // 模块
+	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`                                                                     // 操作描述
+	IpAddress     string                 `protobuf:"bytes,7,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`                                                        // IP地址
+	DeviceInfo    string                 `protobuf:"bytes,8,opt,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`                                                     // 设备信息
+	Metadata      map[string]string      `protobuf:"bytes,9,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 额外数据 (如订单ID、金额等)
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserLogInfo) Reset() {
+	*x = UserLogInfo{}
+	mi := &file_system_v1_system_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserLogInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserLogInfo) ProtoMessage() {}
+
+func (x *UserLogInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserLogInfo.ProtoReflect.Descriptor instead.
+func (*UserLogInfo) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *UserLogInfo) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *UserLogInfo) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetDeviceInfo() string {
+	if x != nil {
+		return x.DeviceInfo
+	}
+	return ""
+}
+
+func (x *UserLogInfo) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *UserLogInfo) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type ListUserLogsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`         // 用户ID筛选
+	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`                        // 操作类型筛选
+	Module        string                 `protobuf:"bytes,3,opt,name=module,proto3" json:"module,omitempty"`                        // 模块筛选
+	StartTime     string                 `protobuf:"bytes,4,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"` // 开始时间
+	EndTime       string                 `protobuf:"bytes,5,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`       // 结束时间
+	Page          int32                  `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,7,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUserLogsRequest) Reset() {
+	*x = ListUserLogsRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUserLogsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUserLogsRequest) ProtoMessage() {}
+
+func (x *ListUserLogsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUserLogsRequest.ProtoReflect.Descriptor instead.
+func (*ListUserLogsRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *ListUserLogsRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *ListUserLogsRequest) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *ListUserLogsRequest) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *ListUserLogsRequest) GetStartTime() string {
+	if x != nil {
+		return x.StartTime
+	}
+	return ""
+}
+
+func (x *ListUserLogsRequest) GetEndTime() string {
+	if x != nil {
+		return x.EndTime
+	}
+	return ""
+}
+
+func (x *ListUserLogsRequest) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListUserLogsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type ListUserLogsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Logs          []*UserLogInfo         `protobuf:"bytes,1,rep,name=logs,proto3" json:"logs,omitempty"`
+	Total         int32                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	Page          int32                  `protobuf:"varint,3,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int32                  `protobuf:"varint,4,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListUserLogsResponse) Reset() {
+	*x = ListUserLogsResponse{}
+	mi := &file_system_v1_system_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUserLogsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUserLogsResponse) ProtoMessage() {}
+
+func (x *ListUserLogsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUserLogsResponse.ProtoReflect.Descriptor instead.
+func (*ListUserLogsResponse) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *ListUserLogsResponse) GetLogs() []*UserLogInfo {
+	if x != nil {
+		return x.Logs
+	}
+	return nil
+}
+
+func (x *ListUserLogsResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *ListUserLogsResponse) GetPage() int32 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListUserLogsResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+type GetUserLogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserLogRequest) Reset() {
+	*x = GetUserLogRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserLogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserLogRequest) ProtoMessage() {}
+
+func (x *GetUserLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserLogRequest.ProtoReflect.Descriptor instead.
+func (*GetUserLogRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *GetUserLogRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type CreateUserLogRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Action        string                 `protobuf:"bytes,3,opt,name=action,proto3" json:"action,omitempty"`
+	Module        string                 `protobuf:"bytes,4,opt,name=module,proto3" json:"module,omitempty"`
+	Description   string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	IpAddress     string                 `protobuf:"bytes,6,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
+	DeviceInfo    string                 `protobuf:"bytes,7,opt,name=device_info,json=deviceInfo,proto3" json:"device_info,omitempty"`
+	Metadata      map[string]string      `protobuf:"bytes,8,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserLogRequest) Reset() {
+	*x = CreateUserLogRequest{}
+	mi := &file_system_v1_system_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserLogRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserLogRequest) ProtoMessage() {}
+
+func (x *CreateUserLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_system_v1_system_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserLogRequest.ProtoReflect.Descriptor instead.
+func (*CreateUserLogRequest) Descriptor() ([]byte, []int) {
+	return file_system_v1_system_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *CreateUserLogRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *CreateUserLogRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetModule() string {
+	if x != nil {
+		return x.Module
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetIpAddress() string {
+	if x != nil {
+		return x.IpAddress
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetDeviceInfo() string {
+	if x != nil {
+		return x.DeviceInfo
+	}
+	return ""
+}
+
+func (x *CreateUserLogRequest) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
 var File_system_v1_system_proto protoreflect.FileDescriptor
 
 const file_system_v1_system_proto_rawDesc = "" +
@@ -1739,7 +2595,108 @@ const file_system_v1_system_proto_rawDesc = "" +
 	"\x02ip\x18\x01 \x01(\tR\x02ip\x12\x12\n" +
 	"\x04type\x18\x02 \x01(\tR\x04type\":\n" +
 	"\x16CheckWhitelistResponse\x12 \n" +
-	"\vwhitelisted\x18\x01 \x01(\bR\vwhitelisted2\xec\r\n" +
+	"\vwhitelisted\x18\x01 \x01(\bR\vwhitelisted\"\xbf\x03\n" +
+	"\rSystemLogInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05level\x18\x02 \x01(\tR\x05level\x12\x16\n" +
+	"\x06module\x18\x03 \x01(\tR\x06module\x12\x16\n" +
+	"\x06action\x18\x04 \x01(\tR\x06action\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\x12\x1f\n" +
+	"\voperator_id\x18\x06 \x01(\tR\n" +
+	"operatorId\x12#\n" +
+	"\roperator_name\x18\a \x01(\tR\foperatorName\x12\x1d\n" +
+	"\n" +
+	"ip_address\x18\b \x01(\tR\tipAddress\x12\x1d\n" +
+	"\n" +
+	"user_agent\x18\t \x01(\tR\tuserAgent\x12B\n" +
+	"\bmetadata\x18\n" +
+	" \x03(\v2&.system.v1.SystemLogInfo.MetadataEntryR\bmetadata\x129\n" +
+	"\n" +
+	"created_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd1\x01\n" +
+	"\x15ListSystemLogsRequest\x12\x14\n" +
+	"\x05level\x18\x01 \x01(\tR\x05level\x12\x16\n" +
+	"\x06module\x18\x02 \x01(\tR\x06module\x12\x1f\n" +
+	"\voperator_id\x18\x03 \x01(\tR\n" +
+	"operatorId\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x04 \x01(\tR\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x05 \x01(\tR\aendTime\x12\x12\n" +
+	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\a \x01(\x05R\bpageSize\"\x8d\x01\n" +
+	"\x16ListSystemLogsResponse\x12,\n" +
+	"\x04logs\x18\x01 \x03(\v2\x18.system.v1.SystemLogInfoR\x04logs\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"%\n" +
+	"\x13GetSystemLogRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x86\x03\n" +
+	"\x16CreateSystemLogRequest\x12\x14\n" +
+	"\x05level\x18\x01 \x01(\tR\x05level\x12\x16\n" +
+	"\x06module\x18\x02 \x01(\tR\x06module\x12\x16\n" +
+	"\x06action\x18\x03 \x01(\tR\x06action\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\x12\x1f\n" +
+	"\voperator_id\x18\x05 \x01(\tR\n" +
+	"operatorId\x12#\n" +
+	"\roperator_name\x18\x06 \x01(\tR\foperatorName\x12\x1d\n" +
+	"\n" +
+	"ip_address\x18\a \x01(\tR\tipAddress\x12\x1d\n" +
+	"\n" +
+	"user_agent\x18\b \x01(\tR\tuserAgent\x12K\n" +
+	"\bmetadata\x18\t \x03(\v2/.system.v1.CreateSystemLogRequest.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9e\x03\n" +
+	"\vUserLogInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\rR\x06userId\x12\x1a\n" +
+	"\busername\x18\x03 \x01(\tR\busername\x12\x16\n" +
+	"\x06action\x18\x04 \x01(\tR\x06action\x12\x16\n" +
+	"\x06module\x18\x05 \x01(\tR\x06module\x12 \n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12\x1d\n" +
+	"\n" +
+	"ip_address\x18\a \x01(\tR\tipAddress\x12\x1f\n" +
+	"\vdevice_info\x18\b \x01(\tR\n" +
+	"deviceInfo\x12@\n" +
+	"\bmetadata\x18\t \x03(\v2$.system.v1.UserLogInfo.MetadataEntryR\bmetadata\x129\n" +
+	"\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xc9\x01\n" +
+	"\x13ListUserLogsRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\rR\x06userId\x12\x16\n" +
+	"\x06action\x18\x02 \x01(\tR\x06action\x12\x16\n" +
+	"\x06module\x18\x03 \x01(\tR\x06module\x12\x1d\n" +
+	"\n" +
+	"start_time\x18\x04 \x01(\tR\tstartTime\x12\x19\n" +
+	"\bend_time\x18\x05 \x01(\tR\aendTime\x12\x12\n" +
+	"\x04page\x18\x06 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\a \x01(\x05R\bpageSize\"\x89\x01\n" +
+	"\x14ListUserLogsResponse\x12*\n" +
+	"\x04logs\x18\x01 \x03(\v2\x16.system.v1.UserLogInfoR\x04logs\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x05R\x05total\x12\x12\n" +
+	"\x04page\x18\x03 \x01(\x05R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x04 \x01(\x05R\bpageSize\"#\n" +
+	"\x11GetUserLogRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xe5\x02\n" +
+	"\x14CreateUserLogRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\rR\x06userId\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x16\n" +
+	"\x06action\x18\x03 \x01(\tR\x06action\x12\x16\n" +
+	"\x06module\x18\x04 \x01(\tR\x06module\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1d\n" +
+	"\n" +
+	"ip_address\x18\x06 \x01(\tR\tipAddress\x12\x1f\n" +
+	"\vdevice_info\x18\a \x01(\tR\n" +
+	"deviceInfo\x12I\n" +
+	"\bmetadata\x18\b \x03(\v2-.system.v1.CreateUserLogRequest.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\x89\x13\n" +
 	"\x06System\x12d\n" +
 	"\tGetConfig\x12\x1b.system.v1.GetConfigRequest\x1a\x15.system.v1.ConfigInfo\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/v1/system/config/{key}\x12a\n" +
 	"\tSetConfig\x12\x1b.system.v1.SetConfigRequest\x1a\x15.system.v1.ConfigInfo\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/system/config\x12l\n" +
@@ -1755,7 +2712,14 @@ const file_system_v1_system_proto_rawDesc = "" +
 	"\n" +
 	"GetDomains\x12\x1c.system.v1.GetDomainsRequest\x1a\x1d.system.v1.GetDomainsResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/system/domains\x12b\n" +
 	"\tAddDomain\x12\x1b.system.v1.AddDomainRequest\x1a\x15.system.v1.DomainInfo\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/system/domains\x12\x80\x01\n" +
-	"\x0eCheckWhitelist\x12 .system.v1.CheckWhitelistRequest\x1a!.system.v1.CheckWhitelistResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/api/v1/system/check-whitelistB\x19Z\x17system/api/system/v1;v1b\x06proto3"
+	"\x0eCheckWhitelist\x12 .system.v1.CheckWhitelistRequest\x1a!.system.v1.CheckWhitelistResponse\")\x82\xd3\xe4\x93\x02#:\x01*\"\x1e/api/v1/system/check-whitelist\x12r\n" +
+	"\x0eListSystemLogs\x12 .system.v1.ListSystemLogsRequest\x1a!.system.v1.ListSystemLogsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/v1/system/logs\x12j\n" +
+	"\fGetSystemLog\x12\x1e.system.v1.GetSystemLogRequest\x1a\x18.system.v1.SystemLogInfo\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/system/logs/{id}\x12n\n" +
+	"\x0fCreateSystemLog\x12!.system.v1.CreateSystemLogRequest\x1a\x18.system.v1.SystemLogInfo\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/system/logs\x12q\n" +
+	"\fListUserLogs\x12\x1e.system.v1.ListUserLogsRequest\x1a\x1f.system.v1.ListUserLogsResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/api/v1/system/user-logs\x12i\n" +
+	"\n" +
+	"GetUserLog\x12\x1c.system.v1.GetUserLogRequest\x1a\x16.system.v1.UserLogInfo\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/system/user-logs/{id}\x12m\n" +
+	"\rCreateUserLog\x12\x1f.system.v1.CreateUserLogRequest\x1a\x16.system.v1.UserLogInfo\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/api/v1/system/user-logsB\x19Z\x17system/api/system/v1;v1b\x06proto3"
 
 var (
 	file_system_v1_system_proto_rawDescOnce sync.Once
@@ -1769,7 +2733,7 @@ func file_system_v1_system_proto_rawDescGZIP() []byte {
 	return file_system_v1_system_proto_rawDescData
 }
 
-var file_system_v1_system_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_system_v1_system_proto_msgTypes = make([]protoimpl.MessageInfo, 39)
 var file_system_v1_system_proto_goTypes = []any{
 	(*ConfigInfo)(nil),                     // 0: system.v1.ConfigInfo
 	(*GetConfigRequest)(nil),               // 1: system.v1.GetConfigRequest
@@ -1796,47 +2760,81 @@ var file_system_v1_system_proto_goTypes = []any{
 	(*AddDomainRequest)(nil),               // 22: system.v1.AddDomainRequest
 	(*CheckWhitelistRequest)(nil),          // 23: system.v1.CheckWhitelistRequest
 	(*CheckWhitelistResponse)(nil),         // 24: system.v1.CheckWhitelistResponse
-	(*timestamppb.Timestamp)(nil),          // 25: google.protobuf.Timestamp
+	(*SystemLogInfo)(nil),                  // 25: system.v1.SystemLogInfo
+	(*ListSystemLogsRequest)(nil),          // 26: system.v1.ListSystemLogsRequest
+	(*ListSystemLogsResponse)(nil),         // 27: system.v1.ListSystemLogsResponse
+	(*GetSystemLogRequest)(nil),            // 28: system.v1.GetSystemLogRequest
+	(*CreateSystemLogRequest)(nil),         // 29: system.v1.CreateSystemLogRequest
+	(*UserLogInfo)(nil),                    // 30: system.v1.UserLogInfo
+	(*ListUserLogsRequest)(nil),            // 31: system.v1.ListUserLogsRequest
+	(*ListUserLogsResponse)(nil),           // 32: system.v1.ListUserLogsResponse
+	(*GetUserLogRequest)(nil),              // 33: system.v1.GetUserLogRequest
+	(*CreateUserLogRequest)(nil),           // 34: system.v1.CreateUserLogRequest
+	nil,                                    // 35: system.v1.SystemLogInfo.MetadataEntry
+	nil,                                    // 36: system.v1.CreateSystemLogRequest.MetadataEntry
+	nil,                                    // 37: system.v1.UserLogInfo.MetadataEntry
+	nil,                                    // 38: system.v1.CreateUserLogRequest.MetadataEntry
+	(*timestamppb.Timestamp)(nil),          // 39: google.protobuf.Timestamp
 }
 var file_system_v1_system_proto_depIdxs = []int32{
-	25, // 0: system.v1.ConfigInfo.created_at:type_name -> google.protobuf.Timestamp
+	39, // 0: system.v1.ConfigInfo.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 1: system.v1.ListConfigsResponse.configs:type_name -> system.v1.ConfigInfo
 	5,  // 2: system.v1.GetProfitSharingRulesResponse.rules:type_name -> system.v1.ProfitSharingRuleInfo
 	12, // 3: system.v1.GetRiskControlsResponse.controls:type_name -> system.v1.RiskControlInfo
 	19, // 4: system.v1.GetDomainsResponse.domains:type_name -> system.v1.DomainInfo
-	1,  // 5: system.v1.System.GetConfig:input_type -> system.v1.GetConfigRequest
-	2,  // 6: system.v1.System.SetConfig:input_type -> system.v1.SetConfigRequest
-	3,  // 7: system.v1.System.ListConfigs:input_type -> system.v1.ListConfigsRequest
-	6,  // 8: system.v1.System.GetProfitSharingRules:input_type -> system.v1.GetProfitSharingRulesRequest
-	8,  // 9: system.v1.System.CreateProfitSharingRule:input_type -> system.v1.CreateProfitSharingRuleRequest
-	9,  // 10: system.v1.System.UpdateProfitSharingRule:input_type -> system.v1.UpdateProfitSharingRuleRequest
-	10, // 11: system.v1.System.DeleteProfitSharingRule:input_type -> system.v1.DeleteProfitSharingRuleRequest
-	13, // 12: system.v1.System.GetRiskControls:input_type -> system.v1.GetRiskControlsRequest
-	15, // 13: system.v1.System.CreateRiskControl:input_type -> system.v1.CreateRiskControlRequest
-	16, // 14: system.v1.System.UpdateRiskControl:input_type -> system.v1.UpdateRiskControlRequest
-	17, // 15: system.v1.System.CheckRisk:input_type -> system.v1.CheckRiskRequest
-	20, // 16: system.v1.System.GetDomains:input_type -> system.v1.GetDomainsRequest
-	22, // 17: system.v1.System.AddDomain:input_type -> system.v1.AddDomainRequest
-	23, // 18: system.v1.System.CheckWhitelist:input_type -> system.v1.CheckWhitelistRequest
-	0,  // 19: system.v1.System.GetConfig:output_type -> system.v1.ConfigInfo
-	0,  // 20: system.v1.System.SetConfig:output_type -> system.v1.ConfigInfo
-	4,  // 21: system.v1.System.ListConfigs:output_type -> system.v1.ListConfigsResponse
-	7,  // 22: system.v1.System.GetProfitSharingRules:output_type -> system.v1.GetProfitSharingRulesResponse
-	5,  // 23: system.v1.System.CreateProfitSharingRule:output_type -> system.v1.ProfitSharingRuleInfo
-	5,  // 24: system.v1.System.UpdateProfitSharingRule:output_type -> system.v1.ProfitSharingRuleInfo
-	11, // 25: system.v1.System.DeleteProfitSharingRule:output_type -> system.v1.DeleteRuleResponse
-	14, // 26: system.v1.System.GetRiskControls:output_type -> system.v1.GetRiskControlsResponse
-	12, // 27: system.v1.System.CreateRiskControl:output_type -> system.v1.RiskControlInfo
-	12, // 28: system.v1.System.UpdateRiskControl:output_type -> system.v1.RiskControlInfo
-	18, // 29: system.v1.System.CheckRisk:output_type -> system.v1.CheckRiskResponse
-	21, // 30: system.v1.System.GetDomains:output_type -> system.v1.GetDomainsResponse
-	19, // 31: system.v1.System.AddDomain:output_type -> system.v1.DomainInfo
-	24, // 32: system.v1.System.CheckWhitelist:output_type -> system.v1.CheckWhitelistResponse
-	19, // [19:33] is the sub-list for method output_type
-	5,  // [5:19] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	35, // 5: system.v1.SystemLogInfo.metadata:type_name -> system.v1.SystemLogInfo.MetadataEntry
+	39, // 6: system.v1.SystemLogInfo.created_at:type_name -> google.protobuf.Timestamp
+	25, // 7: system.v1.ListSystemLogsResponse.logs:type_name -> system.v1.SystemLogInfo
+	36, // 8: system.v1.CreateSystemLogRequest.metadata:type_name -> system.v1.CreateSystemLogRequest.MetadataEntry
+	37, // 9: system.v1.UserLogInfo.metadata:type_name -> system.v1.UserLogInfo.MetadataEntry
+	39, // 10: system.v1.UserLogInfo.created_at:type_name -> google.protobuf.Timestamp
+	30, // 11: system.v1.ListUserLogsResponse.logs:type_name -> system.v1.UserLogInfo
+	38, // 12: system.v1.CreateUserLogRequest.metadata:type_name -> system.v1.CreateUserLogRequest.MetadataEntry
+	1,  // 13: system.v1.System.GetConfig:input_type -> system.v1.GetConfigRequest
+	2,  // 14: system.v1.System.SetConfig:input_type -> system.v1.SetConfigRequest
+	3,  // 15: system.v1.System.ListConfigs:input_type -> system.v1.ListConfigsRequest
+	6,  // 16: system.v1.System.GetProfitSharingRules:input_type -> system.v1.GetProfitSharingRulesRequest
+	8,  // 17: system.v1.System.CreateProfitSharingRule:input_type -> system.v1.CreateProfitSharingRuleRequest
+	9,  // 18: system.v1.System.UpdateProfitSharingRule:input_type -> system.v1.UpdateProfitSharingRuleRequest
+	10, // 19: system.v1.System.DeleteProfitSharingRule:input_type -> system.v1.DeleteProfitSharingRuleRequest
+	13, // 20: system.v1.System.GetRiskControls:input_type -> system.v1.GetRiskControlsRequest
+	15, // 21: system.v1.System.CreateRiskControl:input_type -> system.v1.CreateRiskControlRequest
+	16, // 22: system.v1.System.UpdateRiskControl:input_type -> system.v1.UpdateRiskControlRequest
+	17, // 23: system.v1.System.CheckRisk:input_type -> system.v1.CheckRiskRequest
+	20, // 24: system.v1.System.GetDomains:input_type -> system.v1.GetDomainsRequest
+	22, // 25: system.v1.System.AddDomain:input_type -> system.v1.AddDomainRequest
+	23, // 26: system.v1.System.CheckWhitelist:input_type -> system.v1.CheckWhitelistRequest
+	26, // 27: system.v1.System.ListSystemLogs:input_type -> system.v1.ListSystemLogsRequest
+	28, // 28: system.v1.System.GetSystemLog:input_type -> system.v1.GetSystemLogRequest
+	29, // 29: system.v1.System.CreateSystemLog:input_type -> system.v1.CreateSystemLogRequest
+	31, // 30: system.v1.System.ListUserLogs:input_type -> system.v1.ListUserLogsRequest
+	33, // 31: system.v1.System.GetUserLog:input_type -> system.v1.GetUserLogRequest
+	34, // 32: system.v1.System.CreateUserLog:input_type -> system.v1.CreateUserLogRequest
+	0,  // 33: system.v1.System.GetConfig:output_type -> system.v1.ConfigInfo
+	0,  // 34: system.v1.System.SetConfig:output_type -> system.v1.ConfigInfo
+	4,  // 35: system.v1.System.ListConfigs:output_type -> system.v1.ListConfigsResponse
+	7,  // 36: system.v1.System.GetProfitSharingRules:output_type -> system.v1.GetProfitSharingRulesResponse
+	5,  // 37: system.v1.System.CreateProfitSharingRule:output_type -> system.v1.ProfitSharingRuleInfo
+	5,  // 38: system.v1.System.UpdateProfitSharingRule:output_type -> system.v1.ProfitSharingRuleInfo
+	11, // 39: system.v1.System.DeleteProfitSharingRule:output_type -> system.v1.DeleteRuleResponse
+	14, // 40: system.v1.System.GetRiskControls:output_type -> system.v1.GetRiskControlsResponse
+	12, // 41: system.v1.System.CreateRiskControl:output_type -> system.v1.RiskControlInfo
+	12, // 42: system.v1.System.UpdateRiskControl:output_type -> system.v1.RiskControlInfo
+	18, // 43: system.v1.System.CheckRisk:output_type -> system.v1.CheckRiskResponse
+	21, // 44: system.v1.System.GetDomains:output_type -> system.v1.GetDomainsResponse
+	19, // 45: system.v1.System.AddDomain:output_type -> system.v1.DomainInfo
+	24, // 46: system.v1.System.CheckWhitelist:output_type -> system.v1.CheckWhitelistResponse
+	27, // 47: system.v1.System.ListSystemLogs:output_type -> system.v1.ListSystemLogsResponse
+	25, // 48: system.v1.System.GetSystemLog:output_type -> system.v1.SystemLogInfo
+	25, // 49: system.v1.System.CreateSystemLog:output_type -> system.v1.SystemLogInfo
+	32, // 50: system.v1.System.ListUserLogs:output_type -> system.v1.ListUserLogsResponse
+	30, // 51: system.v1.System.GetUserLog:output_type -> system.v1.UserLogInfo
+	30, // 52: system.v1.System.CreateUserLog:output_type -> system.v1.UserLogInfo
+	33, // [33:53] is the sub-list for method output_type
+	13, // [13:33] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_system_v1_system_proto_init() }
@@ -1850,7 +2848,7 @@ func file_system_v1_system_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_system_v1_system_proto_rawDesc), len(file_system_v1_system_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   25,
+			NumMessages:   39,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

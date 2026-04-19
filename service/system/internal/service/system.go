@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	v1 "system/api/system/v1"
 	"system/internal/biz"
 )
@@ -11,15 +12,17 @@ import (
 // SystemService 系统服务
 type SystemService struct {
 	v1.UnimplementedSystemServer
-	uc  *biz.SystemUsecase
-	log *log.Helper
+	uc    *biz.SystemUsecase
+	logUC *biz.LogUsecase
+	log   *log.Helper
 }
 
 // NewSystemService 创建系统服务
-func NewSystemService(uc *biz.SystemUsecase, logger log.Logger) *SystemService {
+func NewSystemService(uc *biz.SystemUsecase, logUC *biz.LogUsecase, logger log.Logger) *SystemService {
 	return &SystemService{
-		uc:  uc,
-		log: log.NewHelper(logger),
+		uc:    uc,
+		logUC: logUC,
+		log:   log.NewHelper(logger),
 	}
 }
 
@@ -131,5 +134,179 @@ func (s *SystemService) CheckWhitelist(ctx context.Context, req *v1.CheckWhiteli
 	}
 	return &v1.CheckWhitelistResponse{
 		Whitelisted: whitelisted,
+	}, nil
+}
+
+// ==================== 系统日志 API ====================
+
+// ListSystemLogs 查询系统日志列表
+func (s *SystemService) ListSystemLogs(ctx context.Context, req *v1.ListSystemLogsRequest) (*v1.ListSystemLogsResponse, error) {
+	logs, total, err := s.logUC.ListSystemLogs(ctx, req.Level, req.Module, req.OperatorId, req.StartTime, req.EndTime, req.Page, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var list []*v1.SystemLogInfo
+	for _, l := range logs {
+		list = append(list, &v1.SystemLogInfo{
+			Id:           l.ID,
+			Level:        l.Level,
+			Module:       l.Module,
+			Action:       l.Action,
+			Message:      l.Message,
+			OperatorId:   l.OperatorID,
+			OperatorName: l.OperatorName,
+			IpAddress:    l.IPAddress,
+			UserAgent:    l.UserAgent,
+			Metadata:     l.Metadata,
+			CreatedAt:    timestamppb.New(l.CreatedAt),
+		})
+	}
+
+	return &v1.ListSystemLogsResponse{
+		Logs:     list,
+		Total:    total,
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	}, nil
+}
+
+// GetSystemLog 获取单条系统日志
+func (s *SystemService) GetSystemLog(ctx context.Context, req *v1.GetSystemLogRequest) (*v1.SystemLogInfo, error) {
+	l, err := s.logUC.GetSystemLog(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.SystemLogInfo{
+		Id:           l.ID,
+		Level:        l.Level,
+		Module:       l.Module,
+		Action:       l.Action,
+		Message:      l.Message,
+		OperatorId:   l.OperatorID,
+		OperatorName: l.OperatorName,
+		IpAddress:    l.IPAddress,
+		UserAgent:    l.UserAgent,
+		Metadata:     l.Metadata,
+		CreatedAt:    timestamppb.New(l.CreatedAt),
+	}, nil
+}
+
+// CreateSystemLog 创建系统日志
+func (s *SystemService) CreateSystemLog(ctx context.Context, req *v1.CreateSystemLogRequest) (*v1.SystemLogInfo, error) {
+	log := &biz.SystemLog{
+		Level:        req.Level,
+		Module:       req.Module,
+		Action:       req.Action,
+		Message:      req.Message,
+		OperatorID:   req.OperatorId,
+		OperatorName: req.OperatorName,
+		IPAddress:    req.IpAddress,
+		UserAgent:    req.UserAgent,
+		Metadata:     req.Metadata,
+	}
+
+	if err := s.logUC.CreateSystemLog(ctx, log); err != nil {
+		return nil, err
+	}
+
+	return &v1.SystemLogInfo{
+		Id:           log.ID,
+		Level:        log.Level,
+		Module:       log.Module,
+		Action:       log.Action,
+		Message:      log.Message,
+		OperatorId:   log.OperatorID,
+		OperatorName: log.OperatorName,
+		IpAddress:    log.IPAddress,
+		UserAgent:    log.UserAgent,
+		Metadata:     log.Metadata,
+		CreatedAt:    timestamppb.New(log.CreatedAt),
+	}, nil
+}
+
+// ==================== 用户日志 API ====================
+
+// ListUserLogs 查询用户日志列表
+func (s *SystemService) ListUserLogs(ctx context.Context, req *v1.ListUserLogsRequest) (*v1.ListUserLogsResponse, error) {
+	logs, total, err := s.logUC.ListUserLogs(ctx, req.UserId, req.Action, req.Module, req.StartTime, req.EndTime, req.Page, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	var list []*v1.UserLogInfo
+	for _, l := range logs {
+		list = append(list, &v1.UserLogInfo{
+			Id:          l.ID,
+			UserId:      l.UserID,
+			Username:    l.Username,
+			Action:      l.Action,
+			Module:      l.Module,
+			Description: l.Description,
+			IpAddress:   l.IPAddress,
+			DeviceInfo:  l.DeviceInfo,
+			Metadata:    l.Metadata,
+			CreatedAt:   timestamppb.New(l.CreatedAt),
+		})
+	}
+
+	return &v1.ListUserLogsResponse{
+		Logs:     list,
+		Total:    total,
+		Page:     req.Page,
+		PageSize: req.PageSize,
+	}, nil
+}
+
+// GetUserLog 获取单条用户日志
+func (s *SystemService) GetUserLog(ctx context.Context, req *v1.GetUserLogRequest) (*v1.UserLogInfo, error) {
+	l, err := s.logUC.GetUserLog(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &v1.UserLogInfo{
+		Id:          l.ID,
+		UserId:      l.UserID,
+		Username:    l.Username,
+		Action:      l.Action,
+		Module:      l.Module,
+		Description: l.Description,
+		IpAddress:   l.IPAddress,
+		DeviceInfo:  l.DeviceInfo,
+		Metadata:    l.Metadata,
+		CreatedAt:   timestamppb.New(l.CreatedAt),
+	}, nil
+}
+
+// CreateUserLog 创建用户日志
+func (s *SystemService) CreateUserLog(ctx context.Context, req *v1.CreateUserLogRequest) (*v1.UserLogInfo, error) {
+	log := &biz.UserLog{
+		UserID:      req.UserId,
+		Username:    req.Username,
+		Action:      req.Action,
+		Module:      req.Module,
+		Description: req.Description,
+		IPAddress:   req.IpAddress,
+		DeviceInfo:  req.DeviceInfo,
+		Metadata:    req.Metadata,
+	}
+
+	if err := s.logUC.CreateUserLog(ctx, log); err != nil {
+		return nil, err
+	}
+
+	return &v1.UserLogInfo{
+		Id:          log.ID,
+		UserId:      log.UserID,
+		Username:    log.Username,
+		Action:      log.Action,
+		Module:      log.Module,
+		Description: log.Description,
+		IpAddress:   log.IPAddress,
+		DeviceInfo:  log.DeviceInfo,
+		Metadata:    log.Metadata,
+		CreatedAt:   timestamppb.New(log.CreatedAt),
 	}, nil
 }

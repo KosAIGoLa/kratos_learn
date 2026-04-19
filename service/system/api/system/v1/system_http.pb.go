@@ -24,12 +24,18 @@ const OperationSystemCheckRisk = "/system.v1.System/CheckRisk"
 const OperationSystemCheckWhitelist = "/system.v1.System/CheckWhitelist"
 const OperationSystemCreateProfitSharingRule = "/system.v1.System/CreateProfitSharingRule"
 const OperationSystemCreateRiskControl = "/system.v1.System/CreateRiskControl"
+const OperationSystemCreateSystemLog = "/system.v1.System/CreateSystemLog"
+const OperationSystemCreateUserLog = "/system.v1.System/CreateUserLog"
 const OperationSystemDeleteProfitSharingRule = "/system.v1.System/DeleteProfitSharingRule"
 const OperationSystemGetConfig = "/system.v1.System/GetConfig"
 const OperationSystemGetDomains = "/system.v1.System/GetDomains"
 const OperationSystemGetProfitSharingRules = "/system.v1.System/GetProfitSharingRules"
 const OperationSystemGetRiskControls = "/system.v1.System/GetRiskControls"
+const OperationSystemGetSystemLog = "/system.v1.System/GetSystemLog"
+const OperationSystemGetUserLog = "/system.v1.System/GetUserLog"
 const OperationSystemListConfigs = "/system.v1.System/ListConfigs"
+const OperationSystemListSystemLogs = "/system.v1.System/ListSystemLogs"
+const OperationSystemListUserLogs = "/system.v1.System/ListUserLogs"
 const OperationSystemSetConfig = "/system.v1.System/SetConfig"
 const OperationSystemUpdateProfitSharingRule = "/system.v1.System/UpdateProfitSharingRule"
 const OperationSystemUpdateRiskControl = "/system.v1.System/UpdateRiskControl"
@@ -40,12 +46,20 @@ type SystemHTTPServer interface {
 	CheckWhitelist(context.Context, *CheckWhitelistRequest) (*CheckWhitelistResponse, error)
 	CreateProfitSharingRule(context.Context, *CreateProfitSharingRuleRequest) (*ProfitSharingRuleInfo, error)
 	CreateRiskControl(context.Context, *CreateRiskControlRequest) (*RiskControlInfo, error)
+	CreateSystemLog(context.Context, *CreateSystemLogRequest) (*SystemLogInfo, error)
+	CreateUserLog(context.Context, *CreateUserLogRequest) (*UserLogInfo, error)
 	DeleteProfitSharingRule(context.Context, *DeleteProfitSharingRuleRequest) (*DeleteRuleResponse, error)
 	GetConfig(context.Context, *GetConfigRequest) (*ConfigInfo, error)
 	GetDomains(context.Context, *GetDomainsRequest) (*GetDomainsResponse, error)
 	GetProfitSharingRules(context.Context, *GetProfitSharingRulesRequest) (*GetProfitSharingRulesResponse, error)
 	GetRiskControls(context.Context, *GetRiskControlsRequest) (*GetRiskControlsResponse, error)
+	GetSystemLog(context.Context, *GetSystemLogRequest) (*SystemLogInfo, error)
+	GetUserLog(context.Context, *GetUserLogRequest) (*UserLogInfo, error)
 	ListConfigs(context.Context, *ListConfigsRequest) (*ListConfigsResponse, error)
+	// ListSystemLogs 系统日志 (存 MongoDB)
+	ListSystemLogs(context.Context, *ListSystemLogsRequest) (*ListSystemLogsResponse, error)
+	// ListUserLogs 用户日志 (存 MongoDB)
+	ListUserLogs(context.Context, *ListUserLogsRequest) (*ListUserLogsResponse, error)
 	SetConfig(context.Context, *SetConfigRequest) (*ConfigInfo, error)
 	UpdateProfitSharingRule(context.Context, *UpdateProfitSharingRuleRequest) (*ProfitSharingRuleInfo, error)
 	UpdateRiskControl(context.Context, *UpdateRiskControlRequest) (*RiskControlInfo, error)
@@ -67,6 +81,12 @@ func RegisterSystemHTTPServer(s *http.Server, srv SystemHTTPServer) {
 	r.GET("/api/v1/system/domains", _System_GetDomains0_HTTP_Handler(srv))
 	r.POST("/api/v1/system/domains", _System_AddDomain0_HTTP_Handler(srv))
 	r.POST("/api/v1/system/check-whitelist", _System_CheckWhitelist0_HTTP_Handler(srv))
+	r.GET("/api/v1/system/logs", _System_ListSystemLogs0_HTTP_Handler(srv))
+	r.GET("/api/v1/system/logs/{id}", _System_GetSystemLog0_HTTP_Handler(srv))
+	r.POST("/api/v1/system/logs", _System_CreateSystemLog0_HTTP_Handler(srv))
+	r.GET("/api/v1/system/user-logs", _System_ListUserLogs0_HTTP_Handler(srv))
+	r.GET("/api/v1/system/user-logs/{id}", _System_GetUserLog0_HTTP_Handler(srv))
+	r.POST("/api/v1/system/user-logs", _System_CreateUserLog0_HTTP_Handler(srv))
 }
 
 func _System_GetConfig0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
@@ -371,18 +391,150 @@ func _System_CheckWhitelist0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Co
 	}
 }
 
+func _System_ListSystemLogs0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListSystemLogsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemListSystemLogs)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListSystemLogs(ctx, req.(*ListSystemLogsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListSystemLogsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _System_GetSystemLog0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetSystemLogRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemGetSystemLog)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetSystemLog(ctx, req.(*GetSystemLogRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SystemLogInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _System_CreateSystemLog0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateSystemLogRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemCreateSystemLog)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateSystemLog(ctx, req.(*CreateSystemLogRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*SystemLogInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _System_ListUserLogs0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListUserLogsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemListUserLogs)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUserLogs(ctx, req.(*ListUserLogsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListUserLogsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _System_GetUserLog0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetUserLogRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemGetUserLog)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetUserLog(ctx, req.(*GetUserLogRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserLogInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _System_CreateUserLog0_HTTP_Handler(srv SystemHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateUserLogRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationSystemCreateUserLog)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateUserLog(ctx, req.(*CreateUserLogRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserLogInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
 type SystemHTTPClient interface {
 	AddDomain(ctx context.Context, req *AddDomainRequest, opts ...http.CallOption) (rsp *DomainInfo, err error)
 	CheckRisk(ctx context.Context, req *CheckRiskRequest, opts ...http.CallOption) (rsp *CheckRiskResponse, err error)
 	CheckWhitelist(ctx context.Context, req *CheckWhitelistRequest, opts ...http.CallOption) (rsp *CheckWhitelistResponse, err error)
 	CreateProfitSharingRule(ctx context.Context, req *CreateProfitSharingRuleRequest, opts ...http.CallOption) (rsp *ProfitSharingRuleInfo, err error)
 	CreateRiskControl(ctx context.Context, req *CreateRiskControlRequest, opts ...http.CallOption) (rsp *RiskControlInfo, err error)
+	CreateSystemLog(ctx context.Context, req *CreateSystemLogRequest, opts ...http.CallOption) (rsp *SystemLogInfo, err error)
+	CreateUserLog(ctx context.Context, req *CreateUserLogRequest, opts ...http.CallOption) (rsp *UserLogInfo, err error)
 	DeleteProfitSharingRule(ctx context.Context, req *DeleteProfitSharingRuleRequest, opts ...http.CallOption) (rsp *DeleteRuleResponse, err error)
 	GetConfig(ctx context.Context, req *GetConfigRequest, opts ...http.CallOption) (rsp *ConfigInfo, err error)
 	GetDomains(ctx context.Context, req *GetDomainsRequest, opts ...http.CallOption) (rsp *GetDomainsResponse, err error)
 	GetProfitSharingRules(ctx context.Context, req *GetProfitSharingRulesRequest, opts ...http.CallOption) (rsp *GetProfitSharingRulesResponse, err error)
 	GetRiskControls(ctx context.Context, req *GetRiskControlsRequest, opts ...http.CallOption) (rsp *GetRiskControlsResponse, err error)
+	GetSystemLog(ctx context.Context, req *GetSystemLogRequest, opts ...http.CallOption) (rsp *SystemLogInfo, err error)
+	GetUserLog(ctx context.Context, req *GetUserLogRequest, opts ...http.CallOption) (rsp *UserLogInfo, err error)
 	ListConfigs(ctx context.Context, req *ListConfigsRequest, opts ...http.CallOption) (rsp *ListConfigsResponse, err error)
+	ListSystemLogs(ctx context.Context, req *ListSystemLogsRequest, opts ...http.CallOption) (rsp *ListSystemLogsResponse, err error)
+	ListUserLogs(ctx context.Context, req *ListUserLogsRequest, opts ...http.CallOption) (rsp *ListUserLogsResponse, err error)
 	SetConfig(ctx context.Context, req *SetConfigRequest, opts ...http.CallOption) (rsp *ConfigInfo, err error)
 	UpdateProfitSharingRule(ctx context.Context, req *UpdateProfitSharingRuleRequest, opts ...http.CallOption) (rsp *ProfitSharingRuleInfo, err error)
 	UpdateRiskControl(ctx context.Context, req *UpdateRiskControlRequest, opts ...http.CallOption) (rsp *RiskControlInfo, err error)
@@ -461,6 +613,32 @@ func (c *SystemHTTPClientImpl) CreateRiskControl(ctx context.Context, in *Create
 	return &out, nil
 }
 
+func (c *SystemHTTPClientImpl) CreateSystemLog(ctx context.Context, in *CreateSystemLogRequest, opts ...http.CallOption) (*SystemLogInfo, error) {
+	var out SystemLogInfo
+	pattern := "/api/v1/system/logs"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationSystemCreateSystemLog))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *SystemHTTPClientImpl) CreateUserLog(ctx context.Context, in *CreateUserLogRequest, opts ...http.CallOption) (*UserLogInfo, error) {
+	var out UserLogInfo
+	pattern := "/api/v1/system/user-logs"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationSystemCreateUserLog))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *SystemHTTPClientImpl) DeleteProfitSharingRule(ctx context.Context, in *DeleteProfitSharingRuleRequest, opts ...http.CallOption) (*DeleteRuleResponse, error) {
 	var out DeleteRuleResponse
 	pattern := "/api/v1/system/profit-sharing-rules/{id}"
@@ -526,11 +704,63 @@ func (c *SystemHTTPClientImpl) GetRiskControls(ctx context.Context, in *GetRiskC
 	return &out, nil
 }
 
+func (c *SystemHTTPClientImpl) GetSystemLog(ctx context.Context, in *GetSystemLogRequest, opts ...http.CallOption) (*SystemLogInfo, error) {
+	var out SystemLogInfo
+	pattern := "/api/v1/system/logs/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSystemGetSystemLog))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *SystemHTTPClientImpl) GetUserLog(ctx context.Context, in *GetUserLogRequest, opts ...http.CallOption) (*UserLogInfo, error) {
+	var out UserLogInfo
+	pattern := "/api/v1/system/user-logs/{id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSystemGetUserLog))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *SystemHTTPClientImpl) ListConfigs(ctx context.Context, in *ListConfigsRequest, opts ...http.CallOption) (*ListConfigsResponse, error) {
 	var out ListConfigsResponse
 	pattern := "/api/v1/system/configs"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationSystemListConfigs))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *SystemHTTPClientImpl) ListSystemLogs(ctx context.Context, in *ListSystemLogsRequest, opts ...http.CallOption) (*ListSystemLogsResponse, error) {
+	var out ListSystemLogsResponse
+	pattern := "/api/v1/system/logs"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSystemListSystemLogs))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *SystemHTTPClientImpl) ListUserLogs(ctx context.Context, in *ListUserLogsRequest, opts ...http.CallOption) (*ListUserLogsResponse, error) {
+	var out ListUserLogsResponse
+	pattern := "/api/v1/system/user-logs"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationSystemListUserLogs))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

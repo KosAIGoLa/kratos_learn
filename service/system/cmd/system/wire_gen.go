@@ -26,7 +26,8 @@ import (
 func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
-	dataData, cleanup, err := data.NewData(confData, logger, db, client)
+	database := data.NewMongoDB(confData)
+	dataData, cleanup, err := data.NewData(confData, logger, db, client, database)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,7 +37,10 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	domainRepo := data.NewDomainRepo(dataData, logger)
 	whitelistRepo := data.NewWhitelistRepo(dataData, logger)
 	systemUsecase := biz.NewSystemUsecase(configRepo, profitSharingRepo, riskControlRepo, domainRepo, whitelistRepo, logger)
-	systemService := service.NewSystemService(systemUsecase, logger)
+	systemLogRepo := data.NewSystemLogRepo(dataData, logger)
+	userLogRepo := data.NewUserLogRepo(dataData, logger)
+	logUsecase := biz.NewLogUsecase(systemLogRepo, userLogRepo)
+	systemService := service.NewSystemService(systemUsecase, logUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, systemService, logger)
 	httpServer := server.NewHTTPServer(confServer, systemService, logger)
 	app := newApp(logger, grpcServer, httpServer)
