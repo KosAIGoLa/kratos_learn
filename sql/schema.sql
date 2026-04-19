@@ -11,6 +11,14 @@ CREATE TABLE IF NOT EXISTS `users` (
     `parent_id` INT UNSIGNED DEFAULT NULL COMMENT '上级用户ID',
     `balance` DECIMAL(15,2) DEFAULT 0.00 COMMENT '账户余额',
     `work_points` DECIMAL(15,2) DEFAULT 0.00 COMMENT '工分总额',
+    -- 会员等级和工分相关字段 (cron service 同步)
+    `member_level` VARCHAR(20) DEFAULT 'bronze' COMMENT '会员等级: bronze/silver/gold/platinum/diamond',
+    `daily_work_points` DECIMAL(10,2) DEFAULT 0.00 COMMENT '当日工分',
+    `monthly_work_points` DECIMAL(10,2) DEFAULT 0.00 COMMENT '当月累计工分',
+    `daily_points_limit_reached` TINYINT DEFAULT 0 COMMENT '当日工分上限是否已达: 1是 0否',
+    `member_expire_time` DATETIME DEFAULT NULL COMMENT '会员过期时间',
+    `last_reset_time` DATETIME DEFAULT NULL COMMENT '最后重置时间(每日重置)',
+    `level_update_time` DATETIME DEFAULT NULL COMMENT '等级更新时间',
     `status` TINYINT DEFAULT 1 COMMENT '状态: 1正常 0冻结',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -20,6 +28,8 @@ CREATE TABLE IF NOT EXISTS `users` (
     INDEX `idx_invite_code` (`invite_code`),
     INDEX `idx_phone` (`phone`),
     INDEX `idx_parent_id` (`parent_id`),
+    INDEX `idx_member_level` (`member_level`),
+    INDEX `idx_member_expire_time` (`member_expire_time`),
     INDEX `idx_status` (`status`),
 
     CONSTRAINT `fk_users_parent`
@@ -431,6 +441,44 @@ CREATE TABLE IF NOT EXISTS `user_tasks` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户任务完成记录表';
+
+-- 会员权益表 (cron service 同步)
+CREATE TABLE IF NOT EXISTS `member_benefits` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+    `name` VARCHAR(100) NOT NULL COMMENT '权益名称',
+    `benefit_type` VARCHAR(50) NOT NULL COMMENT '权益类型: discount折扣/free_shipping免邮/coupon优惠券/priority优先',
+    `value` DECIMAL(10,2) DEFAULT 0.00 COMMENT '权益价值',
+    `expire_time` DATETIME NOT NULL COMMENT '过期时间',
+    `status` TINYINT DEFAULT 1 COMMENT '状态: 1有效 0已过期 2已使用',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_expire_time` (`expire_time`),
+    INDEX `idx_status` (`status`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员权益表';
+
+-- 用户每日任务完成记录表 (cron service 同步 - 每日重置)
+CREATE TABLE IF NOT EXISTS `user_daily_tasks` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+    `task_id` INT UNSIGNED NOT NULL COMMENT '任务ID',
+    `task_name` VARCHAR(100) NOT NULL COMMENT '任务名称',
+    `completed` TINYINT DEFAULT 0 COMMENT '是否完成: 1是 0否',
+    `completed_at` DATETIME DEFAULT NULL COMMENT '完成时间',
+    `points` DECIMAL(10,2) DEFAULT 0.00 COMMENT '任务工分值',
+    `task_date` DATE NOT NULL COMMENT '任务日期(每日重置)',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `uk_user_task_date` (`user_id`, `task_id`, `task_date`),
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_task_id` (`task_id`),
+    INDEX `idx_task_date` (`task_date`),
+    INDEX `idx_completed` (`completed`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户每日任务完成记录表';
 
 -- 用户算力持有表
 CREATE TABLE IF NOT EXISTS `user_hashrates` (

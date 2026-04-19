@@ -1,0 +1,134 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /cron/v1/tasks:
+        get:
+            tags:
+                - Cron
+            description: 列出所有定时任务
+            operationId: Cron_ListTasks
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.cron.v1.ListTasksReply'
+        post:
+            tags:
+                - Cron
+            description: 添加定时任务
+            operationId: Cron_AddTask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.cron.v1.AddTaskRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.cron.v1.AddTaskReply'
+    /cron/v1/tasks/{name}:
+        delete:
+            tags:
+                - Cron
+            description: 移除定时任务
+            operationId: Cron_RemoveTask
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.cron.v1.RemoveTaskReply'
+    /helloworld/{name}:
+        get:
+            tags:
+                - Greeter
+            description: Sends a greeting
+            operationId: Greeter_SayHello
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
+components:
+    schemas:
+        api.cron.v1.AddTaskReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+            description: 添加任务响应
+        api.cron.v1.AddTaskRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                spec:
+                    type: string
+            description: 添加任务请求
+        api.cron.v1.ListTasksReply:
+            type: object
+            properties:
+                tasks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.cron.v1.TaskInfo'
+            description: 列出任务响应
+        api.cron.v1.RemoveTaskReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+            description: 移除任务响应
+        api.cron.v1.TaskInfo:
+            type: object
+            properties:
+                name:
+                    type: string
+                schedule:
+                    type: string
+                nextRun:
+                    type: string
+                prevRun:
+                    type: string
+            description: 任务信息
+        helloworld.v1.HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+            description: The response message containing the greetings
+tags:
+    - name: Cron
+      description: Cron 定时任务服务
+    - name: Greeter
+      description: The greeting service definition.

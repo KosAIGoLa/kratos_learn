@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package api.cron.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "cron/api/cron/v1;v1";
+
+// Cron 定时任务服务
+service Cron {
+  // 列出所有定时任务
+  rpc ListTasks (ListTasksRequest) returns (ListTasksReply) {
+    option (google.api.http) = {
+      get: "/cron/v1/tasks"
+    };
+  }
+
+  // 添加定时任务
+  rpc AddTask (AddTaskRequest) returns (AddTaskReply) {
+    option (google.api.http) = {
+      post: "/cron/v1/tasks"
+      body: "*"
+    };
+  }
+
+  // 移除定时任务
+  rpc RemoveTask (RemoveTaskRequest) returns (RemoveTaskReply) {
+    option (google.api.http) = {
+      delete: "/cron/v1/tasks/{name}"
+    };
+  }
+}
+
+// 任务信息
+message TaskInfo {
+  string name = 1;
+  string schedule = 2;
+  string next_run = 3;
+  string prev_run = 4;
+}
+
+// 列出任务请求
+message ListTasksRequest {}
+
+// 列出任务响应
+message ListTasksReply {
+  repeated TaskInfo tasks = 1;
+}
+
+// 添加任务请求
+message AddTaskRequest {
+  string name = 1;
+  string spec = 2;  // cron 表达式，如 "0 0 * * * *"
+}
+
+// 添加任务响应
+message AddTaskReply {
+  bool success = 1;
+  string message = 2;
+}
+
+// 移除任务请求
+message RemoveTaskRequest {
+  string name = 1;
+}
+
+// 移除任务响应
+message RemoveTaskReply {
+  bool success = 1;
+  string message = 2;
+}
