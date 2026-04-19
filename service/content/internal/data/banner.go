@@ -58,7 +58,7 @@ func (r *bannerRepo) ListBanners(ctx context.Context, typ, position string, stat
 	query = query.Where("(start_time IS NULL OR start_time <= ?) AND (end_time IS NULL OR end_time >= ?)", now, now)
 
 	if err := query.Order("sort ASC").Find(&banners).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to query banners: %v", err)
 	}
 
 	var bizBanners []*biz.Banner
@@ -74,7 +74,7 @@ func (r *bannerRepo) GetBanner(ctx context.Context, id uint32) (*biz.Banner, err
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "轮播图不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to get banner: %v", err)
 	}
 	return r.toBizBanner(&banner), nil
 }
@@ -92,7 +92,7 @@ func (r *bannerRepo) CreateBanner(ctx context.Context, b *biz.Banner) (*biz.Bann
 		Status:    1,
 	}
 	if err := r.data.db.Create(&banner).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to create banner: %v", err)
 	}
 	return r.toBizBanner(&banner), nil
 }

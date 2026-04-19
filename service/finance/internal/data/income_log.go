@@ -52,7 +52,7 @@ func (r *incomeLogRepo) ListIncomeLogs(ctx context.Context, userID uint32, sourc
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&logs).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "failed to query income logs: %v", err)
 	}
 
 	var bizLogs []*biz.IncomeLog

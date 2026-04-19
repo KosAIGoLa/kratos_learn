@@ -51,7 +51,7 @@ func (r *rechargeRepo) CreateRecharge(ctx context.Context, re *biz.Recharge) (*b
 		CreatedAt:  time.Now(),
 	}
 	if err := r.data.db.Create(&recharge).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to create recharge: %v", err)
 	}
 	return r.toBizRecharge(&recharge), nil
 }
@@ -62,7 +62,7 @@ func (r *rechargeRepo) GetRechargeByOrderNo(ctx context.Context, orderNo string)
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "充值记录不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to get recharge: %v", err)
 	}
 	return r.toBizRecharge(&recharge), nil
 }
@@ -82,7 +82,7 @@ func (r *rechargeRepo) ListRecharges(ctx context.Context, userID uint32, statusF
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&recharges).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "failed to query recharges: %v", err)
 	}
 
 	var bizRecharges []*biz.Recharge

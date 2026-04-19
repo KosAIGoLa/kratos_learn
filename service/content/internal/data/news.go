@@ -64,7 +64,7 @@ func (r *newsRepo) ListNews(ctx context.Context, category, typ string, newsStatu
 	offset := (page - 1) * pageSize
 	if err := query.Order("is_top DESC, sort ASC, publish_time DESC").
 		Limit(int(pageSize)).Offset(int(offset)).Find(&news).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "failed to query news: %v", err)
 	}
 
 	var bizNews []*biz.News
@@ -80,7 +80,7 @@ func (r *newsRepo) GetNews(ctx context.Context, id uint32) (*biz.News, error) {
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "新闻不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to get news: %v", err)
 	}
 	return r.toBizNews(&news), nil
 }
@@ -102,7 +102,7 @@ func (r *newsRepo) CreateNews(ctx context.Context, n *biz.News) (*biz.News, erro
 		Status:      1,
 	}
 	if err := r.data.db.Create(&news).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to create news: %v", err)
 	}
 	return r.toBizNews(&news), nil
 }

@@ -110,7 +110,7 @@ func (r *adminRepo) CreateAdmin(ctx context.Context, a *biz.Admin) (*biz.Admin, 
 		Status:   a.Status,
 	}
 	if err := r.data.db.Create(&admin).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizAdmin(&admin), nil
 }
@@ -121,7 +121,7 @@ func (r *adminRepo) GetAdminByID(ctx context.Context, id uint32) (*biz.Admin, er
 		if err == gorm.ErrRecordNotFound {
 			return nil, grpcstatus.Errorf(codes.NotFound, "管理员不存在")
 		}
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizAdmin(&admin), nil
 }
@@ -132,7 +132,7 @@ func (r *adminRepo) GetAdminByUsername(ctx context.Context, username string) (*b
 		if err == gorm.ErrRecordNotFound {
 			return nil, grpcstatus.Errorf(codes.NotFound, "管理员不存在")
 		}
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizAdmin(&admin), nil
 }
@@ -147,14 +147,14 @@ func (r *adminRepo) UpdateAdmin(ctx context.Context, a *biz.Admin) (*biz.Admin, 
 	}
 
 	if err := r.data.db.Model(&Admin{}).Where("id = ?", a.ID).Updates(updates).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.GetAdminByID(ctx, a.ID)
 }
 
 func (r *adminRepo) DeleteAdmin(ctx context.Context, id uint32) error {
 	if err := r.data.db.Delete(&Admin{}, id).Error; err != nil {
-		return grpcstatus.Errorf(codes.Internal, err.Error())
+		return grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return nil
 }
@@ -165,11 +165,11 @@ func (r *adminRepo) ListAdmins(ctx context.Context, page, pageSize int) ([]*biz.
 
 	offset := (page - 1) * pageSize
 	if err := r.data.db.Model(&Admin{}).Count(&total).Error; err != nil {
-		return nil, 0, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, 0, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	if err := r.data.db.Limit(pageSize).Offset(offset).Find(&admins).Error; err != nil {
-		return nil, 0, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, 0, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	bizAdmins := make([]*biz.Admin, 0, len(admins))
@@ -222,7 +222,7 @@ func (r *menuRepo) CreateMenu(ctx context.Context, m *biz.Menu) (*biz.Menu, erro
 		Status:     m.Status,
 	}
 	if err := r.data.db.Create(&menu).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizMenu(&menu), nil
 }
@@ -233,7 +233,7 @@ func (r *menuRepo) GetMenuByID(ctx context.Context, id uint32) (*biz.Menu, error
 		if err == gorm.ErrRecordNotFound {
 			return nil, grpcstatus.Errorf(codes.NotFound, "菜单不存在")
 		}
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizMenu(&menu), nil
 }
@@ -252,14 +252,14 @@ func (r *menuRepo) UpdateMenu(ctx context.Context, m *biz.Menu) (*biz.Menu, erro
 	}
 
 	if err := r.data.db.Model(&Menu{}).Where("id = ?", m.ID).Updates(updates).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.GetMenuByID(ctx, m.ID)
 }
 
 func (r *menuRepo) DeleteMenu(ctx context.Context, id uint32) error {
 	if err := r.data.db.Delete(&Menu{}, id).Error; err != nil {
-		return grpcstatus.Errorf(codes.Internal, err.Error())
+		return grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return nil
 }
@@ -271,7 +271,7 @@ func (r *menuRepo) ListMenus(ctx context.Context, statusFilter int8) ([]*biz.Men
 		query = query.Where("status = ?", statusFilter)
 	}
 	if err := query.Order("sort asc, id asc").Find(&menus).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	bizMenus := make([]*biz.Menu, 0, len(menus))
@@ -284,7 +284,7 @@ func (r *menuRepo) ListMenus(ctx context.Context, statusFilter int8) ([]*biz.Men
 func (r *menuRepo) GetMenusByRoleIDs(ctx context.Context, roleIDs []uint32) ([]*biz.Menu, error) {
 	var menuIDs []uint32
 	if err := r.data.db.Model(&RoleMenu{}).Where("role_id IN ?", roleIDs).Pluck("menu_id", &menuIDs).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	if len(menuIDs) == 0 {
@@ -293,7 +293,7 @@ func (r *menuRepo) GetMenusByRoleIDs(ctx context.Context, roleIDs []uint32) ([]*
 
 	var menus []*Menu
 	if err := r.data.db.Where("id IN ? AND status = ?", menuIDs, 1).Order("sort asc, id asc").Find(&menus).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	bizMenus := make([]*biz.Menu, 0, len(menus))
@@ -340,7 +340,7 @@ func (r *roleRepo) CreateRole(ctx context.Context, role *biz.Role) (*biz.Role, e
 		Status:      role.Status,
 	}
 	if err := r.data.db.Create(&r2).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizRole(&r2), nil
 }
@@ -351,7 +351,7 @@ func (r *roleRepo) GetRoleByID(ctx context.Context, id uint32) (*biz.Role, error
 		if err == gorm.ErrRecordNotFound {
 			return nil, grpcstatus.Errorf(codes.NotFound, "角色不存在")
 		}
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizRole(&role), nil
 }
@@ -362,7 +362,7 @@ func (r *roleRepo) GetRoleByCode(ctx context.Context, code string) (*biz.Role, e
 		if err == gorm.ErrRecordNotFound {
 			return nil, grpcstatus.Errorf(codes.NotFound, "角色不存在")
 		}
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizRole(&role), nil
 }
@@ -375,14 +375,14 @@ func (r *roleRepo) UpdateRole(ctx context.Context, role *biz.Role) (*biz.Role, e
 	}
 
 	if err := r.data.db.Model(&Role{}).Where("id = ?", role.ID).Updates(updates).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.GetRoleByID(ctx, role.ID)
 }
 
 func (r *roleRepo) DeleteRole(ctx context.Context, id uint32) error {
 	if err := r.data.db.Delete(&Role{}, id).Error; err != nil {
-		return grpcstatus.Errorf(codes.Internal, err.Error())
+		return grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return nil
 }
@@ -394,7 +394,7 @@ func (r *roleRepo) ListRoles(ctx context.Context, statusFilter int8) ([]*biz.Rol
 		query = query.Where("status = ?", statusFilter)
 	}
 	if err := query.Find(&roles).Error; err != nil {
-		return nil, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	bizRoles := make([]*biz.Role, 0, len(roles))
@@ -539,7 +539,7 @@ func (r *adminLogRepo) CreateLog(ctx context.Context, log *biz.AdminLog) error {
 		FailReason:      log.FailReason,
 	}
 	if err := r.data.db.Create(&l).Error; err != nil {
-		return grpcstatus.Errorf(codes.Internal, err.Error())
+		return grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return nil
 }
@@ -557,12 +557,12 @@ func (r *adminLogRepo) ListLogs(ctx context.Context, adminID uint32, module stri
 	}
 
 	if err := query.Count(&total).Error; err != nil {
-		return nil, 0, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, 0, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at desc").Limit(pageSize).Offset(offset).Find(&logs).Error; err != nil {
-		return nil, 0, grpcstatus.Errorf(codes.Internal, err.Error())
+		return nil, 0, grpcstatus.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	bizLogs := make([]*biz.AdminLog, 0, len(logs))

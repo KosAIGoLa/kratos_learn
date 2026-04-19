@@ -53,7 +53,7 @@ func (r *withdrawalRepo) CreateWithdrawal(ctx context.Context, w *biz.Withdrawal
 		CreatedAt: time.Now(),
 	}
 	if err := r.data.db.Create(&withdrawal).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to create withdrawal: %v", err)
 	}
 	return r.toBizWithdrawal(&withdrawal), nil
 }
@@ -64,7 +64,7 @@ func (r *withdrawalRepo) GetWithdrawal(ctx context.Context, id uint64) (*biz.Wit
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "提现记录不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to get withdrawal: %v", err)
 	}
 	return r.toBizWithdrawal(&withdrawal), nil
 }
@@ -84,7 +84,7 @@ func (r *withdrawalRepo) ListWithdrawals(ctx context.Context, userID uint32, sta
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&withdrawals).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "failed to query withdrawals: %v", err)
 	}
 
 	var bizWithdrawals []*biz.Withdrawal

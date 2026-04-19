@@ -57,7 +57,7 @@ func (r *orderRepo) CreateOrder(ctx context.Context, o *biz.Order) (*biz.Order, 
 		Status:      0, // 待支付
 	}
 	if err := r.data.db.Create(&order).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizOrder(&order), nil
 }
@@ -68,7 +68,7 @@ func (r *orderRepo) GetOrderByID(ctx context.Context, id uint64) (*biz.Order, er
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "订单不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizOrder(&order), nil
 }
@@ -96,7 +96,7 @@ func (r *orderRepo) ListOrders(ctx context.Context, userID uint32, statusFilter 
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&orders).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizOrders []*biz.Order

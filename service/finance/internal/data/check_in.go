@@ -42,7 +42,7 @@ func (r *checkInRepo) CheckIn(ctx context.Context, c *biz.CheckIn) (*biz.CheckIn
 		CreatedAt:       time.Now(),
 	}
 	if err := r.data.db.Create(&checkIn).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "failed to create check-in: %v", err)
 	}
 	return &biz.CheckIn{
 		ID:              checkIn.ID,
