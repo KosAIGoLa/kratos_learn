@@ -52,7 +52,7 @@ func (r *riskControlRepo) ListRiskControls(ctx context.Context, typ string, enab
 		query = query.Where("enabled = ?", enabled)
 	}
 	if err := query.Find(&controls).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizControls []*biz.RiskControl
@@ -68,7 +68,7 @@ func (r *riskControlRepo) GetRiskControl(ctx context.Context, id uint32) (*biz.R
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "风控规则不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizControl(&control), nil
 }
@@ -87,7 +87,7 @@ func (r *riskControlRepo) CreateRiskControl(ctx context.Context, c *biz.RiskCont
 		Description:      c.Description,
 	}
 	if err := r.data.db.Create(&control).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizControl(&control), nil
 }

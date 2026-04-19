@@ -42,7 +42,7 @@ func (r *teamRepo) CreateTeamRelation(ctx context.Context, t *biz.TeamRelation) 
 		Level:    t.Level,
 	}
 	if err := r.data.db.Create(&relation).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.TeamRelation{
 		ID:        relation.ID,

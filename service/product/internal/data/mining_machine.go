@@ -53,7 +53,7 @@ func (r *miningMachineRepo) ListMachines(ctx context.Context, algorithm string, 
 		query = query.Where("status = ?", statusFilter)
 	}
 	if err := query.Find(&machines).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizMachines []*biz.MiningMachine
@@ -69,7 +69,7 @@ func (r *miningMachineRepo) GetMachine(ctx context.Context, id uint32) (*biz.Min
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "矿机不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizMachine(&machine), nil
 }

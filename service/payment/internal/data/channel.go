@@ -57,7 +57,7 @@ func (r *channelRepo) ListChannels(ctx context.Context, typ string, statusFilter
 		query = query.Where("status = ?", statusFilter)
 	}
 	if err := query.Order("sort ASC").Find(&channels).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizChannels []*biz.PaymentChannel
@@ -73,7 +73,7 @@ func (r *channelRepo) GetChannel(ctx context.Context, id uint32) (*biz.PaymentCh
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "支付渠道不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizChannel(&channel), nil
 }
@@ -95,7 +95,7 @@ func (r *channelRepo) CreateChannel(ctx context.Context, c *biz.PaymentChannel) 
 		Status:     1,
 	}
 	if err := r.data.db.Create(&channel).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizChannel(&channel), nil
 }

@@ -55,7 +55,7 @@ func (r *taskRepo) ListTasks(ctx context.Context, enabled int32) ([]*biz.Task, e
 		query = query.Where("enabled = ?", enabled)
 	}
 	if err := query.Find(&tasks).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizTasks []*biz.Task
@@ -98,7 +98,7 @@ func (r *taskRepo) CompleteTask(ctx context.Context, userTask *biz.UserTask) (*b
 	ut.LastCompletedAt = &now
 
 	if err := r.data.db.Create(&ut).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return &biz.UserTask{

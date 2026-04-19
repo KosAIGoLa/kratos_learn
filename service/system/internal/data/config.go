@@ -42,7 +42,7 @@ func (r *configRepo) GetConfig(ctx context.Context, key string) (*biz.SystemConf
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "配置不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.SystemConfig{
 		ID:          config.ID,
@@ -62,7 +62,7 @@ func (r *configRepo) SetConfig(ctx context.Context, c *biz.SystemConfig) (*biz.S
 		Group:       c.Group,
 	}
 	if err := r.data.db.Save(&config).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.SystemConfig{
 		ID:          config.ID,
@@ -80,7 +80,7 @@ func (r *configRepo) ListConfigs(ctx context.Context, group string) ([]*biz.Syst
 		query = query.Where("group = ?", group)
 	}
 	if err := query.Find(&configs).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizConfigs []*biz.SystemConfig

@@ -77,7 +77,7 @@ func (r *systemLogRepo) ListSystemLogs(ctx context.Context, level, module, opera
 	total, err := coll.CountDocuments(ctx, filter)
 	if err != nil {
 		r.log.Errorf("count system logs failed: %v", err)
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	// 查询数据
@@ -89,7 +89,7 @@ func (r *systemLogRepo) ListSystemLogs(ctx context.Context, level, module, opera
 	cursor, err := coll.Find(ctx, filter, opts)
 	if err != nil {
 		r.log.Errorf("find system logs failed: %v", err)
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	defer cursor.Close(ctx)
 
@@ -123,7 +123,7 @@ func (r *systemLogRepo) GetSystemLog(ctx context.Context, id string) (*biz.Syste
 		if err == mongo.ErrNoDocuments {
 			return nil, status.Errorf(codes.NotFound, "system log not found")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return r.docToSystemLog(doc), nil
@@ -152,7 +152,7 @@ func (r *systemLogRepo) CreateSystemLog(ctx context.Context, log *biz.SystemLog)
 	_, err := coll.InsertOne(ctx, doc)
 	if err != nil {
 		r.log.Errorf("create system log failed: %v", err)
-		return status.Errorf(codes.Internal, err.Error())
+		return status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return nil
@@ -263,7 +263,7 @@ func (r *userLogRepo) ListUserLogs(ctx context.Context, userID uint32, action, m
 	total, err := coll.CountDocuments(ctx, filter)
 	if err != nil {
 		r.log.Errorf("count user logs failed: %v", err)
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	// 查询数据
@@ -275,7 +275,7 @@ func (r *userLogRepo) ListUserLogs(ctx context.Context, userID uint32, action, m
 	cursor, err := coll.Find(ctx, filter, opts)
 	if err != nil {
 		r.log.Errorf("find user logs failed: %v", err)
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	defer cursor.Close(ctx)
 
@@ -309,7 +309,7 @@ func (r *userLogRepo) GetUserLog(ctx context.Context, id string) (*biz.UserLog, 
 		if err == mongo.ErrNoDocuments {
 			return nil, status.Errorf(codes.NotFound, "user log not found")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return r.docToUserLog(doc), nil
@@ -337,7 +337,7 @@ func (r *userLogRepo) CreateUserLog(ctx context.Context, log *biz.UserLog) error
 	_, err := coll.InsertOne(ctx, doc)
 	if err != nil {
 		r.log.Errorf("create user log failed: %v", err)
-		return status.Errorf(codes.Internal, err.Error())
+		return status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return nil

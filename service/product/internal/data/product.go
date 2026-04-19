@@ -55,7 +55,7 @@ func (r *productRepo) ListProducts(ctx context.Context, typ string, statusFilter
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Limit(int(pageSize)).Offset(int(offset)).Find(&products).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizProducts []*biz.Product
@@ -71,7 +71,7 @@ func (r *productRepo) GetProduct(ctx context.Context, id uint32) (*biz.Product, 
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "产品不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizProduct(&product), nil
 }
@@ -88,7 +88,7 @@ func (r *productRepo) CreateProduct(ctx context.Context, p *biz.Product) (*biz.P
 		Status:           1,
 	}
 	if err := r.data.db.Create(&product).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizProduct(&product), nil
 }

@@ -61,7 +61,7 @@ func (r *apiLogRepo) ListAPILogs(ctx context.Context, orderNo string, channelID 
 	query.Count(&total)
 	offset := (page - 1) * pageSize
 	if err := query.Order("created_at DESC").Limit(int(pageSize)).Offset(int(offset)).Find(&logs).Error; err != nil {
-		return nil, 0, status.Errorf(codes.Internal, err.Error())
+		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizLogs []*biz.PaymentAPILog
@@ -96,7 +96,7 @@ func (r *apiLogRepo) LogRequest(ctx context.Context, log *biz.PaymentAPILog) (*b
 		CreatedAt:   time.Now(),
 	}
 	if err := r.data.db.Create(&l).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.PaymentAPILog{
 		ID:        l.ID,

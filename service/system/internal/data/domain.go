@@ -41,7 +41,7 @@ func (r *domainRepo) ListDomains(ctx context.Context, enabled int32) ([]*biz.Dom
 		query = query.Where("enabled = ?", enabled)
 	}
 	if err := query.Find(&domains).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizDomains []*biz.Domain
@@ -65,7 +65,7 @@ func (r *domainRepo) AddDomain(ctx context.Context, d *biz.Domain) (*biz.Domain,
 		if err == gorm.ErrDuplicatedKey {
 			return nil, status.Errorf(codes.AlreadyExists, "域名已存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.Domain{
 		ID:        domain.ID,

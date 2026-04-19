@@ -53,7 +53,7 @@ func (r *profitSharingRepo) ListRules(ctx context.Context, typ string, enabled i
 		query = query.Where("enabled = ?", enabled)
 	}
 	if err := query.Order("sort ASC").Find(&rules).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	var bizRules []*biz.ProfitSharingRule
@@ -69,7 +69,7 @@ func (r *profitSharingRepo) GetRule(ctx context.Context, id uint32) (*biz.Profit
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "分账规则不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizRule(&rule), nil
 }
@@ -89,7 +89,7 @@ func (r *profitSharingRepo) CreateRule(ctx context.Context, rule *biz.ProfitShar
 		Description: rule.Description,
 	}
 	if err := r.data.db.Create(&r2).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizRule(&r2), nil
 }

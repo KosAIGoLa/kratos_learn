@@ -46,7 +46,7 @@ func (r *whitelistRepo) CheckWhitelist(ctx context.Context, ip, typ string) (boo
 		Where("expire_at IS NULL OR expire_at > ?", now)
 
 	if err := query.Count(&count).Error; err != nil {
-		return false, status.Errorf(codes.Internal, err.Error())
+		return false, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 
 	return count > 0, nil

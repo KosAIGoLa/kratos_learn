@@ -61,7 +61,7 @@ func (r *userRepo) CreateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	}
 
 	if err := r.data.db.Create(&user).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizUser(&user), nil
 }
@@ -72,7 +72,7 @@ func (r *userRepo) GetUserByID(ctx context.Context, id uint32) (*biz.User, error
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "用户不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizUser(&user), nil
 }
@@ -117,7 +117,7 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 
 func (r *userRepo) DeleteUser(ctx context.Context, id uint32) error {
 	if err := r.data.db.Delete(&User{}, id).Error; err != nil {
-		return status.Errorf(codes.Internal, err.Error())
+		return status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return nil
 }

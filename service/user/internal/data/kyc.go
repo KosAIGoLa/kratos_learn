@@ -50,7 +50,7 @@ func (r *kycRepo) CreateKYC(ctx context.Context, k *biz.KYCVerification) (*biz.K
 		Status:      0,
 	}
 	if err := r.data.db.Create(&kyc).Error; err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizKYC(&kyc), nil
 }
@@ -61,7 +61,7 @@ func (r *kycRepo) GetKYCByUserID(ctx context.Context, userID uint32) (*biz.KYCVe
 		if err == gorm.ErrRecordNotFound {
 			return nil, status.Errorf(codes.NotFound, "实名认证记录不存在")
 		}
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return r.toBizKYC(&kyc), nil
 }
