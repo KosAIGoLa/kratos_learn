@@ -11,6 +11,11 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [admin, content, cron, finance, order, payment, product, system, user]
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,6 +29,7 @@ jobs:
         uses: golangci/golangci-lint-action@v7
         with:
           version: v2.11.4
+          working-directory: service/${{ matrix.service }}
           args: --timeout=5m
 
   test:
