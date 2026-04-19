@@ -24,8 +24,8 @@ func TestCronService_ListTasks(t *testing.T) {
 
 	// 启动调度器并添加测试任务
 	ctx := context.Background()
-	scheduler.Start(ctx)
-	defer scheduler.Stop(ctx)
+	_ = scheduler.Start(ctx)
+	defer func() { _ = scheduler.Stop(ctx) }()
 
 	// 添加测试任务
 	err := scheduler.AddTask("test_task_1", "0 0 * * * *", func() {
@@ -61,8 +61,8 @@ func TestCronService_AddTask(t *testing.T) {
 	taskManager := cron.NewTaskManager(scheduler, log.DefaultLogger)
 	service := NewCronService(taskManager, log.DefaultLogger)
 
-	scheduler.Start(context.Background())
-	defer scheduler.Stop(context.Background())
+	_ = scheduler.Start(context.Background())
+	defer func() { _ = scheduler.Stop(context.Background()) }()
 
 	// 测试添加新任务
 	req := &v1.AddTaskRequest{
@@ -100,8 +100,8 @@ func TestCronService_RemoveTask(t *testing.T) {
 	taskManager := cron.NewTaskManager(scheduler, log.DefaultLogger)
 	service := NewCronService(taskManager, log.DefaultLogger)
 
-	scheduler.Start(context.Background())
-	defer scheduler.Stop(context.Background())
+	_ = scheduler.Start(context.Background())
+	defer func() { _ = scheduler.Stop(context.Background()) }()
 
 	// 先添加一个测试任务
 	err := scheduler.AddTask("task_to_remove", "0 0 * * * *", func() {
@@ -164,8 +164,8 @@ func TestCronService_TaskScheduling(t *testing.T) {
 	}
 
 	// 启动调度器
-	scheduler.Start(context.Background())
-	defer scheduler.Stop(context.Background())
+	_ = scheduler.Start(context.Background())
+	defer func() { _ = scheduler.Stop(context.Background()) }()
 
 	// 等待任务执行几次
 	time.Sleep(2 * time.Second)
@@ -262,8 +262,8 @@ func TestCronService_MultipleTasks(t *testing.T) {
 	}
 
 	// 启动调度器
-	scheduler.Start(context.Background())
-	defer scheduler.Stop(context.Background())
+	_ = scheduler.Start(context.Background())
+	defer func() { _ = scheduler.Stop(context.Background()) }()
 
 	// 等待任务执行
 	time.Sleep(4 * time.Second)
@@ -304,8 +304,8 @@ func TestCronService_ConcurrentAccess(t *testing.T) {
 	taskManager := cron.NewTaskManager(scheduler, log.DefaultLogger)
 	service := NewCronService(taskManager, log.DefaultLogger)
 
-	scheduler.Start(context.Background())
-	defer scheduler.Stop(context.Background())
+	_ = scheduler.Start(context.Background())
+	defer func() { _ = scheduler.Stop(context.Background()) }()
 
 	// 先添加一些任务
 	for i := 0; i < 5; i++ {

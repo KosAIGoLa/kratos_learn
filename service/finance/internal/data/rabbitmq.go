@@ -44,7 +44,7 @@ func NewRabbitMQClient(c *conf.Data, logger log.Logger) (*RabbitMQClient, func()
 
 	ch, err := conn.Channel()
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return nil, nil, err
 	}
 
@@ -72,8 +72,8 @@ func NewRabbitMQClient(c *conf.Data, logger log.Logger) (*RabbitMQClient, func()
 		nil,      // arguments
 	)
 	if err != nil {
-		ch.Close()
-		conn.Close()
+		_ = ch.Close()
+		_ = conn.Close()
 		return nil, nil, err
 	}
 
@@ -87,8 +87,8 @@ func NewRabbitMQClient(c *conf.Data, logger log.Logger) (*RabbitMQClient, func()
 		nil,   // arguments
 	)
 	if err != nil {
-		ch.Close()
-		conn.Close()
+		_ = ch.Close()
+		_ = conn.Close()
 		return nil, nil, err
 	}
 
@@ -101,8 +101,8 @@ func NewRabbitMQClient(c *conf.Data, logger log.Logger) (*RabbitMQClient, func()
 		nil,        // arguments
 	)
 	if err != nil {
-		ch.Close()
-		conn.Close()
+		_ = ch.Close()
+		_ = conn.Close()
 		return nil, nil, err
 	}
 
@@ -188,7 +188,7 @@ func (c *RabbitMQClient) ConsumeWithdrawals(handler func(*WithdrawalMessage) err
 			var withdrawalMsg WithdrawalMessage
 			if err := json.Unmarshal(msg.Body, &withdrawalMsg); err != nil {
 				c.log.Errorf("failed to unmarshal withdrawal message: %v", err)
-				msg.Nack(false, false) // 拒绝消息，不重入队
+				_ = msg.Nack(false, false) // 拒绝消息，不重入队
 				continue
 			}
 
@@ -197,11 +197,11 @@ func (c *RabbitMQClient) ConsumeWithdrawals(handler func(*WithdrawalMessage) err
 
 			if err := handler(&withdrawalMsg); err != nil {
 				c.log.Errorf("failed to process withdrawal: %v", err)
-				msg.Nack(false, true) // 重入队，稍后重试
+				_ = msg.Nack(false, true) // 重入队，稍后重试
 				continue
 			}
 
-			msg.Ack(false) // 确认消息已处理
+			_ = msg.Ack(false) // 确认消息已处理
 			c.log.Infof("withdrawal message processed successfully: user_id=%d", withdrawalMsg.UserID)
 		}
 	}()
@@ -213,9 +213,9 @@ func (c *RabbitMQClient) ConsumeWithdrawals(handler func(*WithdrawalMessage) err
 // Close 关闭连接
 func (c *RabbitMQClient) Close() {
 	if c.channel != nil {
-		c.channel.Close()
+		_ = c.channel.Close()
 	}
 	if c.conn != nil {
-		c.conn.Close()
+		_ = c.conn.Close()
 	}
 }

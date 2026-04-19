@@ -592,51 +592,6 @@ func (tm *TaskManager) calculateMemberLevel(spending float64) string {
 	}
 }
 
-// updateMember 更新会员数据（模拟实现）
-func (tm *TaskManager) updateMember(member *Member) error {
-	// 实际实现：更新数据库
-	tm.log.Infof("更新会员 [%s] 数据", member.ID)
-	return nil
-}
-
-// updateMemberBenefits 更新会员权益（模拟实现）
-func (tm *TaskManager) updateMemberBenefits(memberID string, benefits []MemberBenefit) error {
-	// 实际实现：更新数据库
-	tm.log.Infof("更新会员 [%s] 权益", memberID)
-	return nil
-}
-
-// updateMemberLevel 更新会员等级（模拟实现）
-func (tm *TaskManager) updateMemberLevel(memberID, level string) error {
-	// 实际实现：更新数据库
-	tm.log.Infof("更新会员 [%s] 等级为 [%s]", memberID, level)
-	return nil
-}
-
-// markMemberAsExpired 标记会员过期（模拟实现）
-func (tm *TaskManager) markMemberAsExpired(memberID string) error {
-	// 实际实现：更新数据库状态
-	tm.log.Infof("标记会员 [%s] 为过期状态", memberID)
-	return nil
-}
-
-// archiveAndDeleteMember 归档并删除会员（模拟实现）
-func (tm *TaskManager) archiveAndDeleteMember(member *Member) error {
-	// 实际实现：归档到历史表，然后从活跃表删除
-	tm.log.Infof("归档并删除会员 [%s]", member.ID)
-	return nil
-}
-
-// sendLevelChangeNotification 发送等级变更通知
-func (tm *TaskManager) sendLevelChangeNotification(member *Member, oldLevel, newLevel string) {
-	tm.log.Infof("发送等级变更通知：会员 [%s] 从 [%s] 升级为 [%s]", member.ID, oldLevel, newLevel)
-	// 实际实现：
-	// - 发送邮件通知
-	// - 发送短信通知
-	// - 推送 App 通知
-	// - 记录到消息队列
-}
-
 // ==================== 算力生产相关任务实现 ====================
 
 // hourlyHashrateSettlement 每小时算力结算
@@ -1262,4 +1217,42 @@ func (tm *TaskManager) updateUserDailyStats(userID int, dailyPoints, monthlyPoin
 	tm.log.Infof("更新用户 [%d] 每日统计 - 当日[%.2f] 当月[%.2f]",
 		userID, dailyPoints, monthlyPoints)
 	return nil
+}
+
+// ==================== 会员数据更新辅助方法 ====================
+
+// updateMember 更新会员信息（模拟实现）
+func (tm *TaskManager) updateMember(member *Member) error {
+	tm.log.Infof("更新会员 [%s] 信息 - 等级[%s] 当日工分[%d] 当月工分[%d] 总工分[%d]",
+		member.ID, member.Level, member.DailyPoints, member.MonthlyPoints, member.TotalPoints)
+	return nil
+}
+
+// updateMemberBenefits 更新会员权益（模拟实现）
+func (tm *TaskManager) updateMemberBenefits(memberID string, benefits []MemberBenefit) error {
+	tm.log.Infof("更新会员 [%s] 权益，共 %d 项", memberID, len(benefits))
+	return nil
+}
+
+// updateMemberLevel 更新会员等级（模拟实现）
+func (tm *TaskManager) updateMemberLevel(memberID string, level string) error {
+	tm.log.Infof("更新会员 [%s] 等级为 [%s]", memberID, level)
+	return nil
+}
+
+// markMemberAsExpired 标记会员为过期（模拟实现）
+func (tm *TaskManager) markMemberAsExpired(memberID string) error {
+	tm.log.Infof("标记会员 [%s] 为过期状态", memberID)
+	return nil
+}
+
+// archiveAndDeleteMember 归档并删除会员（模拟实现）
+func (tm *TaskManager) archiveAndDeleteMember(member *Member) error {
+	tm.log.Infof("归档并删除会员 [%s]", member.ID)
+	return nil
+}
+
+// sendLevelChangeNotification 发送等级变更通知（模拟实现）
+func (tm *TaskManager) sendLevelChangeNotification(member *Member, oldLevel, newLevel string) {
+	tm.log.Infof("发送等级变更通知 - 会员[%s] 从[%s]升级到[%s]", member.ID, oldLevel, newLevel)
 }

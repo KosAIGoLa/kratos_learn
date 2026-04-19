@@ -91,7 +91,7 @@ func (r *systemLogRepo) ListSystemLogs(ctx context.Context, level, module, opera
 		r.log.Errorf("find system logs failed: %v", err)
 		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
-	defer cursor.Close(ctx)
+	defer func() { _ = cursor.Close(ctx) }()
 
 	var logs []*biz.SystemLog
 	for cursor.Next(ctx) {
@@ -277,7 +277,7 @@ func (r *userLogRepo) ListUserLogs(ctx context.Context, userID uint32, action, m
 		r.log.Errorf("find user logs failed: %v", err)
 		return nil, 0, status.Errorf(codes.Internal, "%s", err.Error())
 	}
-	defer cursor.Close(ctx)
+	defer func() { _ = cursor.Close(ctx) }()
 
 	var logs []*biz.UserLog
 	for cursor.Next(ctx) {

@@ -36,7 +36,7 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, md
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 		if mdb != nil {
-			mdb.Client().Disconnect(context.Background())
+			_ = mdb.Client().Disconnect(context.Background())
 		}
 	}
 	return &Data{db: db, rdb: rdb, mdb: mdb}, cleanup, nil
