@@ -1,0 +1,49 @@
+# 自動標籤配置
+# 根據文件路徑自動為 PR 添加標籤
+
+admin:
+  - service/admin/**/*
+
+content:
+  - service/content/**/*
+
+finance:
+  - service/finance/**/*
+
+order:
+  - service/order/**/*
+
+payment:
+  - service/payment/**/*
+
+product:
+  - service/product/**/*
+
+system:
+  - service/system/**/*
+
+user:
+  - service/user/**/*
+
+documentation:
+  - '**/*.md'
+  - docs/**/*
+
+ci/cd:
+  - .github/**/*
+  - '**/*.yml'
+  - '**/Dockerfile'
+
+proto:
+  - '**/*.proto'
+
+database:
+  - schema.sql
+  - '**/migrations/**/*
+
+dependencies:
+  - '**/go.mod'
+  - '**/go.sum'
+
+tests:
+  - '**/*_test.go'

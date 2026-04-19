@@ -1,0 +1,27 @@
+# 代碼所有者文件
+# 當有人打開 PR 時，這些用戶/團隊會自動被請求審查
+
+# 全局所有者
+* @your-username
+
+# 服務特定所有者
+/service/admin/ @admin-team
+/service/content/ @content-team
+/service/finance/ @finance-team
+/service/order/ @order-team
+
+# Proto 文件
+**/*.proto @api-team
+
+# CI/CD 配置
+/.github/ @devops-team
+**/Dockerfile @devops-team
+**/*.yml @devops-team
+
+# 文檔
+*.md @docs-team
+/docs/ @docs-team
+
+# 數據庫
+schema.sql @database-team
+**/migrations/ @database-team

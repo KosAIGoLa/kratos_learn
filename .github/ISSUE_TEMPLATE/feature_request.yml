@@ -1,0 +1,73 @@
+name: Feature Request
+description: 建議一個新功能
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感謝您的功能建議！
+
+  - type: dropdown
+    id: service
+    attributes:
+      label: 相關服務
+      description: 這個功能屬於哪個服務？
+      options:
+        - admin
+        - content
+        - finance
+        - order
+        - payment
+        - product
+        - system
+        - user
+        - 新服務
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 問題描述
+      description: 您的功能請求是否與某個問題相關？請描述。
+      placeholder: 我總是感到沮喪當...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 建議的解決方案
+      description: 描述您想要的解決方案
+      placeholder: 我希望...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+      description: 描述您考慮過的任何替代解決方案或功能
+      placeholder: 我也考慮過...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先級
+      description: 這個功能對您有多重要？
+      options:
+        - 低 - 有了更好
+        - 中 - 會顯著改善體驗
+        - 高 - 對我的工作流程至關重要
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 附加信息
+      description: 添加任何其他關於功能請求的上下文或截圖

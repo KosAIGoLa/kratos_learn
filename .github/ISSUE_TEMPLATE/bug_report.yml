@@ -1,0 +1,97 @@
+name: Bug Report
+description: 報告一個 Bug
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感謝您花時間填寫此 Bug 報告！
+
+  - type: dropdown
+    id: service
+    attributes:
+      label: 受影響的服務
+      description: 哪個服務出現了問題？
+      options:
+        - admin
+        - content
+        - finance
+        - order
+        - payment
+        - product
+        - system
+        - user
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug 描述
+      description: 請清楚簡潔地描述這個 Bug
+      placeholder: 告訴我們發生了什麼...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 重現步驟
+      description: 如何重現這個問題？
+      placeholder: |
+        1. 訪問 '...'
+        2. 點擊 '...'
+        3. 滾動到 '...'
+        4. 看到錯誤
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 預期行為
+      description: 您期望發生什麼？
+      placeholder: 應該...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 實際行為
+      description: 實際發生了什麼？
+      placeholder: 但是...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 相關日誌
+      description: 請粘貼任何相關的日誌輸出
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 環境信息
+      description: 請提供環境信息
+      value: |
+        - Go 版本: 
+        - Kratos 版本: 
+        - MySQL 版本: 
+        - Redis 版本: 
+        - RabbitMQ 版本: 
+        - 操作系統: 
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 附加信息
+      description: 添加任何其他關於問題的上下文或截圖

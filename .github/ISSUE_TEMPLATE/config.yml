@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 文檔
+    url: https://go-kratos.dev/
+    about: 查看 Kratos 框架文檔
+  - name: 💬 討論區
+    url: https://github.com/go-kratos/kratos/discussions
+    about: 在 Kratos 社區討論區提問
+  - name: 🔒 安全問題
+    url: mailto:security@example.com
+    about: 報告安全漏洞（請勿公開）

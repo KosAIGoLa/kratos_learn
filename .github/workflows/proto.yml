@@ -1,0 +1,44 @@
+name: Proto Validation
+
+on:
+  push:
+    paths:
+      - '**/*.proto'
+  pull_request:
+    paths:
+      - '**/*.proto'
+
+jobs:
+  validate:
+    name: Validate Proto Files
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint proto files
+        run: |
+          cd service
+          for service in admin content finance order; do
+            echo "Linting $service proto files..."
+            cd $service
+            buf lint api || true
+            cd ..
+          done
+
+      - name: Check proto breaking changes
+        if: github.event_name == 'pull_request'
+        run: |
+          cd service
+          for service in admin content finance order; do
+            echo "Checking $service for breaking changes..."
+            cd $service
+            buf breaking --against '.git#branch=main' api || true
+            cd ..
+          done

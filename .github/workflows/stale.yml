@@ -1,0 +1,47 @@
+name: Stale Issues and PRs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  stale:
+    name: Mark Stale Issues and PRs
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Issue 配置
+          stale-issue-message: |
+            此 Issue 已經 60 天沒有活動，將被標記為過期。
+            如果此問題仍然相關，請回覆此消息以保持其活躍狀態。
+          close-issue-message: |
+            此 Issue 已經 90 天沒有活動，現在將被關閉。
+            如果您認為這是一個錯誤，請重新打開它。
+          days-before-stale: 60
+          days-before-close: 30
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'pinned,security,roadmap'
+          
+          # PR 配置
+          stale-pr-message: |
+            此 PR 已經 30 天沒有活動，將被標記為過期。
+            如果此 PR 仍在進行中，請回覆此消息以保持其活躍狀態。
+          close-pr-message: |
+            此 PR 已經 60 天沒有活動，現在將被關閉。
+            如果您想繼續此工作，請重新打開它。
+          days-before-pr-stale: 30
+          days-before-pr-close: 30
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'pinned,security,work-in-progress'
+          
+          # 其他配置
+          operations-per-run: 100
+          remove-stale-when-updated: true
