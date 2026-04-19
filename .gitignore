@@ -1,77 +1,15 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+# 项目根目录 .gitignore
+# 注意：各个 service 子目录有自己的 .gitignore
+# 这里只包含项目级别的规则，避免影响 service
 
-# Build output
-bin/
-dist/
-build/
+# IDE配置（项目级别）
+/.idea/
+/.vscode/
 
-# Test binary, built with `go test -c`
-*.test
-
-# Output of the go coverage tool
-*.out
-coverage.out
-coverage.html
-
-# Dependency directories (use `go mod` instead)
-vendor/
-
-# Go workspace file
-go.work
-go.work.sum
-
-# IDE - JetBrains
-.idea/
-*.iml
-
-# IDE - VSCode
-.vscode/
-*.code-workspace
-
-# IDE - Vim
-*.swp
-*.swo
-*~
-
-# OS - macOS
+# OS文件
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# OS - Windows
 Thumbs.db
-ehthumbs.db
-Desktop.ini
 
-# OS - Linux
-*~
-
-# Debug and temporary files
+# 临时文件
 debug.txt
-*.log
-*.tmp
-*.temp
-
-# Config files with secrets
-*.env
-.env.local
-.env.*.local
-secrets.yaml
-secrets.yml
-
-# Build artifacts
-tmp/
-temp/
-
-# Wire generated files (可选：如果你想提交 wire_gen.go，注释掉下一行)
-# wire_gen.go
-
-# Kratos generated files (保留这些文件在版本控制中)
-# 不要忽略 .pb.go 文件
-# 不要忽略 .proto 文件
-# 不要忽略 openapi.yaml 文件
+WORKFLOW_CHANGES.md
