@@ -1,9 +1,12 @@
 FROM golang:1.26 AS builder
 
+ARG GOPROXY=https://proxy.golang.org,direct
+ENV GOPROXY=${GOPROXY}
+
 COPY . /src
 WORKDIR /src
 
-RUN GOPROXY=https://goproxy.cn make build
+RUN go env GOMOD && test -f internal/pkg/jwt/jwt.go && make build
 
 FROM debian:stable-slim
 
