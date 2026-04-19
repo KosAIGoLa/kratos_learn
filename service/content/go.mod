@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-kratos/swagger-api v1.0.1
-	github.com/google/wire v0.6.0
+	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/extra/redisotel/v9 v9.18.0
 	github.com/redis/go-redis/v9 v9.18.0
 	go.uber.org/automaxprocs v1.5.1
