@@ -97,7 +97,7 @@ jobs:
           RABBITMQ_URL: amqp://guest:guest@localhost:5672/
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         with:
           file: ./service/${{ matrix.service }}/coverage.out
           flags: ${{ matrix.service }}
