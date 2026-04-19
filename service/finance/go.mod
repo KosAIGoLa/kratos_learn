@@ -6,9 +6,10 @@ require (
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-kratos/swagger-api v1.0.1
 	github.com/google/wire v0.6.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	github.com/redis/go-redis/extra/redisotel/v9 v9.18.0
 	github.com/redis/go-redis/v9 v9.18.0
-	go.uber.org/automaxprocs v1.5.1
+	go.uber.org/automaxprocs v1.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.1
@@ -37,7 +38,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/rabbitmq/amqp091-go v1.10.0 // indirect
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/redis/go-redis/extra/rediscmd/v9 v9.18.0 // indirect
 	go.opentelemetry.io/otel v1.24.0 // indirect
