@@ -6,7 +6,7 @@ ENV GOPROXY=${GOPROXY}
 COPY . /src
 WORKDIR /src/service/admin
 
-RUN go env GOMOD && go mod download && test -f internal/pkg/jwt/jwt.go && make build
+RUN go mod download && make build
 
 FROM debian:stable-slim
 
