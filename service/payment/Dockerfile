@@ -4,9 +4,9 @@ ARG GOPROXY=https://proxy.golang.org,direct
 ENV GOPROXY=${GOPROXY}
 
 COPY . /src
-WORKDIR /src
+WORKDIR /src/service/payment
 
-RUN make build
+RUN go mod download && make build
 
 FROM debian:stable-slim
 
@@ -16,12 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && rm -rf /var/lib/apt/lists/ \
         && apt-get autoremove -y && apt-get autoclean -y
 
-COPY --from=builder /src/bin /app
+COPY --from=builder /src/service/payment/bin /app
 
 WORKDIR /app
 
-EXPOSE 8000
-EXPOSE 9000
+EXPOSE 8104
+EXPOSE 9104
 VOLUME /data/conf
 
 CMD ["./server", "-conf", "/data/conf"]
