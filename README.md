@@ -26,7 +26,6 @@
 | 服務 | HTTP 端口 | gRPC 端口 | 說明 |
 |------|-----------|-----------|------|
 | content | 8101 | 9101 | 內容管理（新聞、輪播圖） |
-| cron | 8109 | 9109 | 定時任務服務 |
 | finance | 8102 | 9102 | 財務管理（充值、提現、收益） |
 | order | 8103 | 9103 | 訂單管理 |
 | payment | 8104 | 9104 | 支付處理 |
@@ -34,6 +33,9 @@
 | system | 8106 | 9106 | 系統配置（分潤規則、風控、域名） |
 | user | 8107 | 9107 | 用戶管理（註冊、登錄、KYC、團隊） |
 | admin | 8108 | 9108 | 管理員後台（管理員、角色、菜單、日誌） |
+| mail | 8109 | 9109 | 郵件服務 |
+| sms | 8110 | 9110 | 短信服務 |
+| cron | 8111 | 9111 | 定時任務服務 |
 
 ---
 
@@ -148,7 +150,9 @@ all_post.http
 ├── Finance Service (8102)     # 充值、提現、收益
 ├── Payment Service (8104)     # 支付渠道、回調
 ├── System Service (8106)      # 配置、分潤、風控
-├── Admin Service (8000)       # 管理員、角色、菜單、日誌
+├── Admin Service (8108)       # 管理員、角色、菜單、日誌
+├── Mail Service (8109)        # 郵件發送服務
+├── SMS Service (8110)         # 短信發送服務
 └── Swagger UI 訪問地址        # http://localhost:{port}/q/
 ```
 
@@ -161,6 +165,8 @@ all_post.http
 - System: http://localhost:8106/q/
 - User: http://localhost:8107/q/
 - Admin: http://localhost:8108/q/
+- Mail: http://localhost:8109/q/
+- SMS: http://localhost:8110/q/
 
 ### gRPC 測試
 
@@ -200,6 +206,8 @@ brew install grpcurl
 - System: `localhost:9106`
 - User: `localhost:9107`
 - Admin: `localhost:9108`
+- Mail: `localhost:9109`
+- SMS: `localhost:9110`
 
 ---
 
