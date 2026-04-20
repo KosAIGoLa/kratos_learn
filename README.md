@@ -16,6 +16,7 @@
 | 消息隊列 | RabbitMQ |
 | 配置 | Protobuf + YAML |
 | 依賴注入 | Google Wire |
+| 服務發現 | etcd |
 | API 文檔 | Swagger/OpenAPI v2 |
 
 ---
@@ -25,13 +26,14 @@
 | 服務 | HTTP 端口 | gRPC 端口 | 說明 |
 |------|-----------|-----------|------|
 | content | 8101 | 9101 | 內容管理（新聞、輪播圖） |
+| cron | 8109 | 9109 | 定時任務服務 |
 | finance | 8102 | 9102 | 財務管理（充值、提現、收益） |
 | order | 8103 | 9103 | 訂單管理 |
 | payment | 8104 | 9104 | 支付處理 |
 | product | 8105 | 9105 | 產品管理（礦機、算力產品） |
 | system | 8106 | 9106 | 系統配置（分潤規則、風控、域名） |
 | user | 8107 | 9107 | 用戶管理（註冊、登錄、KYC、團隊） |
-| admin | 8000 | 9000 | 管理員後台（管理員、角色、菜單、日誌） |
+| admin | 8108 | 9108 | 管理員後台（管理員、角色、菜單、日誌） |
 
 ---
 
@@ -158,7 +160,7 @@ all_post.http
 - Product: http://localhost:8105/q/
 - System: http://localhost:8106/q/
 - User: http://localhost:8107/q/
-- Admin: http://localhost:8000/q/
+- Admin: http://localhost:8108/q/
 
 ### gRPC 測試
 
@@ -249,6 +251,26 @@ brew install grpcurl
 - **隊列**: `withdrawal.queue`
 - **交換器**: `finance.exchange`
 - **路由鍵**: `withdrawal`
+
+### 服務發現
+
+基於 **etcd** 的服務註冊與發現，支持多服務實例動態管理。
+
+**配置示例：**
+```yaml
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 5s
+```
+
+**查看已註冊服務：**
+```bash
+etcdctl get --prefix /microservices/
+```
+
+詳見 [ETCD_SERVICE_DISCOVERY.md](./ETCD_SERVICE_DISCOVERY.md)
 
 ### 訂單系統
 - 產品購買

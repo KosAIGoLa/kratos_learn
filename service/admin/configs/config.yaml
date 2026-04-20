@@ -17,3 +17,8 @@ jwt:
   secret: "your-admin-secret-key-change-in-production"
   access_token_expire: 86400s
   refresh_token_expire: 604800s
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 5s
