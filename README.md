@@ -278,7 +278,7 @@ registry:
 etcdctl get --prefix /microservices/
 ```
 
-詳見 [ETCD_SERVICE_DISCOVERY.md](./ETCD_SERVICE_DISCOVERY.md)
+詳見 [ETCD_SERVICE_DISCOVERY.md](documents/ETCD_SERVICE_DISCOVERY.mdOVERY.md)
 
 ### 訂單系統
 - 產品購買
