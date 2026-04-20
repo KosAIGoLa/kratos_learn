@@ -21,3 +21,8 @@ data:
     connect_timeout: 10s
     max_pool_size: 100
     min_pool_size: 10
+
+# 链路追踪 (OpenTelemetry)
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+  sample_rate: 1.0

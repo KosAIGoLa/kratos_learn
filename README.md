@@ -18,6 +18,7 @@
 | 依賴注入 | Google Wire |
 | 服務發現 | etcd |
 | API 文檔 | Swagger/OpenAPI v2 |
+| 鏈路追蹤 | OpenTelemetry + Jaeger |
 
 ---
 
@@ -59,7 +60,10 @@ my-front-app/
 │   ├── product/               # 產品服務
 │   ├── system/                # 系統服務
 │   ├── user/                  # 用戶服務
-│   └── admin/                 # 管理員服務（含菜單、角色、日誌管理）
+│   ├── admin/                 # 管理員服務（含菜單、角色、日誌管理）
+│   ├── mail/                  # 郵件服務
+│   ├── sms/                   # 短信服務
+│   └── cron/                  # 定時任務服務
 ├── third_party/               # 第三方 proto 文件
 ├── schema.sql                 # 數據庫結構
 ├── all_post.http              # HTTP 測試請求集合
@@ -208,6 +212,7 @@ brew install grpcurl
 - Admin: `localhost:9108`
 - Mail: `localhost:9109`
 - SMS: `localhost:9110`
+- Cron: `localhost:9111`
 
 ---
 
@@ -215,18 +220,13 @@ brew install grpcurl
 
 參見 `.windsurf/rules/` 目錄下的開發規範：
 - `01-overview.md` - 項目概覽
-- `02-project-structure.md` - 項目結構規範
-- `03-coding-style.md` - 編碼風格
-- `04-database.md` - 數據庫規範
-- `05-api-design.md` - API 設計規範
-- `06-kratos-pattern.md` - Kratos 模式
-- `07-error-handling.md` - 錯誤處理
+- `02-api-definition.md` - API 定義規範
+- `03-configuration.md` - 配置管理規範
+- `04-data-layer.md` - 數據層規範
+- `05-biz-layer.md` - 業務層規範
+- `06-service-layer.md` - 服務層規範
+- `07-server-setup.md` - 服務器設置規範
 - `08-testing.md` - 測試規範
-- `09-security.md` - 安全規範
-- `10-deployment.md` - 部署規範
-- `11-common-commands.md` - 常用命令
-- `12-troubleshooting.md` - 問題排查
-- `13-kratos-layout.md` - Kratos 佈局規範
 
 ---
 
@@ -303,3 +303,20 @@ etcdctl get --prefix /microservices/
 - 角色管理（角色創建、權限分配）
 - 菜單管理（菜單結構、權限標識）
 - 操作日誌查詢
+
+### 通知服務
+- 郵件服務（SMTP 配置、郵件模板）
+- 短信服務（多提供商支持：Twilio、阿里雲等）
+
+### 鏈路追蹤 (OpenTelemetry)
+基於 **OpenTelemetry** 的分布式鏈路追蹤，支持跨服務請求追蹤。
+
+**配置示例：**
+```yaml
+trace:
+  endpoint: http://127.0.0.1:14268/api/traces
+  sample_rate: 1.0
+```
+
+**查看鏈路：**
+- 訪問 Jaeger UI: http://localhost:16686

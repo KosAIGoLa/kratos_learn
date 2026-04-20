@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+  namespace: mining-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-service
+  template:
+    metadata:
+      labels:
+        app: admin-service
+    spec:
+      containers:
+        - name: admin-service
+          image: admin-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVICE_NAME
+              value: "admin"
+            - name: SERVICE_VERSION
+              value: "v1.0.0"
+            - name: CONF
+              value: "/app/configs/config.yaml"
+          ports:
+            - containerPort: 8108
+            - containerPort: 9108
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: config
+          configMap:
+            name: service-configs
+            items:
+              - key: admin-config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+  namespace: mining-platform
+spec:
+  selector:
+    app: admin-service
+  ports:
+    - port: 8108
+      targetPort: 8108
+      name: http
+    - port: 9108
+      targetPort: 9108
+      name: grpc

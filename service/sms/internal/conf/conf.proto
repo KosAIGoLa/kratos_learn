@@ -10,6 +10,7 @@ message Bootstrap {
   Data data = 2;
   Sms sms = 3;
   Registry registry = 4;
+  Trace trace = 5;
 }
 
 message Server {
@@ -77,4 +78,9 @@ message Registry {
     google.protobuf.Duration dial_timeout = 2;
   }
   Etcd etcd = 1;
+}
+
+message Trace {
+  string endpoint = 1;
+  float sample_rate = 2;
 }

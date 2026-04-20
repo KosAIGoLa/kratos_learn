@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-service
+  namespace: mining-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-service
+  template:
+    metadata:
+      labels:
+        app: mail-service
+    spec:
+      containers:
+        - name: mail-service
+          image: mail-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVICE_NAME
+              value: "mail"
+            - name: SERVICE_VERSION
+              value: "v1.0.0"
+            - name: CONF
+              value: "/app/configs/config.yaml"
+          ports:
+            - containerPort: 8109
+            - containerPort: 9109
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: config
+          configMap:
+            name: service-configs
+            items:
+              - key: mail-config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-service
+  namespace: mining-platform
+spec:
+  selector:
+    app: mail-service
+  ports:
+    - port: 8109
+      targetPort: 8109
+      name: http
+    - port: 9109
+      targetPort: 9109
+      name: grpc

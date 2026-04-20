@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content-service
+  namespace: mining-platform
+  labels:
+    app: content-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: content-service
+  template:
+    metadata:
+      labels:
+        app: content-service
+    spec:
+      containers:
+        - name: content-service
+          image: content-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVICE_NAME
+              value: "content"
+            - name: SERVICE_VERSION
+              value: "v1.0.0"
+            - name: CONF
+              value: "/app/configs/config.yaml"
+          ports:
+            - name: http
+              containerPort: 8101
+            - name: grpc
+              containerPort: 9101
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /q/health
+              port: 8101
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /q/health
+              port: 8101
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: service-configs
+            items:
+              - key: content-config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: content-service
+  namespace: mining-platform
+spec:
+  selector:
+    app: content-service
+  ports:
+    - name: http
+      port: 8101
+      targetPort: 8101
+    - name: grpc
+      port: 9101
+      targetPort: 9101
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: content-service-ingress
+  namespace: mining-platform
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: content.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: content-service
+                port:
+                  number: 8101

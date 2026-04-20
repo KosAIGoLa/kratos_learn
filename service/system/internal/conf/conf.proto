@@ -8,6 +8,7 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
+  Trace trace = 3;
 }
 
 message Server {
@@ -51,4 +52,9 @@ message Data {
   Database database = 1;
   Redis redis = 2;
   MongoDB mongodb = 3;
+}
+
+message Trace {
+  string endpoint = 1;
+  float sample_rate = 2;
 }

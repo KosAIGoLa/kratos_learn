@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sms-service
+  namespace: mining-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sms-service
+  template:
+    metadata:
+      labels:
+        app: sms-service
+    spec:
+      containers:
+        - name: sms-service
+          image: sms-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVICE_NAME
+              value: "sms"
+            - name: SERVICE_VERSION
+              value: "v1.0.0"
+            - name: CONF
+              value: "/app/configs/config.yaml"
+          ports:
+            - containerPort: 8110
+            - containerPort: 9110
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: config
+          configMap:
+            name: service-configs
+            items:
+              - key: sms-config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sms-service
+  namespace: mining-platform
+spec:
+  selector:
+    app: sms-service
+  ports:
+    - port: 8110
+      targetPort: 8110
+      name: http
+    - port: 9110
+      targetPort: 9110
+      name: grpc

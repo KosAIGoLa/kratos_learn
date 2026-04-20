@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: mining-platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SERVICE_NAME
+              value: "user"
+            - name: SERVICE_VERSION
+              value: "v1.0.0"
+            - name: CONF
+              value: "/app/configs/config.yaml"
+          ports:
+            - containerPort: 8107
+            - containerPort: 9107
+          volumeMounts:
+            - name: config
+              mountPath: /app/configs
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+      volumes:
+        - name: config
+          configMap:
+            name: service-configs
+            items:
+              - key: user-config.yaml
+                path: config.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: mining-platform
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8107
+      targetPort: 8107
+      name: http
+    - port: 9107
+      targetPort: 9107
+      name: grpc

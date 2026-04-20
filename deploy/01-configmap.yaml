@@ -1,0 +1,278 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-configs
+  namespace: mining-platform
+data:
+  # Content Service Config
+  content-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8101
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9101
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # User Service Config
+  user-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8107
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9107
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    jwt:
+      secret: "your-secret-key-change-in-production"
+      access_token_expire: 86400s
+      refresh_token_expire: 604800s
+    registry:
+      etcd:
+        endpoints:
+          - etcd:2379
+        dial_timeout: 5s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Finance Service Config
+  finance-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8102
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9102
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+        dial_timeout: 0.2s
+      rabbitmq:
+        addr: amqp://guest:guest@rabbitmq:5672/
+        exchange: finance.exchange
+        queue: withdrawal.queue
+        routing_key: withdrawal
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Order Service Config
+  order-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8103
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9103
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Payment Service Config
+  payment-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8104
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9104
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Product Service Config
+  product-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8105
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9105
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # System Service Config
+  system-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8106
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9106
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+      mongodb:
+        uri: mongodb://admin:secret123@mongodb:27017
+        database: system_logs
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Admin Service Config
+  admin-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8108
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9108
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    jwt:
+      secret: "your-admin-secret-key-change-in-production"
+      access_token_expire: 86400s
+      refresh_token_expire: 604800s
+    registry:
+      etcd:
+        endpoints:
+          - etcd:2379
+        dial_timeout: 5s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Mail Service Config
+  mail-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8109
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9109
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    email:
+      smtp:
+        host: smtp.gmail.com
+        port: 587
+        username: your-email@gmail.com
+        password: your-password
+        use_tls: true
+        use_ssl: false
+        timeout: 30s
+        from: noreply@example.com
+        from_name: Mail Service
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # SMS Service Config
+  sms-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8110
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9110
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    sms:
+      default_provider: console
+      retry_times: 2
+      enable_log: true
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0
+
+  # Cron Service Config
+  cron-config.yaml: |
+    server:
+      http:
+        addr: 0.0.0.0:8111
+        timeout: 1s
+      grpc:
+        addr: 0.0.0.0:9111
+        timeout: 1s
+    data:
+      database:
+        driver: mysql
+        source: root:root123@tcp(mysql:3306)/msgame?parseTime=True&loc=Local
+      redis:
+        addr: redis:6379
+        read_timeout: 0.2s
+        write_timeout: 0.2s
+    trace:
+      endpoint: http://jaeger:14268/api/traces
+      sample_rate: 1.0

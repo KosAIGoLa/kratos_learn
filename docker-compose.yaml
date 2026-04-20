@@ -1,0 +1,346 @@
+version: '3.8'
+
+services:
+  # Infrastructure
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: msgame
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - microservices
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - microservices
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - microservices
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservices
+
+  etcd:
+    image: bitnami/etcd:3.5
+    container_name: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    volumes:
+      - etcd_data:/bitnami/etcd
+    networks:
+      - microservices
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.50
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - microservices
+
+  # Microservices
+  content-service:
+    build:
+      context: ./service/content
+      dockerfile: Dockerfile
+    container_name: content-service
+    environment:
+      - SERVICE_NAME=content
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8101:8101"
+      - "9101:9101"
+    volumes:
+      - ./service/content/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  finance-service:
+    build:
+      context: ./service/finance
+      dockerfile: Dockerfile
+    container_name: finance-service
+    environment:
+      - SERVICE_NAME=finance
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8102:8102"
+      - "9102:9102"
+    volumes:
+      - ./service/finance/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - rabbitmq
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./service/order
+      dockerfile: Dockerfile
+    container_name: order-service
+    environment:
+      - SERVICE_NAME=order
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8103:8103"
+      - "9103:9103"
+    volumes:
+      - ./service/order/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./service/payment
+      dockerfile: Dockerfile
+    container_name: payment-service
+    environment:
+      - SERVICE_NAME=payment
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8104:8104"
+      - "9104:9104"
+    volumes:
+      - ./service/payment/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: ./service/product
+      dockerfile: Dockerfile
+    container_name: product-service
+    environment:
+      - SERVICE_NAME=product
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8105:8105"
+      - "9105:9105"
+    volumes:
+      - ./service/product/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  system-service:
+    build:
+      context: ./service/system
+      dockerfile: Dockerfile
+    container_name: system-service
+    environment:
+      - SERVICE_NAME=system
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8106:8106"
+      - "9106:9106"
+    volumes:
+      - ./service/system/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - mongodb
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./service/user
+      dockerfile: Dockerfile
+    container_name: user-service
+    environment:
+      - SERVICE_NAME=user
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8107:8107"
+      - "9107:9107"
+    volumes:
+      - ./service/user/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  admin-service:
+    build:
+      context: ./service/admin
+      dockerfile: Dockerfile
+    container_name: admin-service
+    environment:
+      - SERVICE_NAME=admin
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8108:8108"
+      - "9108:9108"
+    volumes:
+      - ./service/admin/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  mail-service:
+    build:
+      context: ./service/mail
+      dockerfile: Dockerfile
+    container_name: mail-service
+    environment:
+      - SERVICE_NAME=mail
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8109:8109"
+      - "9109:9109"
+    volumes:
+      - ./service/mail/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  sms-service:
+    build:
+      context: ./service/sms
+      dockerfile: Dockerfile
+    container_name: sms-service
+    environment:
+      - SERVICE_NAME=sms
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8110:8110"
+      - "9110:9110"
+    volumes:
+      - ./service/sms/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+  cron-service:
+    build:
+      context: ./service/cron
+      dockerfile: Dockerfile
+    container_name: cron-service
+    environment:
+      - SERVICE_NAME=cron
+      - SERVICE_VERSION=v1.0.0
+      - CONF=/app/configs/config.yaml
+    ports:
+      - "8111:8111"
+      - "9111:9111"
+    volumes:
+      - ./service/cron/configs:/app/configs
+    depends_on:
+      - mysql
+      - redis
+      - etcd
+    networks:
+      - microservices
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
+  mongodb_data:
+  rabbitmq_data:
+  etcd_data:
+
+networks:
+  microservices:
+    driver: bridge

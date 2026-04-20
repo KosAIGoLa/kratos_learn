@@ -1,0 +1,57 @@
+# 多階段構建範例
+# 複製此文件到每個服務目錄並修改相關配置
+
+# 構建階段
+FROM golang:1.21-alpine AS builder
+
+# 安裝構建依賴
+RUN apk add --no-cache git
+
+# 設置工作目錄
+WORKDIR /app
+
+# 複製 go mod 文件並下載依賴
+COPY go.mod go.sum ./
+RUN go mod download
+
+# 複製源碼
+COPY . .
+
+# 構建可執行文件
+# 注意: 修改 cmd/*/main.go 中的路徑匹配您的服務
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o server ./cmd/*/main.go
+
+# 運行階段
+FROM alpine:latest
+
+# 安裝 CA 證書
+RUN apk --no-cache add ca-certificates
+
+# 創建非 root 用戶
+RUN addgroup -g 1000 -S appgroup && \
+    adduser -u 1000 -S appuser -G appgroup
+
+# 設置工作目錄
+WORKDIR /app
+
+# 從構建階段複製可執行文件
+COPY --from=builder /app/server .
+
+# 創建配置目錄
+RUN mkdir -p /app/configs
+
+# 設置權限
+RUN chown -R appuser:appgroup /app
+
+# 切換到非 root 用戶
+USER appuser
+
+# 暴露端口 (修改為您服務的端口)
+EXPOSE 8101 9101
+
+# 健康檢查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8101/q/health || exit 1
+
+# 啟動命令
+CMD ["./server", "-conf", "/app/configs"]
