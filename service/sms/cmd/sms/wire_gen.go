@@ -24,13 +24,14 @@ import (
 
 // wireApp init kratos application.
 func wireApp(confServer *conf.Server, confData *conf.Data, sms *conf.Sms, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData)
+	dataData, cleanup, err := data.NewData(confData, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	smsRepo := data.NewSmsRepo(dataData, logger)
 	smsUsecase, err := biz.NewSmsUsecase(smsRepo, sms, logger)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	smsService := service.NewSmsService(smsUsecase, logger)
