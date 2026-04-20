@@ -4,7 +4,7 @@ ARG GOPROXY=https://proxy.golang.org,direct
 ENV GOPROXY=${GOPROXY}
 
 COPY . /src
-WORKDIR /src
+WORKDIR /src/service/admin
 
 RUN go env GOMOD && test -f internal/pkg/jwt/jwt.go && make build
 
@@ -16,12 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && rm -rf /var/lib/apt/lists/ \
         && apt-get autoremove -y && apt-get autoclean -y
 
-COPY --from=builder /src/bin /app
+COPY --from=builder /src/service/admin/bin /app
 
 WORKDIR /app
 
-EXPOSE 8000
-EXPOSE 9000
+EXPOSE 8108
+EXPOSE 9108
 VOLUME /data/conf
 
 CMD ["./admin", "-conf", "/data/conf"]
