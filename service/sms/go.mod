@@ -1,6 +1,6 @@
 module sms
 
-go 1.25.0
+go 1.26.2
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.3.0
