@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"user/internal/biz"
 )
@@ -122,12 +123,30 @@ func (r *userRepo) DeleteUser(ctx context.Context, id uint32) error {
 	return nil
 }
 
-// UpdateWorkPoints 更新用户工分（增加）
+// UpdateWorkPoints 更新用户工分（增加）- 使用事务和行锁
 func (r *userRepo) UpdateWorkPoints(ctx context.Context, userID uint32, points float64) error {
-	if err := r.data.db.Model(&User{}).Where("id = ?", userID).UpdateColumn("work_points", gorm.Expr("work_points + ?", points)).Error; err != nil {
-		return status.Errorf(codes.Internal, "更新工分失败: %s", err.Error())
-	}
-	return nil
+	return r.data.db.Transaction(func(tx *gorm.DB) error {
+		// 1. 查询用户并加行锁 (FOR UPDATE)
+		var user User
+		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("id = ?", userID).
+			First(&user).Error
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return status.Errorf(codes.NotFound, "用户不存在: %d", userID)
+			}
+			return status.Errorf(codes.Internal, "查询用户失败: %s", err.Error())
+		}
+
+		// 2. 更新工分（原子增加）
+		user.WorkPoints += points
+		if err := tx.Save(&user).Error; err != nil {
+			return status.Errorf(codes.Internal, "更新工分失败: %s", err.Error())
+		}
+
+		r.log.Infof("工分更新成功: user_id=%d, added=%.2f, new_total=%.2f", userID, points, user.WorkPoints)
+		return nil
+	})
 }
 
 func (r *userRepo) toBizUser(u *User) *biz.User {
