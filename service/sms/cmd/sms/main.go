@@ -66,7 +66,11 @@ func main() {
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			_, _ = os.Stderr.WriteString("failed to close config: " + err.Error() + "\n")
+		}
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -81,10 +85,14 @@ func main() {
 	if bc.Trace != nil && bc.Trace.Endpoint != "" {
 		tracerCleanup, err := tracing.InitTracer(bc.Trace.Endpoint, Name, float64(bc.Trace.SampleRate))
 		if err != nil {
-			logger.Log(log.LevelWarn, "msg", "failed to init tracer", "err", err)
+			if logErr := logger.Log(log.LevelWarn, "msg", "failed to init tracer", "err", err); logErr != nil {
+				_, _ = os.Stderr.WriteString("failed to write warn log: " + logErr.Error() + "\n")
+			}
 		} else {
 			defer tracerCleanup()
-			logger.Log(log.LevelInfo, "msg", "tracer initialized", "endpoint", bc.Trace.Endpoint)
+			if logErr := logger.Log(log.LevelInfo, "msg", "tracer initialized", "endpoint", bc.Trace.Endpoint); logErr != nil {
+				_, _ = os.Stderr.WriteString("failed to write info log: " + logErr.Error() + "\n")
+			}
 		}
 	}
 

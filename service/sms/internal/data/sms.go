@@ -125,7 +125,9 @@ func (r *smsRepo) ListLogs(ctx context.Context, phone, status, providerId string
 func (r *smsRepo) toBizLog(model *SmsLogModel) *biz.SmsLog {
 	// 反序列化模板参数
 	var params map[string]string
-	json.Unmarshal([]byte(model.TemplateParams), &params)
+	if err := json.Unmarshal([]byte(model.TemplateParams), &params); err != nil {
+		r.log.Warnf("failed to unmarshal template params for sms log %s: %v", model.ID, err)
+	}
 
 	return &biz.SmsLog{
 		ID:                model.ID,

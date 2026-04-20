@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -106,7 +107,9 @@ func (p *TwilioProvider) SendSms(ctx context.Context, req *SendRequest) (*SendRe
 			ErrorMessage: err.Error(),
 		}, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	// 解析响应
 	var result struct {
@@ -158,7 +161,10 @@ func (f *TwilioProviderFactory) CreateProvider(config map[string]string) (SmsPro
 	// 解析优先级
 	priority := int32(0)
 	if p := config["priority"]; p != "" {
-		fmt.Sscanf(p, "%d", &priority)
+		parsed, err := strconv.ParseInt(p, 10, 32)
+		if err == nil {
+			priority = int32(parsed)
+		}
 	}
 
 	// 解析启用状态

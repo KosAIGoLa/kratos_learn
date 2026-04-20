@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/smtp"
 	"net/textproto"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,6 +42,12 @@ type SMTPConfig struct {
 type SMTPSender struct {
 	config *SMTPConfig
 	logger *log.Helper
+}
+
+func (s *SMTPSender) logCloseError(name string, err error) {
+	if err != nil {
+		s.logger.Warnf("Failed to close %s: %v", name, err)
+	}
 }
 
 // NewSMTPSender creates a new SMTP sender
@@ -195,7 +202,9 @@ func (s *SMTPSender) buildEmailContent(email *Email, from, fromName string, atta
 	if err != nil {
 		return nil, err
 	}
-	qpWriter.Close()
+	if err := qpWriter.Close(); err != nil {
+		return nil, err
+	}
 
 	// Attachments
 	for _, att := range attachments {
@@ -214,7 +223,9 @@ func (s *SMTPSender) buildEmailContent(email *Email, from, fromName string, atta
 		}
 	}
 
-	writer.Close()
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
 	return buf.Bytes(), nil
 }
 
@@ -244,14 +255,16 @@ func (s *SMTPSender) sendWithRetry(ctx context.Context, to string, content []byt
 
 // sendSMTP performs the actual SMTP sending
 func (s *SMTPSender) sendSMTP(to string, content []byte) error {
-	addr := fmt.Sprintf("%s:%d", s.config.Host, s.config.Port)
+	addr := net.JoinHostPort(s.config.Host, strconv.Itoa(s.config.Port))
 
 	// Connect
 	conn, err := net.DialTimeout("tcp", addr, s.config.Timeout)
 	if err != nil {
 		return fmt.Errorf("failed to connect to SMTP server: %w", err)
 	}
-	defer conn.Close()
+	defer func() {
+		s.logCloseError("smtp connection", conn.Close())
+	}()
 
 	// TLS
 	if s.config.UseTLS {
@@ -271,7 +284,9 @@ func (s *SMTPSender) sendSMTP(to string, content []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to create SMTP client: %w", err)
 	}
-	defer client.Close()
+	defer func() {
+		s.logCloseError("smtp client", client.Close())
+	}()
 
 	// Auth
 	if s.config.Username != "" && s.config.Password != "" {
@@ -299,7 +314,9 @@ func (s *SMTPSender) sendSMTP(to string, content []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to write content: %w", err)
 	}
-	w.Close()
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("failed to finalize message body: %w", err)
+	}
 
 	return client.Quit()
 }
@@ -320,8 +337,12 @@ func encodeSubject(subject string) string {
 
 	var buf bytes.Buffer
 	qpWriter := quotedprintable.NewWriter(&buf)
-	qpWriter.Write([]byte(subject))
-	qpWriter.Close()
+	if _, err := qpWriter.Write([]byte(subject)); err != nil {
+		return subject
+	}
+	if err := qpWriter.Close(); err != nil {
+		return subject
+	}
 	return fmt.Sprintf("=?UTF-8?q?%s?=", strings.ReplaceAll(buf.String(), " ", "_"))
 }
 

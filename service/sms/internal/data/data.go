@@ -37,7 +37,9 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		log.Info("closing the data resources")
 		sqlDB, _ := db.DB()
 		if sqlDB != nil {
-			sqlDB.Close()
+			if err := sqlDB.Close(); err != nil {
+				log.Errorf("failed to close sql db: %v", err)
+			}
 		}
 	}
 

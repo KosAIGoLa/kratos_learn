@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -127,7 +128,9 @@ func (p *AliyunProvider) SendSms(ctx context.Context, req *SendRequest) (*SendRe
 			ErrorMessage: err.Error(),
 		}, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	// 读取响应
 	body, err := io.ReadAll(resp.Body)
@@ -234,7 +237,10 @@ func (f *AliyunProviderFactory) CreateProvider(config map[string]string) (SmsPro
 	// 解析优先级
 	priority := int32(0)
 	if p := config["priority"]; p != "" {
-		fmt.Sscanf(p, "%d", &priority)
+		parsed, err := strconv.ParseInt(p, 10, 32)
+		if err == nil {
+			priority = int32(parsed)
+		}
 	}
 
 	// 解析启用状态

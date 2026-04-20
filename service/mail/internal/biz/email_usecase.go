@@ -59,7 +59,9 @@ func (uc *EmailUsecase) SendEmail(ctx context.Context, email *Email, opts *SendO
 		email.Status = EmailStatusFailed
 		email.ErrorMsg = err.Error()
 		email.UpdatedAt = time.Now()
-		uc.repo.Update(ctx, email)
+		if updateErr := uc.repo.Update(ctx, email); updateErr != nil {
+			uc.logger.Errorf("Failed to persist failed email status for %s: %v", email.MessageID, updateErr)
+		}
 		return email.MessageID, fmt.Errorf("failed to send email: %w", err)
 	}
 
@@ -146,12 +148,10 @@ func (uc *EmailUsecase) ApplyTemplate(ctx context.Context, templateID string, da
 	}
 
 	// Simple variable substitution
-	if data != nil {
-		for key, value := range data {
-			placeholder := fmt.Sprintf("{{%s}}", key)
-			template.Content = replaceAll(template.Content, placeholder, value)
-			template.Subject = replaceAll(template.Subject, placeholder, value)
-		}
+	for key, value := range data {
+		placeholder := fmt.Sprintf("{{%s}}", key)
+		template.Content = replaceAll(template.Content, placeholder, value)
+		template.Subject = replaceAll(template.Subject, placeholder, value)
 	}
 
 	return template, nil
