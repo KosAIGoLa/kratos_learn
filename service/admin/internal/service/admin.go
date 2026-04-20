@@ -5,6 +5,7 @@ import (
 
 	v1 "admin/api/admin/v1"
 	"admin/internal/biz"
+	"admin/internal/pkg/captcha"
 	"admin/internal/pkg/jwt"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -14,28 +15,46 @@ import (
 // AdminService 管理服务
 type AdminService struct {
 	v1.UnimplementedAdminServer
-	adminUC    *biz.AdminUsecase
-	menuUC     *biz.MenuUsecase
-	roleUC     *biz.RoleUsecase
-	adminLogUC *biz.AdminLogUsecase
-	jwtManager *jwt.JWTManager
-	log        *log.Helper
+	adminUC        *biz.AdminUsecase
+	menuUC         *biz.MenuUsecase
+	roleUC         *biz.RoleUsecase
+	adminLogUC     *biz.AdminLogUsecase
+	jwtManager     *jwt.JWTManager
+	captchaManager *captcha.CaptchaManager
+	log            *log.Helper
 }
 
 // NewAdminService 创建管理服务
-func NewAdminService(adminUC *biz.AdminUsecase, menuUC *biz.MenuUsecase, roleUC *biz.RoleUsecase, adminLogUC *biz.AdminLogUsecase, jwtManager *jwt.JWTManager, logger log.Logger) *AdminService {
+func NewAdminService(adminUC *biz.AdminUsecase, menuUC *biz.MenuUsecase, roleUC *biz.RoleUsecase, adminLogUC *biz.AdminLogUsecase, jwtManager *jwt.JWTManager, captchaManager *captcha.CaptchaManager, logger log.Logger) *AdminService {
 	return &AdminService{
-		adminUC:    adminUC,
-		menuUC:     menuUC,
-		roleUC:     roleUC,
-		adminLogUC: adminLogUC,
-		jwtManager: jwtManager,
-		log:        log.NewHelper(logger),
+		adminUC:        adminUC,
+		menuUC:         menuUC,
+		roleUC:         roleUC,
+		adminLogUC:     adminLogUC,
+		jwtManager:     jwtManager,
+		captchaManager: captchaManager,
+		log:            log.NewHelper(logger),
 	}
+}
+
+// GetCaptcha 获取验证码
+func (s *AdminService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest) (*v1.GetCaptchaResponse, error) {
+	id, b64s, err := s.captchaManager.Generate()
+	if err != nil {
+		return nil, errors.New(500, "CAPTCHA_GENERATE_FAILED", "验证码生成失败")
+	}
+	return &v1.GetCaptchaResponse{
+		CaptchaId:    id,
+		CaptchaImage: b64s,
+	}, nil
 }
 
 // Login 管理员登录
 func (s *AdminService) Login(ctx context.Context, req *v1.AdminLoginRequest) (*v1.AdminLoginResponse, error) {
+	if !s.captchaManager.Verify(req.CaptchaId, req.CaptchaCode, true) {
+		return nil, errors.New(400, "CAPTCHA_VERIFY_FAILED", "验证码错误")
+	}
+
 	admin, err := s.adminUC.AdminLogin(ctx, req.Username, req.Password)
 	if err != nil {
 		return nil, errors.New(400, "LOGIN_FAILED", "用户名或密码错误")

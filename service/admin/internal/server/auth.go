@@ -20,7 +20,8 @@ const (
 )
 
 var publicOperations = map[string]struct{}{
-	v1.OperationAdminLogin: {},
+	v1.OperationAdminGetCaptcha: {},
+	v1.OperationAdminLogin:      {},
 }
 
 // JWTAuth JWT 认证中间件

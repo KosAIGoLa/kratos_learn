@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.8.0
 // - protoc             v7.34.1
-// source: api/admin/v1/admin.proto
+// source: admin/v1/admin.proto
 
 package v1
 
@@ -26,6 +26,7 @@ const OperationAdminDeleteAdmin = "/admin.v1.Admin/DeleteAdmin"
 const OperationAdminDeleteMenu = "/admin.v1.Admin/DeleteMenu"
 const OperationAdminDeleteRole = "/admin.v1.Admin/DeleteRole"
 const OperationAdminGetAdmin = "/admin.v1.Admin/GetAdmin"
+const OperationAdminGetCaptcha = "/admin.v1.Admin/GetCaptcha"
 const OperationAdminGetMenu = "/admin.v1.Admin/GetMenu"
 const OperationAdminGetRole = "/admin.v1.Admin/GetRole"
 const OperationAdminListAdminLogs = "/admin.v1.Admin/ListAdminLogs"
@@ -48,6 +49,8 @@ type AdminHTTPServer interface {
 	DeleteMenu(context.Context, *DeleteMenuRequest) (*DeleteMenuResponse, error)
 	DeleteRole(context.Context, *DeleteRoleRequest) (*DeleteRoleResponse, error)
 	GetAdmin(context.Context, *GetAdminRequest) (*AdminInfo, error)
+	// GetCaptcha 登录相关
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	GetMenu(context.Context, *GetMenuRequest) (*MenuInfo, error)
 	GetRole(context.Context, *GetRoleRequest) (*RoleInfo, error)
 	// ListAdminLogs 日志管理
@@ -55,7 +58,6 @@ type AdminHTTPServer interface {
 	ListAdmins(context.Context, *ListAdminsRequest) (*ListAdminsResponse, error)
 	ListMenus(context.Context, *ListMenusRequest) (*ListMenusResponse, error)
 	ListRoles(context.Context, *ListRolesRequest) (*ListRolesResponse, error)
-	// Login 登录相关
 	Login(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	UpdateAdmin(context.Context, *UpdateAdminRequest) (*AdminInfo, error)
 	UpdateMenu(context.Context, *UpdateMenuRequest) (*MenuInfo, error)
@@ -64,6 +66,7 @@ type AdminHTTPServer interface {
 
 func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r := s.Route("/")
+	r.GET("/api/v1/admin/captcha", _Admin_GetCaptcha0_HTTP_Handler(srv))
 	r.POST("/api/v1/admin/login", _Admin_Login0_HTTP_Handler(srv))
 	r.POST("/api/v1/admin/admins", _Admin_CreateAdmin0_HTTP_Handler(srv))
 	r.GET("/api/v1/admin/admins/{id}", _Admin_GetAdmin0_HTTP_Handler(srv))
@@ -81,6 +84,25 @@ func RegisterAdminHTTPServer(s *http.Server, srv AdminHTTPServer) {
 	r.DELETE("/api/v1/admin/roles/{id}", _Admin_DeleteRole0_HTTP_Handler(srv))
 	r.GET("/api/v1/admin/roles", _Admin_ListRoles0_HTTP_Handler(srv))
 	r.GET("/api/v1/admin/logs", _Admin_ListAdminLogs0_HTTP_Handler(srv))
+}
+
+func _Admin_GetCaptcha0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetCaptchaRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAdminGetCaptcha)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetCaptcha(ctx, req.(*GetCaptchaRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetCaptchaResponse)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _Admin_Login0_HTTP_Handler(srv AdminHTTPServer) func(ctx http.Context) error {
@@ -462,6 +484,7 @@ type AdminHTTPClient interface {
 	DeleteMenu(ctx context.Context, req *DeleteMenuRequest, opts ...http.CallOption) (rsp *DeleteMenuResponse, err error)
 	DeleteRole(ctx context.Context, req *DeleteRoleRequest, opts ...http.CallOption) (rsp *DeleteRoleResponse, err error)
 	GetAdmin(ctx context.Context, req *GetAdminRequest, opts ...http.CallOption) (rsp *AdminInfo, err error)
+	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *GetCaptchaResponse, err error)
 	GetMenu(ctx context.Context, req *GetMenuRequest, opts ...http.CallOption) (rsp *MenuInfo, err error)
 	GetRole(ctx context.Context, req *GetRoleRequest, opts ...http.CallOption) (rsp *RoleInfo, err error)
 	ListAdminLogs(ctx context.Context, req *ListAdminLogsRequest, opts ...http.CallOption) (rsp *ListAdminLogsResponse, err error)
@@ -565,6 +588,19 @@ func (c *AdminHTTPClientImpl) GetAdmin(ctx context.Context, in *GetAdminRequest,
 	pattern := "/api/v1/admin/admins/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationAdminGetAdmin))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *AdminHTTPClientImpl) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...http.CallOption) (*GetCaptchaResponse, error) {
+	var out GetCaptchaResponse
+	pattern := "/api/v1/admin/captcha"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationAdminGetCaptcha))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {

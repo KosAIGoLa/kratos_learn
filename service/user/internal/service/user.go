@@ -5,6 +5,7 @@ import (
 
 	v1 "user/api/user/v1"
 	"user/internal/biz"
+	"user/internal/pkg/captcha"
 	"user/internal/pkg/jwt"
 
 	"github.com/go-kratos/kratos/v2/errors"
@@ -14,17 +15,19 @@ import (
 // UserService 用户服务
 type UserService struct {
 	v1.UnimplementedUserServer
-	uc         *biz.UserUsecase
-	jwtManager *jwt.JWTManager
-	log        *log.Helper
+	uc             *biz.UserUsecase
+	jwtManager     *jwt.JWTManager
+	captchaManager *captcha.CaptchaManager
+	log            *log.Helper
 }
 
 // NewUserService 创建用户服务
-func NewUserService(uc *biz.UserUsecase, jwtManager *jwt.JWTManager, logger log.Logger) *UserService {
+func NewUserService(uc *biz.UserUsecase, jwtManager *jwt.JWTManager, captchaManager *captcha.CaptchaManager, logger log.Logger) *UserService {
 	return &UserService{
-		uc:         uc,
-		jwtManager: jwtManager,
-		log:        log.NewHelper(logger),
+		uc:             uc,
+		jwtManager:     jwtManager,
+		captchaManager: captchaManager,
+		log:            log.NewHelper(logger),
 	}
 }
 
@@ -73,8 +76,24 @@ func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v
 	}, nil
 }
 
+// GetCaptcha 获取验证码
+func (s *UserService) GetCaptcha(ctx context.Context, req *v1.GetCaptchaRequest) (*v1.GetCaptchaResponse, error) {
+	id, b64s, err := s.captchaManager.Generate()
+	if err != nil {
+		return nil, errors.New(500, "CAPTCHA_GENERATE_FAILED", "验证码生成失败")
+	}
+	return &v1.GetCaptchaResponse{
+		CaptchaId:    id,
+		CaptchaImage: b64s,
+	}, nil
+}
+
 // Login 用户登录
 func (s *UserService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginResponse, error) {
+	if !s.captchaManager.Verify(req.CaptchaId, req.CaptchaCode, true) {
+		return nil, errors.New(400, "CAPTCHA_VERIFY_FAILED", "验证码错误")
+	}
+
 	user, err := s.uc.GetUserByPhone(ctx, req.Phone)
 	if err != nil {
 		return nil, err

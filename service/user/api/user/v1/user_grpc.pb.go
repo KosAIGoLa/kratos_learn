@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	User_GetCaptcha_FullMethodName      = "/user.v1.User/GetCaptcha"
 	User_Register_FullMethodName        = "/user.v1.User/Register"
 	User_Login_FullMethodName           = "/user.v1.User/Login"
 	User_RefreshToken_FullMethodName    = "/user.v1.User/RefreshToken"
@@ -35,6 +36,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
+	GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...grpc.CallOption) (*GetCaptchaResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*LoginResponse, error)
@@ -53,6 +55,16 @@ type userClient struct {
 
 func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
+}
+
+func (c *userClient) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...grpc.CallOption) (*GetCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCaptchaResponse)
+	err := c.cc.Invoke(ctx, User_GetCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
@@ -159,6 +171,7 @@ func (c *userClient) GetTeamMembers(ctx context.Context, in *GetTeamMembersReque
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	Register(context.Context, *RegisterRequest) (*LoginResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	RefreshToken(context.Context, *RefreshTokenRequest) (*LoginResponse, error)
@@ -179,6 +192,9 @@ type UserServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServer struct{}
 
+func (UnimplementedUserServer) GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCaptcha not implemented")
+}
 func (UnimplementedUserServer) Register(context.Context, *RegisterRequest) (*LoginResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
 }
@@ -228,6 +244,24 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&User_ServiceDesc, srv)
+}
+
+func _User_GetCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCaptchaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetCaptcha(ctx, req.(*GetCaptchaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _User_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -417,6 +451,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "user.v1.User",
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetCaptcha",
+			Handler:    _User_GetCaptcha_Handler,
+		},
 		{
 			MethodName: "Register",
 			Handler:    _User_Register_Handler,

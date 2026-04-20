@@ -21,6 +21,7 @@ const (
 )
 
 var publicOperations = map[string]struct{}{
+	v1.OperationUserGetCaptcha:   {},
 	v1.OperationUserRegister:     {},
 	v1.OperationUserLogin:        {},
 	v1.OperationUserRefreshToken: {},

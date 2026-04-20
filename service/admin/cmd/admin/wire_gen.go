@@ -23,23 +23,24 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, jwtConf *conf.Jwt, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, jwt *conf.Jwt, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	dataData, cleanup, err := data.NewData(confData, logger, db)
 	if err != nil {
 		return nil, nil, err
 	}
 	adminRepo := data.NewAdminRepo(dataData, logger)
-	menuRepo := data.NewMenuRepo(dataData, logger)
 	roleRepo := data.NewRoleRepo(dataData, logger)
 	adminRoleRepo := data.NewAdminRoleRepo(dataData, logger)
-	adminLogRepo := data.NewAdminLogRepo(dataData, logger)
 	adminUsecase := biz.NewAdminUsecase(adminRepo, roleRepo, adminRoleRepo, logger)
+	menuRepo := data.NewMenuRepo(dataData, logger)
 	menuUsecase := biz.NewMenuUsecase(menuRepo, logger)
 	roleUsecase := biz.NewRoleUsecase(roleRepo, menuRepo, adminRoleRepo, logger)
+	adminLogRepo := data.NewAdminLogRepo(dataData, logger)
 	adminLogUsecase := biz.NewAdminLogUsecase(adminLogRepo, logger)
-	jwtManager := service.NewJWTManagerProvider(jwtConf)
-	adminService := service.NewAdminService(adminUsecase, menuUsecase, roleUsecase, adminLogUsecase, jwtManager, logger)
+	jwtManager := service.NewJWTManagerProvider(jwt)
+	captchaManager := service.NewCaptchaManagerProvider()
+	adminService := service.NewAdminService(adminUsecase, menuUsecase, roleUsecase, adminLogUsecase, jwtManager, captchaManager, logger)
 	grpcServer := server.NewGRPCServer(confServer, adminService, jwtManager, logger)
 	httpServer := server.NewHTTPServer(confServer, adminService, jwtManager, logger)
 	app := newApp(logger, grpcServer, httpServer)

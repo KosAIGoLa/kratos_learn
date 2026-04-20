@@ -20,6 +20,7 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationUserDeleteUser = "/user.v1.User/DeleteUser"
+const OperationUserGetCaptcha = "/user.v1.User/GetCaptcha"
 const OperationUserGetKYC = "/user.v1.User/GetKYC"
 const OperationUserGetTeamMembers = "/user.v1.User/GetTeamMembers"
 const OperationUserGetTeamRelation = "/user.v1.User/GetTeamRelation"
@@ -32,6 +33,7 @@ const OperationUserUpdateUser = "/user.v1.User/UpdateUser"
 
 type UserHTTPServer interface {
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	GetKYC(context.Context, *GetKYCRequest) (*KYCInfo, error)
 	GetTeamMembers(context.Context, *GetTeamMembersRequest) (*TeamMembersResponse, error)
 	GetTeamRelation(context.Context, *GetTeamRequest) (*TeamRelationInfo, error)
@@ -45,6 +47,7 @@ type UserHTTPServer interface {
 
 func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r := s.Route("/")
+	r.GET("/api/v1/user/captcha", _User_GetCaptcha0_HTTP_Handler(srv))
 	r.POST("/api/v1/user/register", _User_Register0_HTTP_Handler(srv))
 	r.POST("/api/v1/user/login", _User_Login0_HTTP_Handler(srv))
 	r.POST("/api/v1/user/refresh-token", _User_RefreshToken0_HTTP_Handler(srv))
@@ -55,6 +58,25 @@ func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r.GET("/api/v1/user/kyc/{user_id}", _User_GetKYC0_HTTP_Handler(srv))
 	r.GET("/api/v1/user/team/{user_id}", _User_GetTeamRelation0_HTTP_Handler(srv))
 	r.GET("/api/v1/user/team/{user_id}/members", _User_GetTeamMembers0_HTTP_Handler(srv))
+}
+
+func _User_GetCaptcha0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in GetCaptchaRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserGetCaptcha)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetCaptcha(ctx, req.(*GetCaptchaRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*GetCaptchaResponse)
+		return ctx.Result(200, reply)
+	}
 }
 
 func _User_Register0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
@@ -282,6 +304,7 @@ func _User_GetTeamMembers0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Contex
 
 type UserHTTPClient interface {
 	DeleteUser(ctx context.Context, req *DeleteUserRequest, opts ...http.CallOption) (rsp *DeleteUserResponse, err error)
+	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *GetCaptchaResponse, err error)
 	GetKYC(ctx context.Context, req *GetKYCRequest, opts ...http.CallOption) (rsp *KYCInfo, err error)
 	GetTeamMembers(ctx context.Context, req *GetTeamMembersRequest, opts ...http.CallOption) (rsp *TeamMembersResponse, err error)
 	GetTeamRelation(ctx context.Context, req *GetTeamRequest, opts ...http.CallOption) (rsp *TeamRelationInfo, err error)
@@ -308,6 +331,19 @@ func (c *UserHTTPClientImpl) DeleteUser(ctx context.Context, in *DeleteUserReque
 	opts = append(opts, http.Operation(OperationUserDeleteUser))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserHTTPClientImpl) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...http.CallOption) (*GetCaptchaResponse, error) {
+	var out GetCaptchaResponse
+	pattern := "/api/v1/user/captcha"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserGetCaptcha))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

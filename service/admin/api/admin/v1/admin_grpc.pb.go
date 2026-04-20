@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: api/admin/v1/admin.proto
+// source: admin/v1/admin.proto
 
 package v1
 
@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	Admin_GetCaptcha_FullMethodName    = "/admin.v1.Admin/GetCaptcha"
 	Admin_Login_FullMethodName         = "/admin.v1.Admin/Login"
 	Admin_CreateAdmin_FullMethodName   = "/admin.v1.Admin/CreateAdmin"
 	Admin_GetAdmin_FullMethodName      = "/admin.v1.Admin/GetAdmin"
@@ -45,6 +46,7 @@ const (
 // AdminService 管理服务
 type AdminClient interface {
 	// 登录相关
+	GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...grpc.CallOption) (*GetCaptchaResponse, error)
 	Login(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	// 管理员管理
 	CreateAdmin(ctx context.Context, in *CreateAdminRequest, opts ...grpc.CallOption) (*AdminInfo, error)
@@ -74,6 +76,16 @@ type adminClient struct {
 
 func NewAdminClient(cc grpc.ClientConnInterface) AdminClient {
 	return &adminClient{cc}
+}
+
+func (c *adminClient) GetCaptcha(ctx context.Context, in *GetCaptchaRequest, opts ...grpc.CallOption) (*GetCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCaptchaResponse)
+	err := c.cc.Invoke(ctx, Admin_GetCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *adminClient) Login(ctx context.Context, in *AdminLoginRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error) {
@@ -253,6 +265,7 @@ func (c *adminClient) ListAdminLogs(ctx context.Context, in *ListAdminLogsReques
 // AdminService 管理服务
 type AdminServer interface {
 	// 登录相关
+	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	Login(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error)
 	// 管理员管理
 	CreateAdmin(context.Context, *CreateAdminRequest) (*AdminInfo, error)
@@ -284,6 +297,9 @@ type AdminServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAdminServer struct{}
 
+func (UnimplementedAdminServer) GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCaptcha not implemented")
+}
 func (UnimplementedAdminServer) Login(context.Context, *AdminLoginRequest) (*AdminLoginResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
 }
@@ -354,6 +370,24 @@ func RegisterAdminServer(s grpc.ServiceRegistrar, srv AdminServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&Admin_ServiceDesc, srv)
+}
+
+func _Admin_GetCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCaptchaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).GetCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Admin_GetCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).GetCaptcha(ctx, req.(*GetCaptchaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Admin_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -670,6 +704,10 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AdminServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetCaptcha",
+			Handler:    _Admin_GetCaptcha_Handler,
+		},
+		{
 			MethodName: "Login",
 			Handler:    _Admin_Login_Handler,
 		},
@@ -739,5 +777,5 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/admin/v1/admin.proto",
+	Metadata: "admin/v1/admin.proto",
 }

@@ -6,6 +6,18 @@ info:
     title: User API
     version: 0.0.1
 paths:
+    /api/v1/user/captcha:
+        get:
+            tags:
+                - User
+            operationId: User_GetCaptcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.GetCaptchaResponse'
     /api/v1/user/kyc:
         post:
             tags:
@@ -220,6 +232,13 @@ components:
                     type: boolean
                 message:
                     type: string
+        user.v1.GetCaptchaResponse:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                captchaImage:
+                    type: string
         user.v1.KYCInfo:
             type: object
             properties:
@@ -254,6 +273,10 @@ components:
                 phone:
                     type: string
                 password:
+                    type: string
+                captchaId:
+                    type: string
+                captchaCode:
                     type: string
         user.v1.LoginResponse:
             type: object

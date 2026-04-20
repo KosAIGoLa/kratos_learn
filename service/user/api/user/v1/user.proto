@@ -8,6 +8,11 @@ import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
 service User {
+  rpc GetCaptcha(GetCaptchaRequest) returns (GetCaptchaResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/user/captcha"
+    };
+  }
   rpc Register(RegisterRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/api/v1/user/register"
@@ -86,9 +91,18 @@ message RegisterRequest {
   string invite_code = 4;
 }
 
+message GetCaptchaRequest {}
+
+message GetCaptchaResponse {
+  string captcha_id = 1;
+  string captcha_image = 2;
+}
+
 message LoginRequest {
   string phone = 1;
   string password = 2;
+  string captcha_id = 3;
+  string captcha_code = 4;
 }
 
 message LoginResponse {
