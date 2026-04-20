@@ -647,3 +647,25 @@ CREATE TABLE IF NOT EXISTS `check_ins` (
     INDEX `idx_check_in_date` (`check_in_date`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='签到表';
+
+-- SMS 短信发送记录表
+CREATE TABLE IF NOT EXISTS `sms_logs` (
+    `id` VARCHAR(64) NOT NULL COMMENT '记录ID',
+    `phone` VARCHAR(20) NOT NULL COMMENT '手机号',
+    `template_code` VARCHAR(64) DEFAULT NULL COMMENT '短信模板代码',
+    `template_params` TEXT COMMENT '模板参数(JSON)',
+    `content` TEXT COMMENT '短信内容',
+    `provider_id` VARCHAR(64) NOT NULL COMMENT '服务商ID',
+    `provider_name` VARCHAR(128) DEFAULT NULL COMMENT '服务商名称',
+    `status` VARCHAR(20) NOT NULL COMMENT '状态: pending, sent, failed, delivered',
+    `provider_message_id` VARCHAR(128) DEFAULT NULL COMMENT '服务商返回的消息ID',
+    `error_message` TEXT COMMENT '错误信息',
+    `retry_count` INT DEFAULT 0 COMMENT '重试次数',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_phone` (`phone`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_provider_id` (`provider_id`),
+    INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='短信发送记录表';

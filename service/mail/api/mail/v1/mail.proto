@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package mail.v1;
+
+option go_package = "mail/api/mail/v1;v1";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+// Email message
+message Email {
+  string to = 1;
+  string subject = 2;
+  string body = 3;
+  string content_type = 4;  // text/plain, text/html
+  repeated Attachment attachments = 5;
+}
+
+// Email attachment
+message Attachment {
+  string filename = 1;
+  bytes content = 2;
+  string content_type = 3;
+}
+
+// SendEmailRequest
+message SendEmailRequest {
+  Email email = 1 [(validate.rules).message.required = true];
+  string template_id = 2;  // optional: use template
+  map<string, string> template_data = 3;  // template variables
+  string from = 4;  // sender email, optional
+  string from_name = 5;  // sender name, optional
+}
+
+// SendEmailResponse
+message SendEmailResponse {
+  string message_id = 1;
+  string status = 2;  // pending, sent, failed
+  google.protobuf.Timestamp created_at = 3;
+}
+
+// SendBatchEmailRequest
+message SendBatchEmailRequest {
+  repeated Email emails = 1 [(validate.rules).repeated.min_items = 1];
+  string template_id = 2;
+  map<string, string> template_data = 3;
+  string from = 4;
+  string from_name = 5;
+  int32 batch_size = 6;  // default: 100
+  google.protobuf.Duration rate_limit = 7;  // default: 1s
+}
+
+// SendBatchEmailResponse
+message SendBatchEmailResponse {
+  string batch_id = 1;
+  int32 total = 2;
+  int32 accepted = 3;
+  int32 rejected = 4;
+  string status = 5;  // processing, completed, failed
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// GetEmailStatusRequest
+message GetEmailStatusRequest {
+  string message_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+// GetEmailStatusResponse
+message GetEmailStatusResponse {
+  string message_id = 1;
+  string status = 2;  // pending, sent, delivered, opened, clicked, failed, bounced
+  string error_message = 3;
+  google.protobuf.Timestamp sent_at = 4;
+  google.protobuf.Timestamp delivered_at = 5;
+  google.protobuf.Timestamp opened_at = 6;
+}
+
+// ListEmailTemplatesRequest
+message ListEmailTemplatesRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+  string category = 3;
+}
+
+// ListEmailTemplatesResponse
+message ListEmailTemplatesResponse {
+  message Template {
+    string id = 1;
+    string name = 2;
+    string subject = 3;
+    string content = 4;
+    string content_type = 5;
+    string category = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+  }
+  repeated Template templates = 1;
+  int32 total = 2;
+}
+
+// GetBatchStatusRequest
+message GetBatchStatusRequest {
+  string batch_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+// GetBatchStatusResponse
+message GetBatchStatusResponse {
+  string batch_id = 1;
+  string status = 2;
+  int32 total = 3;
+  int32 sent = 4;
+  int32 failed = 5;
+  int32 pending = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp completed_at = 8;
+}
+
+// Mail service
+service Mail {
+  // Send single email
+  rpc SendEmail(SendEmailRequest) returns (SendEmailResponse) {
+    option (google.api.http) = {
+      post: "/v1/mail/send"
+      body: "*"
+    };
+  }
+
+  // Send batch emails
+  rpc SendBatchEmail(SendBatchEmailRequest) returns (SendBatchEmailResponse) {
+    option (google.api.http) = {
+      post: "/v1/mail/send-batch"
+      body: "*"
+    };
+  }
+
+  // Get email sending status
+  rpc GetEmailStatus(GetEmailStatusRequest) returns (GetEmailStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/mail/status/{message_id}"
+    };
+  }
+
+  // List email templates
+  rpc ListEmailTemplates(ListEmailTemplatesRequest) returns (ListEmailTemplatesResponse) {
+    option (google.api.http) = {
+      get: "/v1/mail/templates"
+    };
+  }
+
+  // Get batch sending status
+  rpc GetBatchStatus(GetBatchStatusRequest) returns (GetBatchStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/mail/batch/{batch_id}"
+    };
+  }
+}

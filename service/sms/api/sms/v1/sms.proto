@@ -1,0 +1,193 @@
+syntax = "proto3";
+package api.sms.v1;
+
+option go_package = "sms/api/sms/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.sms.v1";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+// SMS 短信服务
+service SmsService {
+  // 发送短信
+  rpc SendSms (SendSmsRequest) returns (SendSmsReply) {
+    option (google.api.http) = {
+      post: "/v1/sms/send"
+      body: "*"
+    };
+  }
+
+  // 批量发送短信
+  rpc BatchSendSms (BatchSendSmsRequest) returns (BatchSendSmsReply) {
+    option (google.api.http) = {
+      post: "/v1/sms/batch-send"
+      body: "*"
+    };
+  }
+
+  // 获取短信发送记录
+  rpc GetSmsLog (GetSmsLogRequest) returns (SmsLog) {
+    option (google.api.http) = {
+      get: "/v1/sms/log/{id}"
+    };
+  }
+
+  // 查询短信发送记录列表
+  rpc ListSmsLogs (ListSmsLogsRequest) returns (ListSmsLogsReply) {
+    option (google.api.http) = {
+      get: "/v1/sms/logs"
+    };
+  }
+
+  // 获取所有短信服务商
+  rpc GetProviders (GetProvidersRequest) returns (GetProvidersReply) {
+    option (google.api.http) = {
+      get: "/v1/sms/providers"
+    };
+  }
+
+  // 切换默认短信服务商
+  rpc SwitchProvider (SwitchProviderRequest) returns (SwitchProviderReply) {
+    option (google.api.http) = {
+      post: "/v1/sms/provider/switch"
+      body: "*"
+    };
+  }
+}
+
+// 发送短信请求
+message SendSmsRequest {
+  // 手机号（国际格式，如 +8613800138000）
+  string phone = 1 [(validate.rules).string = {
+    min_len: 8,
+    max_len: 20
+  }];
+  // 短信模板代码
+  string template_code = 2 [(validate.rules).string = {min_len: 1}];
+  // 模板参数
+  map<string, string> template_params = 3;
+  // 指定使用哪个短信服务商（可选，不指定则使用默认）
+  string provider_id = 4;
+  // 短信签名（可选，使用服务商默认签名）
+  string sign_name = 5;
+}
+
+// 发送短信响应
+message SendSmsReply {
+  // 是否发送成功
+  bool success = 1;
+  // 短信记录ID
+  string id = 2;
+  // 服务商返回的消息ID
+  string provider_message_id = 3;
+  // 使用的服务商ID
+  string provider_id = 4;
+  // 响应消息
+  string message = 5;
+}
+
+// 批量发送短信请求
+message BatchSendSmsRequest {
+  // 手机号列表
+  repeated string phones = 1 [(validate.rules).repeated = {
+    min_items: 1,
+    max_items: 100
+  }];
+  // 短信模板代码
+  string template_code = 2 [(validate.rules).string = {min_len: 1}];
+  // 模板参数
+  map<string, string> template_params = 3;
+  // 指定使用哪个短信服务商（可选）
+  string provider_id = 4;
+  // 短信签名
+  string sign_name = 5;
+}
+
+// 批量发送短信响应
+message BatchSendSmsReply {
+  // 发送结果列表
+  message Result {
+    string phone = 1;
+    bool success = 2;
+    string message_id = 3;
+    string error = 4;
+  }
+  repeated Result results = 1;
+  // 成功数量
+  int32 success_count = 2;
+  // 失败数量
+  int32 fail_count = 3;
+}
+
+// 获取短信记录请求
+message GetSmsLogRequest {
+  string id = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+// 短信发送记录
+message SmsLog {
+  string id = 1;
+  string phone = 2;
+  string template_code = 3;
+  map<string, string> template_params = 4;
+  string content = 5;
+  string provider_id = 6;
+  string provider_name = 7;
+  string status = 8; // pending, sent, failed, delivered
+  string provider_message_id = 9;
+  string error_message = 10;
+  int32 retry_count = 11;
+  string created_at = 12;
+  string updated_at = 13;
+}
+
+// 查询短信记录列表请求
+message ListSmsLogsRequest {
+  // 手机号筛选
+  string phone = 1;
+  // 状态筛选
+  string status = 2;
+  // 服务商ID筛选
+  string provider_id = 3;
+  // 分页
+  int32 page = 4 [(validate.rules).int32 = {gte: 1}];
+  int32 page_size = 5 [(validate.rules).int32 = {gte: 1, lte: 100}];
+}
+
+// 查询短信记录列表响应
+message ListSmsLogsReply {
+  repeated SmsLog logs = 1;
+  int32 total = 2;
+}
+
+// 获取服务商列表请求
+message GetProvidersRequest {}
+
+// 短信服务商信息
+message SmsProviderInfo {
+  string id = 1;
+  string name = 2;
+  string type = 3;
+  bool enabled = 4;
+  int32 priority = 5;
+  bool is_default = 6;
+  string description = 7;
+}
+
+// 获取服务商列表响应
+message GetProvidersReply {
+  repeated SmsProviderInfo providers = 1;
+}
+
+// 切换服务商请求
+message SwitchProviderRequest {
+  string provider_id = 1 [(validate.rules).string = {min_len: 1}];
+}
+
+// 切换服务商响应
+message SwitchProviderReply {
+  bool success = 1;
+  string message = 2;
+  SmsProviderInfo current_provider = 3;
+}

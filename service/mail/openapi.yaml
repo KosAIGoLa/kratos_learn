@@ -1,0 +1,292 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /v1/mail/batch/{batchId}:
+        get:
+            tags:
+                - Mail
+            description: Get batch sending status
+            operationId: Mail_GetBatchStatus
+            parameters:
+                - name: batchId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mail.v1.GetBatchStatusResponse'
+    /v1/mail/send:
+        post:
+            tags:
+                - Mail
+            description: Send single email
+            operationId: Mail_SendEmail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/mail.v1.SendEmailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mail.v1.SendEmailResponse'
+    /v1/mail/send-batch:
+        post:
+            tags:
+                - Mail
+            description: Send batch emails
+            operationId: Mail_SendBatchEmail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/mail.v1.SendBatchEmailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mail.v1.SendBatchEmailResponse'
+    /v1/mail/status/{messageId}:
+        get:
+            tags:
+                - Mail
+            description: Get email sending status
+            operationId: Mail_GetEmailStatus
+            parameters:
+                - name: messageId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mail.v1.GetEmailStatusResponse'
+    /v1/mail/templates:
+        get:
+            tags:
+                - Mail
+            description: List email templates
+            operationId: Mail_ListEmailTemplates
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: category
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/mail.v1.ListEmailTemplatesResponse'
+components:
+    schemas:
+        mail.v1.Attachment:
+            type: object
+            properties:
+                filename:
+                    type: string
+                content:
+                    type: string
+                    format: bytes
+                contentType:
+                    type: string
+            description: Email attachment
+        mail.v1.Email:
+            type: object
+            properties:
+                to:
+                    type: string
+                subject:
+                    type: string
+                body:
+                    type: string
+                contentType:
+                    type: string
+                attachments:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/mail.v1.Attachment'
+            description: Email message
+        mail.v1.GetBatchStatusResponse:
+            type: object
+            properties:
+                batchId:
+                    type: string
+                status:
+                    type: string
+                total:
+                    type: integer
+                    format: int32
+                sent:
+                    type: integer
+                    format: int32
+                failed:
+                    type: integer
+                    format: int32
+                pending:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+                completedAt:
+                    type: string
+                    format: date-time
+            description: GetBatchStatusResponse
+        mail.v1.GetEmailStatusResponse:
+            type: object
+            properties:
+                messageId:
+                    type: string
+                status:
+                    type: string
+                errorMessage:
+                    type: string
+                sentAt:
+                    type: string
+                    format: date-time
+                deliveredAt:
+                    type: string
+                    format: date-time
+                openedAt:
+                    type: string
+                    format: date-time
+            description: GetEmailStatusResponse
+        mail.v1.ListEmailTemplatesResponse:
+            type: object
+            properties:
+                templates:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/mail.v1.ListEmailTemplatesResponse_Template'
+                total:
+                    type: integer
+                    format: int32
+            description: ListEmailTemplatesResponse
+        mail.v1.ListEmailTemplatesResponse_Template:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                subject:
+                    type: string
+                content:
+                    type: string
+                contentType:
+                    type: string
+                category:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+        mail.v1.SendBatchEmailRequest:
+            type: object
+            properties:
+                emails:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/mail.v1.Email'
+                templateId:
+                    type: string
+                templateData:
+                    type: object
+                    additionalProperties:
+                        type: string
+                from:
+                    type: string
+                fromName:
+                    type: string
+                batchSize:
+                    type: integer
+                    format: int32
+                rateLimit:
+                    pattern: ^-?(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,9})?s$
+                    type: string
+            description: SendBatchEmailRequest
+        mail.v1.SendBatchEmailResponse:
+            type: object
+            properties:
+                batchId:
+                    type: string
+                total:
+                    type: integer
+                    format: int32
+                accepted:
+                    type: integer
+                    format: int32
+                rejected:
+                    type: integer
+                    format: int32
+                status:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+            description: SendBatchEmailResponse
+        mail.v1.SendEmailRequest:
+            type: object
+            properties:
+                email:
+                    $ref: '#/components/schemas/mail.v1.Email'
+                templateId:
+                    type: string
+                templateData:
+                    type: object
+                    additionalProperties:
+                        type: string
+                from:
+                    type: string
+                fromName:
+                    type: string
+            description: SendEmailRequest
+        mail.v1.SendEmailResponse:
+            type: object
+            properties:
+                messageId:
+                    type: string
+                status:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+            description: SendEmailResponse
+tags:
+    - name: Mail
+      description: Mail service

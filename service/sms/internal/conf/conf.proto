@@ -1,0 +1,80 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "sms/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Server server = 1;
+  Data data = 2;
+  Sms sms = 3;
+  Registry registry = 4;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration read_timeout = 3;
+    google.protobuf.Duration write_timeout = 4;
+  }
+  Database database = 1;
+  Redis redis = 2;
+}
+
+// SMS 短信服务配置
+message Sms {
+  // 默认使用的短信服务商
+  string default_provider = 1;
+  // 短信服务商列表
+  repeated SmsProvider providers = 2;
+  // 发送失败重试次数
+  int32 retry_times = 3;
+  // 是否启用发送记录
+  bool enable_log = 4;
+}
+
+// 短信服务商配置
+message SmsProvider {
+  // 服务商唯一标识
+  string id = 1;
+  // 服务商名称
+  string name = 2;
+  // 服务商类型: twilio, aws_sns, aliyun, tencent, etc.
+  string type = 3;
+  // 是否启用
+  bool enabled = 4;
+  // 优先级(数字越小优先级越高)
+  int32 priority = 5;
+  // 服务商配置参数
+  map<string, string> config = 6;
+}
+
+// 服务注册配置
+message Registry {
+  message Etcd {
+    repeated string endpoints = 1;
+    google.protobuf.Duration dial_timeout = 2;
+  }
+  Etcd etcd = 1;
+}

@@ -1,0 +1,43 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 1s
+  grpc:
+    addr: 0.0.0.0:9000
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+  redis:
+    addr: 127.0.0.1:6379
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+email:
+  smtp:
+    host: smtp.gmail.com
+    port: 587
+    username: your-email@gmail.com
+    password: your-password
+    use_tls: true
+    use_ssl: false
+    timeout: 30s
+    from: noreply@example.com
+    from_name: Mail Service
+  rate_limit:
+    max_per_second: 10
+    max_per_day: 10000
+    max_batch_size: 100
+  retry:
+    max_retries: 3
+    initial_delay: 1s
+    max_delay: 30s
+    backoff_multiplier: 2.0
+  enable_queue: false
+  queue_driver: memory
+  worker_count: 5
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 1s

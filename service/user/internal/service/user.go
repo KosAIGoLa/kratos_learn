@@ -58,6 +58,15 @@ func (s *UserService) Register(ctx context.Context, req *v1.RegisterRequest) (*v
 		return nil, err
 	}
 
+	// 给邀请人奖励工分（异步执行，不影响注册流程）
+	if parentId > 0 {
+		go func() {
+			if err := s.uc.RewardInviteWorkPoints(context.Background(), parentId); err != nil {
+				s.log.Errorf("邀请奖励发放失败: parent_id=%d, err=%v", parentId, err)
+			}
+		}()
+	}
+
 	// 生成 token 和 refresh_token
 	token, err := s.jwtManager.GenerateToken(user.ID, user.Username, user.Phone)
 	if err != nil {

@@ -23,7 +23,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, jwt *conf.Jwt, confRegistry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(confServer *conf.Server, confData *conf.Data, jwt *conf.Jwt, registry *conf.Registry, logger log.Logger) (*kratos.App, func(), error) {
 	db := data.NewDB(confData)
 	client := data.NewRedis(confData)
 	dataData, cleanup, err := data.NewData(confData, logger, db, client)
@@ -31,13 +31,14 @@ func wireApp(confServer *conf.Server, confData *conf.Data, jwt *conf.Jwt, confRe
 		return nil, nil, err
 	}
 	userRepo := data.NewUserRepo(dataData, logger)
-	userUsecase := biz.NewUserUsecase(userRepo, logger)
+	configRepo := data.NewConfigRepo(dataData, logger)
+	userUsecase := biz.NewUserUsecase(userRepo, configRepo, logger)
 	jwtManager := service.NewJWTManagerProvider(jwt)
 	captchaManager := service.NewCaptchaManagerProvider()
 	userService := service.NewUserService(userUsecase, jwtManager, captchaManager, logger)
 	grpcServer := server.NewGRPCServer(confServer, userService, jwtManager, logger)
 	httpServer := server.NewHTTPServer(confServer, userService, jwtManager, logger)
-	registrar := server.NewRegistrar(confRegistry)
+	registrar := server.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, httpServer, registrar)
 	return app, func() {
 		cleanup()

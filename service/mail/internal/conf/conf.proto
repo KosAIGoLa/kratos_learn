@@ -1,0 +1,88 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "mail/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Server server = 1;
+  Data data = 2;
+  Email email = 3;
+  Registry registry = 4;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration read_timeout = 3;
+    google.protobuf.Duration write_timeout = 4;
+  }
+  Database database = 1;
+  Redis redis = 2;
+}
+
+message Email {
+  // SMTP configuration
+  message SMTP {
+    string host = 1;
+    int32 port = 2;
+    string username = 3;
+    string password = 4;
+    bool use_tls = 5;
+    bool use_ssl = 6;
+    google.protobuf.Duration timeout = 7;
+    string from = 8;  // default sender email
+    string from_name = 9;  // default sender name
+  }
+
+  // Rate limiting
+  message RateLimit {
+    int32 max_per_second = 1;
+    int32 max_per_day = 2;
+    int32 max_batch_size = 3;  // default: 100
+  }
+
+  // Retry configuration
+  message Retry {
+    int32 max_retries = 1;
+    google.protobuf.Duration initial_delay = 2;
+    google.protobuf.Duration max_delay = 3;
+    float backoff_multiplier = 4;
+  }
+
+  SMTP smtp = 1;
+  RateLimit rate_limit = 2;
+  Retry retry = 3;
+  bool enable_queue = 4;  // use queue for async sending
+  string queue_driver = 5;  // redis, database, memory
+  int32 worker_count = 6;  // number of workers for queue processing
+}
+
+message Registry {
+  message Etcd {
+    repeated string endpoints = 1;
+    google.protobuf.Duration dial_timeout = 2;
+  }
+  Etcd etcd = 1;
+}

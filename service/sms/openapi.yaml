@@ -1,0 +1,320 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /v1/sms/batch-send:
+        post:
+            tags:
+                - SmsService
+            description: 批量发送短信
+            operationId: SmsService_BatchSendSms
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sms.v1.BatchSendSmsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.BatchSendSmsReply'
+    /v1/sms/log/{id}:
+        get:
+            tags:
+                - SmsService
+            description: 获取短信发送记录
+            operationId: SmsService_GetSmsLog
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.SmsLog'
+    /v1/sms/logs:
+        get:
+            tags:
+                - SmsService
+            description: 查询短信发送记录列表
+            operationId: SmsService_ListSmsLogs
+            parameters:
+                - name: phone
+                  in: query
+                  description: 手机号筛选
+                  schema:
+                    type: string
+                - name: status
+                  in: query
+                  description: 状态筛选
+                  schema:
+                    type: string
+                - name: providerId
+                  in: query
+                  description: 服务商ID筛选
+                  schema:
+                    type: string
+                - name: page
+                  in: query
+                  description: 分页
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.ListSmsLogsReply'
+    /v1/sms/provider/switch:
+        post:
+            tags:
+                - SmsService
+            description: 切换默认短信服务商
+            operationId: SmsService_SwitchProvider
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sms.v1.SwitchProviderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.SwitchProviderReply'
+    /v1/sms/providers:
+        get:
+            tags:
+                - SmsService
+            description: 获取所有短信服务商
+            operationId: SmsService_GetProviders
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.GetProvidersReply'
+    /v1/sms/send:
+        post:
+            tags:
+                - SmsService
+            description: 发送短信
+            operationId: SmsService_SendSms
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.sms.v1.SendSmsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.sms.v1.SendSmsReply'
+components:
+    schemas:
+        api.sms.v1.BatchSendSmsReply:
+            type: object
+            properties:
+                results:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sms.v1.BatchSendSmsReply_Result'
+                successCount:
+                    type: integer
+                    description: 成功数量
+                    format: int32
+                failCount:
+                    type: integer
+                    description: 失败数量
+                    format: int32
+            description: 批量发送短信响应
+        api.sms.v1.BatchSendSmsReply_Result:
+            type: object
+            properties:
+                phone:
+                    type: string
+                success:
+                    type: boolean
+                messageId:
+                    type: string
+                error:
+                    type: string
+            description: 发送结果列表
+        api.sms.v1.BatchSendSmsRequest:
+            type: object
+            properties:
+                phones:
+                    type: array
+                    items:
+                        type: string
+                    description: 手机号列表
+                templateCode:
+                    type: string
+                    description: 短信模板代码
+                templateParams:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 模板参数
+                providerId:
+                    type: string
+                    description: 指定使用哪个短信服务商（可选）
+                signName:
+                    type: string
+                    description: 短信签名
+            description: 批量发送短信请求
+        api.sms.v1.GetProvidersReply:
+            type: object
+            properties:
+                providers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sms.v1.SmsProviderInfo'
+            description: 获取服务商列表响应
+        api.sms.v1.ListSmsLogsReply:
+            type: object
+            properties:
+                logs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/api.sms.v1.SmsLog'
+                total:
+                    type: integer
+                    format: int32
+            description: 查询短信记录列表响应
+        api.sms.v1.SendSmsReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    description: 是否发送成功
+                id:
+                    type: string
+                    description: 短信记录ID
+                providerMessageId:
+                    type: string
+                    description: 服务商返回的消息ID
+                providerId:
+                    type: string
+                    description: 使用的服务商ID
+                message:
+                    type: string
+                    description: 响应消息
+            description: 发送短信响应
+        api.sms.v1.SendSmsRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+                    description: 手机号（国际格式，如 +8613800138000）
+                templateCode:
+                    type: string
+                    description: 短信模板代码
+                templateParams:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 模板参数
+                providerId:
+                    type: string
+                    description: 指定使用哪个短信服务商（可选，不指定则使用默认）
+                signName:
+                    type: string
+                    description: 短信签名（可选，使用服务商默认签名）
+            description: 发送短信请求
+        api.sms.v1.SmsLog:
+            type: object
+            properties:
+                id:
+                    type: string
+                phone:
+                    type: string
+                templateCode:
+                    type: string
+                templateParams:
+                    type: object
+                    additionalProperties:
+                        type: string
+                content:
+                    type: string
+                providerId:
+                    type: string
+                providerName:
+                    type: string
+                status:
+                    type: string
+                providerMessageId:
+                    type: string
+                errorMessage:
+                    type: string
+                retryCount:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+            description: 短信发送记录
+        api.sms.v1.SmsProviderInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                type:
+                    type: string
+                enabled:
+                    type: boolean
+                priority:
+                    type: integer
+                    format: int32
+                isDefault:
+                    type: boolean
+                description:
+                    type: string
+            description: 短信服务商信息
+        api.sms.v1.SwitchProviderReply:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
+                currentProvider:
+                    $ref: '#/components/schemas/api.sms.v1.SmsProviderInfo'
+            description: 切换服务商响应
+        api.sms.v1.SwitchProviderRequest:
+            type: object
+            properties:
+                providerId:
+                    type: string
+            description: 切换服务商请求
+tags:
+    - name: SmsService
+      description: SMS 短信服务

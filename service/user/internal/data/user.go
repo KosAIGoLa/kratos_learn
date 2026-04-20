@@ -122,6 +122,14 @@ func (r *userRepo) DeleteUser(ctx context.Context, id uint32) error {
 	return nil
 }
 
+// UpdateWorkPoints 更新用户工分（增加）
+func (r *userRepo) UpdateWorkPoints(ctx context.Context, userID uint32, points float64) error {
+	if err := r.data.db.Model(&User{}).Where("id = ?", userID).UpdateColumn("work_points", gorm.Expr("work_points + ?", points)).Error; err != nil {
+		return status.Errorf(codes.Internal, "更新工分失败: %s", err.Error())
+	}
+	return nil
+}
+
 func (r *userRepo) toBizUser(u *User) *biz.User {
 	return &biz.User{
 		ID:         u.ID,

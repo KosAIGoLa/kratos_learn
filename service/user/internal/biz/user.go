@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -58,6 +59,7 @@ type UserRepo interface {
 	GetUserByInviteCode(ctx context.Context, inviteCode string) (*User, error)
 	UpdateUser(ctx context.Context, u *User) (*User, error)
 	DeleteUser(ctx context.Context, id uint32) error
+	UpdateWorkPoints(ctx context.Context, userID uint32, points float64) error
 }
 
 // KYCRepo 实名认证存储接口
@@ -77,13 +79,14 @@ type TeamRepo interface {
 
 // UserUsecase 用户用例
 type UserUsecase struct {
-	repo UserRepo
-	log  *log.Helper
+	repo       UserRepo
+	configRepo ConfigRepo
+	log        *log.Helper
 }
 
 // NewUserUsecase 创建用户用例
-func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
-	return &UserUsecase{repo: repo, log: log.NewHelper(logger)}
+func NewUserUsecase(repo UserRepo, configRepo ConfigRepo, logger log.Logger) *UserUsecase {
+	return &UserUsecase{repo: repo, configRepo: configRepo, log: log.NewHelper(logger)}
 }
 
 // Register 用户注册
@@ -128,6 +131,40 @@ func (uc *UserUsecase) DeleteUser(ctx context.Context, id uint32) error {
 	return uc.repo.DeleteUser(ctx, id)
 }
 
+// RewardInviteWorkPoints 给邀请人奖励工分
+func (uc *UserUsecase) RewardInviteWorkPoints(ctx context.Context, parentID uint32) error {
+	if parentID == 0 {
+		return nil
+	}
+
+	// 获取邀请奖励工分配置
+	config, err := uc.configRepo.GetConfig(ctx, "invite.reward_work_points")
+	if err != nil {
+		uc.log.Warnf("获取邀请奖励配置失败: %v", err)
+		return nil // 配置不存在时不奖励，但不影响注册流程
+	}
+
+	// 解析工分值
+	rewardPoints, err := strconv.ParseFloat(config.Value, 64)
+	if err != nil {
+		uc.log.Errorf("解析工分值失败: %v", err)
+		return nil
+	}
+
+	if rewardPoints <= 0 {
+		return nil
+	}
+
+	// 给父用户增加工分
+	if err := uc.repo.UpdateWorkPoints(ctx, parentID, rewardPoints); err != nil {
+		uc.log.Errorf("更新邀请人工分失败: %v", err)
+		return err
+	}
+
+	uc.log.Infof("邀请奖励工分已发放: parent_id=%d, points=%.2f", parentID, rewardPoints)
+	return nil
+}
+
 // KYCUsecase 实名认证用例
 type KYCUsecase struct {
 	repo KYCRepo
@@ -168,4 +205,18 @@ func (uc *TeamUsecase) GetTeamRelationByUserID(ctx context.Context, userID uint3
 // GetTeamMembers 获取团队成员
 func (uc *TeamUsecase) GetTeamMembers(ctx context.Context, parentID uint32, level int32) ([]*User, error) {
 	return uc.repo.GetTeamMembers(ctx, parentID, level)
+}
+
+// SystemConfig 系统配置领域模型
+type SystemConfig struct {
+	ID          uint32
+	Key         string
+	Value       string
+	Description string
+	Group       string
+}
+
+// ConfigRepo 配置存储接口
+type ConfigRepo interface {
+	GetConfig(ctx context.Context, key string) (*SystemConfig, error)
 }

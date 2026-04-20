@@ -1,0 +1,78 @@
+server:
+  http:
+    addr: 0.0.0.0:8110
+    timeout: 1s
+  grpc:
+    addr: 0.0.0.0:9110
+    timeout: 1s
+data:
+  database:
+    driver: mysql
+    source: root:root@tcp(127.0.0.1:3306)/test?parseTime=True&loc=Local
+  redis:
+    addr: 127.0.0.1:6379
+    read_timeout: 0.2s
+    write_timeout: 0.2s
+
+# SMS 短信服务配置
+sms:
+  # 默认使用的短信服务商
+  default_provider: console
+  # 发送失败重试次数
+  retry_times: 2
+  # 是否启用发送记录
+  enable_log: true
+  # 短信服务商列表
+  providers:
+    # 控制台输出（开发调试使用）
+    - id: console
+      name: 控制台输出
+      type: console
+      enabled: true
+      priority: 1
+      config:
+        id: console
+        name: Console SMS
+    
+    # 模拟发送（测试使用）
+    - id: mock
+      name: 模拟短信
+      type: mock
+      enabled: false
+      priority: 2
+      config:
+        id: mock
+        name: Mock SMS
+    
+    # Twilio 短信服务
+    - id: twilio
+      name: Twilio
+      type: twilio
+      enabled: false
+      priority: 3
+      config:
+        id: twilio
+        name: Twilio SMS
+        account_sid: your_twilio_account_sid
+        auth_token: your_twilio_auth_token
+        from_number: your_twilio_phone_number
+    
+    # 阿里云短信服务
+    - id: aliyun
+      name: 阿里云短信
+      type: aliyun
+      enabled: false
+      priority: 4
+      config:
+        id: aliyun
+        name: 阿里云短信
+        access_key_id: your_aliyun_access_key_id
+        access_key_secret: your_aliyun_access_key_secret
+        sign_name: your_sign_name
+
+# 服务注册配置 (etcd)
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 5s
