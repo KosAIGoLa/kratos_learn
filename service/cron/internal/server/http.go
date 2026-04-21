@@ -12,7 +12,8 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Server, cron *service.CronService, logger log.Logger) *http.Server {
+func NewHTTPServer(bc *conf.Bootstrap, cron *service.CronService, logger log.Logger) *http.Server {
+	c := bc.Server
 	var opts = []http.ServerOption{
 		http.Middleware(
 			recovery.Recovery(),

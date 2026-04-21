@@ -71,6 +71,25 @@ type CheckIn struct {
 	CreatedAt       time.Time
 }
 
+// UserAsset 用户资产
+type UserAsset struct {
+	UserID     uint32
+	Balance    float64
+	WorkPoints float64
+}
+
+// HashrateConversion 算力转换结果
+type HashrateConversion struct {
+	UserID         uint32
+	Amount         float64
+	BeforeHashrate float64
+	AfterHashrate  float64
+	BeforeBalance  float64
+	AfterBalance   float64
+	Remark         string
+	CreatedAt      time.Time
+}
+
 // RechargeRepo 充值存储接口
 type RechargeRepo interface {
 	CreateRecharge(ctx context.Context, r *Recharge) (*Recharge, error)
@@ -98,12 +117,19 @@ type IncomeLogRepo interface {
 // BalanceLogRepo 余额变动存储接口
 type BalanceLogRepo interface {
 	ListBalanceLogs(ctx context.Context, userID uint32, typ int32, page, pageSize uint32) ([]*BalanceLog, uint32, error)
+	CreateBalanceLog(ctx context.Context, log *BalanceLog) (*BalanceLog, error)
 }
 
 // CheckInRepo 签到存储接口
 type CheckInRepo interface {
 	CheckIn(ctx context.Context, c *CheckIn) (*CheckIn, error)
 	GetLastCheckIn(ctx context.Context, userID uint32) (*CheckIn, error)
+}
+
+// UserAssetRepo 用户资产存储接口
+type UserAssetRepo interface {
+	GetUserAsset(ctx context.Context, userID uint32) (*UserAsset, error)
+	ConvertHashrate(ctx context.Context, userID uint32, amount float64) (*HashrateConversion, error)
 }
 
 // FinanceUsecase 财务用例
@@ -114,6 +140,7 @@ type FinanceUsecase struct {
 	incomeLogRepo          IncomeLogRepo
 	balanceLogRepo         BalanceLogRepo
 	checkInRepo            CheckInRepo
+	userAssetRepo          UserAssetRepo
 	log                    *log.Helper
 }
 
@@ -125,6 +152,7 @@ func NewFinanceUsecase(
 	incomeLogRepo IncomeLogRepo,
 	balanceLogRepo BalanceLogRepo,
 	checkInRepo CheckInRepo,
+	userAssetRepo UserAssetRepo,
 	logger log.Logger,
 ) *FinanceUsecase {
 	return &FinanceUsecase{
@@ -134,6 +162,7 @@ func NewFinanceUsecase(
 		incomeLogRepo:          incomeLogRepo,
 		balanceLogRepo:         balanceLogRepo,
 		checkInRepo:            checkInRepo,
+		userAssetRepo:          userAssetRepo,
 		log:                    log.NewHelper(logger),
 	}
 }
@@ -194,6 +223,11 @@ func (uc *FinanceUsecase) ListBalanceLogs(ctx context.Context, userID uint32, ty
 	return uc.balanceLogRepo.ListBalanceLogs(ctx, userID, typ, page, pageSize)
 }
 
+// CreateBalanceLog 创建余额变动记录
+func (uc *FinanceUsecase) CreateBalanceLog(ctx context.Context, log *BalanceLog) (*BalanceLog, error) {
+	return uc.balanceLogRepo.CreateBalanceLog(ctx, log)
+}
+
 // CheckIn 签到
 func (uc *FinanceUsecase) CheckIn(ctx context.Context, c *CheckIn) (*CheckIn, error) {
 	return uc.checkInRepo.CheckIn(ctx, c)
@@ -201,6 +235,14 @@ func (uc *FinanceUsecase) CheckIn(ctx context.Context, c *CheckIn) (*CheckIn, er
 
 // GetUserBalance 获取用户余额
 func (uc *FinanceUsecase) GetUserBalance(ctx context.Context, userID uint32) (float64, float64, error) {
-	// TODO: 实现从用户服务获取余额的逻辑
-	return 0, 0, nil
+	asset, err := uc.userAssetRepo.GetUserAsset(ctx, userID)
+	if err != nil {
+		return 0, 0, err
+	}
+	return asset.Balance, asset.WorkPoints, nil
+}
+
+// ConvertHashrate 手动将算力转换为余额
+func (uc *FinanceUsecase) ConvertHashrate(ctx context.Context, userID uint32, amount float64) (*HashrateConversion, error) {
+	return uc.userAssetRepo.ConvertHashrate(ctx, userID, amount)
 }

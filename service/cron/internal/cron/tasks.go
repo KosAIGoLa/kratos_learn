@@ -1,22 +1,32 @@
 package cron
 
 import (
+	"context"
+	"cron/internal/data"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	kratoslog "github.com/go-kratos/kratos/v2/log"
 )
 
 // TaskManager 任务管理器
 type TaskManager struct {
 	scheduler *Scheduler
-	log       *log.Helper
+	data      *data.Data
+	log       *kratoslog.Helper
 }
 
-// NewTaskManager 创建任务管理器
-func NewTaskManager(scheduler *Scheduler, logger log.Logger) *TaskManager {
+// NewTaskManager 创建任务管理器。
+// 保持旧签名以兼容现有测试与调用方。
+func NewTaskManager(scheduler *Scheduler, logger kratoslog.Logger) *TaskManager {
+	return NewTaskManagerWithData(scheduler, nil, logger)
+}
+
+// NewTaskManagerWithData 创建带数据依赖的任务管理器。
+func NewTaskManagerWithData(scheduler *Scheduler, data *data.Data, logger kratoslog.Logger) *TaskManager {
 	return &TaskManager{
 		scheduler: scheduler,
-		log:       log.NewHelper(logger),
+		data:      data,
+		log:       kratoslog.NewHelper(logger),
 	}
 }
 
@@ -33,12 +43,6 @@ func (tm *TaskManager) RegisterTasks() error {
 	// 2. 每日算力汇总结算 - 每天0点执行，24小时周期结算
 	// 公式: 每日总算力 = Σ(每小时产出)
 	if err := tm.scheduler.AddTask("daily_hashrate_settlement", "0 0 0 * * *", tm.dailyHashrateSettlement); err != nil {
-		return err
-	}
-
-	// 3. 算力转可提现余额 - 每天0:30执行，1:1转换
-	// 公式: 可提现余额 = 算力产出 × 1:1 转换比例
-	if err := tm.scheduler.AddTask("hashrate_to_balance", "0 30 0 * * *", tm.hashrateToBalance); err != nil {
 		return err
 	}
 
@@ -714,11 +718,11 @@ func (tm *TaskManager) hashrateToBalance() {
 		// 公式: 可提现余额 = 算力产出 × 1:1 转换比例
 		convertAmount := dailyHashrate // 1:1 转换
 
+		// 记录转换前的余额
+		beforeBalance := user.WithdrawableBalance
+
 		// 增加用户可提现余额
 		user.WithdrawableBalance += convertAmount
-
-		// 扣除已转换的算力（可选，取决于业务逻辑）
-		// user.DailyHashrate = 0
 
 		// 更新用户余额
 		if err := tm.updateUserWithdrawableBalance(user.ID, user.WithdrawableBalance); err != nil {
@@ -726,7 +730,23 @@ func (tm *TaskManager) hashrateToBalance() {
 			continue
 		}
 
-		// 记录转换日志
+		// 创建余额变动记录到 balance_logs
+		if tm.data != nil && tm.data.FinanceClient() != nil {
+			remark := "算力转换: " + today
+			err := tm.data.FinanceClient().CreateBalanceLog(
+				tm.getTaskContext(),
+				uint32(user.ID),
+				convertAmount,
+				beforeBalance,
+				user.WithdrawableBalance,
+				remark,
+			)
+			if err != nil {
+				tm.log.Errorf("记录用户 [%d] 余额变动日志失败: %v", user.ID, err)
+			}
+		}
+
+		// 记录本地转换日志
 		tm.recordBalanceConversion(user.ID, dailyHashrate, convertAmount, today)
 
 		conversionCount++
@@ -734,6 +754,11 @@ func (tm *TaskManager) hashrateToBalance() {
 	}
 
 	tm.log.Infof("算力转余额完成，共处理 %d 位用户，总转换金额: %.2f", conversionCount, totalConverted)
+}
+
+// getTaskContext 获取任务执行的上下文
+func (tm *TaskManager) getTaskContext() context.Context {
+	return context.Background()
 }
 
 // expiredMachineCleanup 过期机器清理

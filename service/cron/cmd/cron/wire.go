@@ -8,6 +8,7 @@ package main
 import (
 	"cron/internal/conf"
 	"cron/internal/cron"
+	"cron/internal/data"
 	"cron/internal/server"
 	"cron/internal/service"
 
@@ -17,6 +18,6 @@ import (
 )
 
 // wireApp init kratos application with cron support.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, service.ProviderSet, cron.ProviderSet, newApp))
+func wireApp(*conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(server.ProviderSet, data.ProviderSet, service.ProviderSet, cron.ProviderSet, newApp))
 }

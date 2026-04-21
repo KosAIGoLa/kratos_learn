@@ -19,16 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Finance_Recharge_FullMethodName        = "/finance.v1.Finance/Recharge"
-	Finance_GetRecharge_FullMethodName     = "/finance.v1.Finance/GetRecharge"
-	Finance_ListRecharges_FullMethodName   = "/finance.v1.Finance/ListRecharges"
-	Finance_Withdraw_FullMethodName        = "/finance.v1.Finance/Withdraw"
-	Finance_GetWithdrawal_FullMethodName   = "/finance.v1.Finance/GetWithdrawal"
-	Finance_ListWithdrawals_FullMethodName = "/finance.v1.Finance/ListWithdrawals"
-	Finance_ListIncomeLogs_FullMethodName  = "/finance.v1.Finance/ListIncomeLogs"
-	Finance_ListBalanceLogs_FullMethodName = "/finance.v1.Finance/ListBalanceLogs"
-	Finance_CheckIn_FullMethodName         = "/finance.v1.Finance/CheckIn"
-	Finance_GetUserBalance_FullMethodName  = "/finance.v1.Finance/GetUserBalance"
+	Finance_Recharge_FullMethodName         = "/finance.v1.Finance/Recharge"
+	Finance_GetRecharge_FullMethodName      = "/finance.v1.Finance/GetRecharge"
+	Finance_ListRecharges_FullMethodName    = "/finance.v1.Finance/ListRecharges"
+	Finance_Withdraw_FullMethodName         = "/finance.v1.Finance/Withdraw"
+	Finance_GetWithdrawal_FullMethodName    = "/finance.v1.Finance/GetWithdrawal"
+	Finance_ListWithdrawals_FullMethodName  = "/finance.v1.Finance/ListWithdrawals"
+	Finance_ListIncomeLogs_FullMethodName   = "/finance.v1.Finance/ListIncomeLogs"
+	Finance_ListBalanceLogs_FullMethodName  = "/finance.v1.Finance/ListBalanceLogs"
+	Finance_CheckIn_FullMethodName          = "/finance.v1.Finance/CheckIn"
+	Finance_GetUserBalance_FullMethodName   = "/finance.v1.Finance/GetUserBalance"
+	Finance_CreateBalanceLog_FullMethodName = "/finance.v1.Finance/CreateBalanceLog"
+	Finance_ConvertHashPower_FullMethodName = "/finance.v1.Finance/ConvertHashPower"
 )
 
 // FinanceClient is the client API for Finance service.
@@ -45,6 +47,8 @@ type FinanceClient interface {
 	ListBalanceLogs(ctx context.Context, in *ListBalanceLogsRequest, opts ...grpc.CallOption) (*ListBalanceLogsResponse, error)
 	CheckIn(ctx context.Context, in *CheckInRequest, opts ...grpc.CallOption) (*CheckInResponse, error)
 	GetUserBalance(ctx context.Context, in *GetUserBalanceRequest, opts ...grpc.CallOption) (*UserBalanceInfo, error)
+	CreateBalanceLog(ctx context.Context, in *CreateBalanceLogRequest, opts ...grpc.CallOption) (*BalanceLogInfo, error)
+	ConvertHashPower(ctx context.Context, in *ConvertHashPowerRequest, opts ...grpc.CallOption) (*HashPowerConversionInfo, error)
 }
 
 type financeClient struct {
@@ -155,6 +159,26 @@ func (c *financeClient) GetUserBalance(ctx context.Context, in *GetUserBalanceRe
 	return out, nil
 }
 
+func (c *financeClient) CreateBalanceLog(ctx context.Context, in *CreateBalanceLogRequest, opts ...grpc.CallOption) (*BalanceLogInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BalanceLogInfo)
+	err := c.cc.Invoke(ctx, Finance_CreateBalanceLog_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeClient) ConvertHashPower(ctx context.Context, in *ConvertHashPowerRequest, opts ...grpc.CallOption) (*HashPowerConversionInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HashPowerConversionInfo)
+	err := c.cc.Invoke(ctx, Finance_ConvertHashPower_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FinanceServer is the server API for Finance service.
 // All implementations must embed UnimplementedFinanceServer
 // for forward compatibility.
@@ -169,6 +193,8 @@ type FinanceServer interface {
 	ListBalanceLogs(context.Context, *ListBalanceLogsRequest) (*ListBalanceLogsResponse, error)
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
 	GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalanceInfo, error)
+	CreateBalanceLog(context.Context, *CreateBalanceLogRequest) (*BalanceLogInfo, error)
+	ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error)
 	mustEmbedUnimplementedFinanceServer()
 }
 
@@ -208,6 +234,12 @@ func (UnimplementedFinanceServer) CheckIn(context.Context, *CheckInRequest) (*Ch
 }
 func (UnimplementedFinanceServer) GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalanceInfo, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUserBalance not implemented")
+}
+func (UnimplementedFinanceServer) CreateBalanceLog(context.Context, *CreateBalanceLogRequest) (*BalanceLogInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateBalanceLog not implemented")
+}
+func (UnimplementedFinanceServer) ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConvertHashPower not implemented")
 }
 func (UnimplementedFinanceServer) mustEmbedUnimplementedFinanceServer() {}
 func (UnimplementedFinanceServer) testEmbeddedByValue()                 {}
@@ -410,6 +442,42 @@ func _Finance_GetUserBalance_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Finance_CreateBalanceLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateBalanceLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).CreateBalanceLog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_CreateBalanceLog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).CreateBalanceLog(ctx, req.(*CreateBalanceLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Finance_ConvertHashPower_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertHashPowerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).ConvertHashPower(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_ConvertHashPower_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).ConvertHashPower(ctx, req.(*ConvertHashPowerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Finance_ServiceDesc is the grpc.ServiceDesc for Finance service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +524,14 @@ var Finance_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserBalance",
 			Handler:    _Finance_GetUserBalance_Handler,
+		},
+		{
+			MethodName: "CreateBalanceLog",
+			Handler:    _Finance_CreateBalanceLog_Handler,
+		},
+		{
+			MethodName: "ConvertHashPower",
+			Handler:    _Finance_ConvertHashPower_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

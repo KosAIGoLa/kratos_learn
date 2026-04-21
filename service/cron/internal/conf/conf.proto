@@ -9,6 +9,15 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   Trace trace = 3;
+  Client client = 4;
+}
+
+message Client {
+  message Finance {
+    string endpoint = 1;
+    google.protobuf.Duration timeout = 2;
+  }
+  Finance finance = 1;
 }
 
 message Server {

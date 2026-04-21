@@ -22,7 +22,7 @@ import (
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData, NewDB, NewRedis, NewRabbitMQClient,
-	NewRechargeRepo, NewWithdrawalRepo, NewIncomeLogRepo, NewBalanceLogRepo, NewCheckInRepo,
+	NewRechargeRepo, NewWithdrawalRepo, NewIncomeLogRepo, NewBalanceLogRepo, NewCheckInRepo, NewUserAssetRepo,
 	// 绑定 RabbitMQClient 到 biz.WithdrawalMessageQueue 接口
 	wire.Bind(new(biz.WithdrawalMessageQueue), new(*RabbitMQClient)),
 )

@@ -20,6 +20,8 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationFinanceCheckIn = "/finance.v1.Finance/CheckIn"
+const OperationFinanceConvertHashPower = "/finance.v1.Finance/ConvertHashPower"
+const OperationFinanceCreateBalanceLog = "/finance.v1.Finance/CreateBalanceLog"
 const OperationFinanceGetRecharge = "/finance.v1.Finance/GetRecharge"
 const OperationFinanceGetUserBalance = "/finance.v1.Finance/GetUserBalance"
 const OperationFinanceGetWithdrawal = "/finance.v1.Finance/GetWithdrawal"
@@ -32,6 +34,8 @@ const OperationFinanceWithdraw = "/finance.v1.Finance/Withdraw"
 
 type FinanceHTTPServer interface {
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
+	ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error)
+	CreateBalanceLog(context.Context, *CreateBalanceLogRequest) (*BalanceLogInfo, error)
 	GetRecharge(context.Context, *GetRechargeRequest) (*RechargeInfo, error)
 	GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalanceInfo, error)
 	GetWithdrawal(context.Context, *GetWithdrawalRequest) (*WithdrawalInfo, error)
@@ -55,6 +59,8 @@ func RegisterFinanceHTTPServer(s *http.Server, srv FinanceHTTPServer) {
 	r.GET("/api/v1/finance/balance-logs", _Finance_ListBalanceLogs0_HTTP_Handler(srv))
 	r.POST("/api/v1/finance/checkin", _Finance_CheckIn0_HTTP_Handler(srv))
 	r.GET("/api/v1/finance/balance/{user_id}", _Finance_GetUserBalance0_HTTP_Handler(srv))
+	r.POST("/api/v1/finance/balance-log", _Finance_CreateBalanceLog0_HTTP_Handler(srv))
+	r.POST("/api/v1/finance/hash-power/convert", _Finance_ConvertHashPower0_HTTP_Handler(srv))
 }
 
 func _Finance_Recharge0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
@@ -265,8 +271,54 @@ func _Finance_GetUserBalance0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.
 	}
 }
 
+func _Finance_CreateBalanceLog0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateBalanceLogRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFinanceCreateBalanceLog)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateBalanceLog(ctx, req.(*CreateBalanceLogRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*BalanceLogInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Finance_ConvertHashPower0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ConvertHashPowerRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFinanceConvertHashPower)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ConvertHashPower(ctx, req.(*ConvertHashPowerRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*HashPowerConversionInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
 type FinanceHTTPClient interface {
 	CheckIn(ctx context.Context, req *CheckInRequest, opts ...http.CallOption) (rsp *CheckInResponse, err error)
+	ConvertHashPower(ctx context.Context, req *ConvertHashPowerRequest, opts ...http.CallOption) (rsp *HashPowerConversionInfo, err error)
+	CreateBalanceLog(ctx context.Context, req *CreateBalanceLogRequest, opts ...http.CallOption) (rsp *BalanceLogInfo, err error)
 	GetRecharge(ctx context.Context, req *GetRechargeRequest, opts ...http.CallOption) (rsp *RechargeInfo, err error)
 	GetUserBalance(ctx context.Context, req *GetUserBalanceRequest, opts ...http.CallOption) (rsp *UserBalanceInfo, err error)
 	GetWithdrawal(ctx context.Context, req *GetWithdrawalRequest, opts ...http.CallOption) (rsp *WithdrawalInfo, err error)
@@ -291,6 +343,32 @@ func (c *FinanceHTTPClientImpl) CheckIn(ctx context.Context, in *CheckInRequest,
 	pattern := "/api/v1/finance/checkin"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFinanceCheckIn))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FinanceHTTPClientImpl) ConvertHashPower(ctx context.Context, in *ConvertHashPowerRequest, opts ...http.CallOption) (*HashPowerConversionInfo, error) {
+	var out HashPowerConversionInfo
+	pattern := "/api/v1/finance/hash-power/convert"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFinanceConvertHashPower))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FinanceHTTPClientImpl) CreateBalanceLog(ctx context.Context, in *CreateBalanceLogRequest, opts ...http.CallOption) (*BalanceLogInfo, error) {
+	var out BalanceLogInfo
+	pattern := "/api/v1/finance/balance-log"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFinanceCreateBalanceLog))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

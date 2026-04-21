@@ -6,6 +6,24 @@ info:
     title: Finance API
     version: 0.0.1
 paths:
+    /api/v1/finance/balance-log:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_CreateBalanceLog
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.CreateBalanceLogRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.BalanceLogInfo'
     /api/v1/finance/balance-logs:
         get:
             tags:
@@ -76,6 +94,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/finance.v1.CheckInResponse'
+    /api/v1/finance/hash-power/convert:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_ConvertHashPower
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.ConvertHashPowerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.HashPowerConversionInfo'
     /api/v1/finance/income-logs:
         get:
             tags:
@@ -294,6 +330,64 @@ components:
                 rewardPoints:
                     type: number
                     format: double
+        finance.v1.ConvertHashPowerRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                amount:
+                    type: number
+                    format: double
+        finance.v1.CreateBalanceLogRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                type:
+                    type: integer
+                    format: int32
+                amount:
+                    type: number
+                    format: double
+                beforeBalance:
+                    type: number
+                    format: double
+                afterBalance:
+                    type: number
+                    format: double
+                remark:
+                    type: string
+                relatedId:
+                    type: integer
+                    format: uint32
+        finance.v1.HashPowerConversionInfo:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                amount:
+                    type: number
+                    format: double
+                beforeHashrate:
+                    type: number
+                    format: double
+                afterHashrate:
+                    type: number
+                    format: double
+                beforeBalance:
+                    type: number
+                    format: double
+                afterBalance:
+                    type: number
+                    format: double
+                remark:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
         finance.v1.IncomeLogInfo:
             type: object
             properties:

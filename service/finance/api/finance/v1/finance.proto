@@ -61,6 +61,18 @@ service Finance {
       get: "/api/v1/finance/balance/{user_id}"
     };
   }
+  rpc CreateBalanceLog(CreateBalanceLogRequest) returns (BalanceLogInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/finance/balance-log"
+      body: "*"
+    };
+  }
+  rpc ConvertHashPower(ConvertHashPowerRequest) returns (HashPowerConversionInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/finance/hash-power/convert"
+      body: "*"
+    };
+  }
 }
 
 message RechargeInfo {
@@ -200,4 +212,30 @@ message UserBalanceInfo {
 
 message GetUserBalanceRequest {
   uint32 user_id = 1;
+}
+
+message CreateBalanceLogRequest {
+  uint32 user_id = 1;
+  int32 type = 2;
+  double amount = 3;
+  double before_balance = 4;
+  double after_balance = 5;
+  string remark = 6;
+  uint32 related_id = 7;
+}
+
+message ConvertHashPowerRequest {
+  uint32 user_id = 1;
+  double amount = 2;
+}
+
+message HashPowerConversionInfo {
+  uint32 user_id = 1;
+  double amount = 2;
+  double before_hashrate = 3;
+  double after_hashrate = 4;
+  double before_balance = 5;
+  double after_balance = 6;
+  string remark = 7;
+  google.protobuf.Timestamp created_at = 8;
 }

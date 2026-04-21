@@ -70,3 +70,24 @@ func (r *balanceLogRepo) ListBalanceLogs(ctx context.Context, userID uint32, typ
 	}
 	return bizLogs, uint32(total), nil
 }
+
+func (r *balanceLogRepo) CreateBalanceLog(ctx context.Context, log *biz.BalanceLog) (*biz.BalanceLog, error) {
+	dataLog := &BalanceLog{
+		UserID:        log.UserID,
+		Type:          int8(log.Type),
+		Amount:        log.Amount,
+		BeforeBalance: log.BeforeBalance,
+		AfterBalance:  log.AfterBalance,
+		Remark:        log.Remark,
+		RelatedID:     log.RelatedID,
+		CreatedAt:     time.Now(),
+	}
+
+	if err := r.data.db.WithContext(ctx).Create(dataLog).Error; err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create balance log: %v", err)
+	}
+
+	log.ID = dataLog.ID
+	log.CreatedAt = dataLog.CreatedAt
+	return log, nil
+}

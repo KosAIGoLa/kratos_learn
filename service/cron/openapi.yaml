@@ -3,7 +3,8 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: Cron API
+    description: Cron 定时任务服务
     version: 0.0.1
 paths:
     /cron/v1/tasks:
@@ -56,25 +57,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.cron.v1.RemoveTaskReply'
-    /helloworld/{name}:
-        get:
-            tags:
-                - Greeter
-            description: Sends a greeting
-            operationId: Greeter_SayHello
-            parameters:
-                - name: name
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/helloworld.v1.HelloReply'
 components:
     schemas:
         api.cron.v1.AddTaskReply:
@@ -121,14 +103,5 @@ components:
                 prevRun:
                     type: string
             description: 任务信息
-        helloworld.v1.HelloReply:
-            type: object
-            properties:
-                message:
-                    type: string
-            description: The response message containing the greetings
 tags:
     - name: Cron
-      description: Cron 定时任务服务
-    - name: Greeter
-      description: The greeting service definition.

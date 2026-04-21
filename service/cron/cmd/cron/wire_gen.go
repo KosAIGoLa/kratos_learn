@@ -9,6 +9,7 @@ package main
 import (
 	"cron/internal/conf"
 	"cron/internal/cron"
+	"cron/internal/data"
 	"cron/internal/server"
 	"cron/internal/service"
 	"github.com/go-kratos/kratos/v2"
@@ -22,13 +23,22 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application with cron support.
-func wireApp(confServer *conf.Server, data *conf.Data, logger log.Logger) (*kratos.App, func(), error) {
+func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
 	scheduler := cron.NewScheduler(logger)
-	taskManager := cron.NewTaskManager(scheduler, logger)
+	financeClient, err := data.NewFinanceClient(bootstrap, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	dataData, cleanup, err := data.NewData(financeClient, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+	taskManager := cron.NewTaskManagerWithData(scheduler, dataData, logger)
 	cronService := service.NewCronService(taskManager, logger)
-	grpcServer := server.NewGRPCServer(confServer, cronService, logger)
-	httpServer := server.NewHTTPServer(confServer, cronService, logger)
+	grpcServer := server.NewGRPCServer(bootstrap, cronService, logger)
+	httpServer := server.NewHTTPServer(bootstrap, cronService, logger)
 	app := newApp(logger, grpcServer, httpServer, taskManager, scheduler)
 	return app, func() {
+		cleanup()
 	}, nil
 }
