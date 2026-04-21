@@ -1,6 +1,10 @@
 package data
 
 import (
+	slog "log"
+	"os"
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/extra/redisotel/v9"
@@ -9,9 +13,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	slog "log"
-	"os"
-	"time"
 
 	"payment/internal/conf"
 )

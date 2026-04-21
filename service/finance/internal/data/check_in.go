@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 // CheckIn 签到数据模型
@@ -57,7 +58,10 @@ func (r *checkInRepo) CheckIn(ctx context.Context, c *biz.CheckIn) (*biz.CheckIn
 func (r *checkInRepo) GetLastCheckIn(ctx context.Context, userID uint32) (*biz.CheckIn, error) {
 	var checkIn CheckIn
 	if err := r.data.db.Where("user_id = ?", userID).Order("created_at DESC").First(&checkIn).Error; err != nil {
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get last check-in: %v", err)
 	}
 	return &biz.CheckIn{
 		ID:              checkIn.ID,

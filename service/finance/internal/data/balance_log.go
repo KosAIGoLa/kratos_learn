@@ -37,6 +37,10 @@ func NewBalanceLogRepo(data *Data, logger log.Logger) biz.BalanceLogRepo {
 }
 
 func (r *balanceLogRepo) ListBalanceLogs(ctx context.Context, userID uint32, typ int32, page, pageSize uint32) ([]*biz.BalanceLog, uint32, error) {
+	if page == 0 || pageSize == 0 {
+		return nil, 0, status.Errorf(codes.InvalidArgument, "page and pageSize must be greater than 0")
+	}
+
 	var logs []BalanceLog
 	var total int64
 

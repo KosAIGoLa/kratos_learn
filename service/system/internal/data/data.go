@@ -4,6 +4,9 @@ import (
 	"context"
 	"time"
 
+	slog "log"
+	"os"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/extra/redisotel/v9"
@@ -15,8 +18,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	slog "log"
-	"os"
+	"gorm.io/plugin/dbresolver"
 
 	"system/internal/conf"
 )
@@ -59,6 +61,13 @@ func NewDB(c *conf.Data) *gorm.DB {
 	})
 	if err != nil {
 		panic("failed to connect database")
+	}
+	if c.Database != nil && c.Database.SlaveSource != "" {
+		if err := db.Use(dbresolver.Register(dbresolver.Config{
+			Replicas: []gorm.Dialector{mysql.Open(c.Database.SlaveSource)},
+		})); err != nil {
+			panic("failed to register dbresolver: " + err.Error())
+		}
 	}
 	return db
 }

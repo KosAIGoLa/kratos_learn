@@ -2,8 +2,6 @@ package data
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"time"
 
@@ -33,11 +31,15 @@ func (c *WithdrawalConsumer) Start(ctx context.Context) error {
 	}
 
 	handler := func(msg *WithdrawalMessage) error {
-		// 基于业务主键生成稳定幂等键，避免消息重复投递时重复入库。
-		requestHash := sha256.Sum256([]byte(fmt.Sprintf("%d:%s:%.2f", msg.UserID, msg.BankCard, msg.Amount)))
-		lockKey := fmt.Sprintf("withdrawal:idempotency:%s", hex.EncodeToString(requestHash[:]))
+		if msg.RequestID == "" {
+			c.log.Errorf("withdrawal message missing request_id, cannot ensure idempotency")
+			return fmt.Errorf("missing request_id")
+		}
 
-		// 尝试获取幂等锁，短时间内相同请求只允许处理一次。
+		// 基于请求ID生成幂等键，精确识别每笔独立提现。
+		lockKey := fmt.Sprintf("withdrawal:idempotency:%s", msg.RequestID)
+
+		// 尝试获取幂等锁，相同 request_id 只允许处理一次。
 		result, err := c.data.rdb.SetArgs(ctx, lockKey, "1", redis.SetArgs{
 			Mode: "NX",
 			TTL:  24 * time.Hour,
@@ -47,7 +49,7 @@ func (c *WithdrawalConsumer) Start(ctx context.Context) error {
 			return err
 		}
 		if result != "OK" {
-			c.log.Warnf("duplicate withdrawal detected, skip processing: user_id=%d, amount=%.2f", msg.UserID, msg.Amount)
+			c.log.Warnf("duplicate withdrawal detected, skip processing: request_id=%s", msg.RequestID)
 			return nil // 重复请求，直接返回成功，不处理
 		}
 

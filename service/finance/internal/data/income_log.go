@@ -38,6 +38,10 @@ func NewIncomeLogRepo(data *Data, logger log.Logger) biz.IncomeLogRepo {
 }
 
 func (r *incomeLogRepo) ListIncomeLogs(ctx context.Context, userID uint32, sourceType int32, page, pageSize uint32) ([]*biz.IncomeLog, uint32, error) {
+	if page == 0 || pageSize == 0 {
+		return nil, 0, status.Errorf(codes.InvalidArgument, "page and pageSize must be greater than 0")
+	}
+
 	var logs []IncomeLog
 	var total int64
 

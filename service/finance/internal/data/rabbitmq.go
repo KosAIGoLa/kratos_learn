@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"finance/internal/biz"
 	"finance/internal/conf"
+	"fmt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/rabbitmq/amqp091-go"
@@ -22,12 +23,13 @@ type RabbitMQClient struct {
 
 // WithdrawalMessage 提款消息
 type WithdrawalMessage struct {
-	UserID   uint32  `json:"user_id"`
-	Amount   float64 `json:"amount"`
-	BankCard string  `json:"bank_card"`
-	BankName string  `json:"bank_name"`
-	Phone    string  `json:"phone"`
-	Name     string  `json:"name"`
+	RequestID string  `json:"request_id"`
+	UserID    uint32  `json:"user_id"`
+	Amount    float64 `json:"amount"`
+	BankCard  string  `json:"bank_card"`
+	BankName  string  `json:"bank_name"`
+	Phone     string  `json:"phone"`
+	Name      string  `json:"name"`
 }
 
 // NewRabbitMQClient 创建 RabbitMQ 客户端
@@ -126,16 +128,17 @@ func NewRabbitMQClient(c *conf.Data, logger log.Logger) (*RabbitMQClient, func()
 // PublishWithdrawal 发布提款消息 (实现 biz.WithdrawalMessageQueue 接口)
 func (c *RabbitMQClient) PublishWithdrawal(ctx context.Context, w *biz.Withdrawal) error {
 	if c == nil || c.channel == nil {
-		return nil
+		return fmt.Errorf("rabbitmq not configured, cannot publish withdrawal")
 	}
 
 	msg := &WithdrawalMessage{
-		UserID:   w.UserID,
-		Amount:   w.Amount,
-		BankCard: w.BankCard,
-		BankName: w.BankName,
-		Phone:    w.Phone,
-		Name:     w.Name,
+		RequestID: w.RequestID,
+		UserID:    w.UserID,
+		Amount:    w.Amount,
+		BankCard:  w.BankCard,
+		BankName:  w.BankName,
+		Phone:     w.Phone,
+		Name:      w.Name,
 	}
 
 	body, err := json.Marshal(msg)

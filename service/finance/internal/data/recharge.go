@@ -2,6 +2,8 @@ package data
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"time"
 
@@ -40,12 +42,16 @@ func NewRechargeRepo(data *Data, logger log.Logger) biz.RechargeRepo {
 }
 
 func (r *rechargeRepo) CreateRecharge(ctx context.Context, re *biz.Recharge) (*biz.Recharge, error) {
+	orderNo := re.OrderNo
+	if orderNo == "" {
+		orderNo = generateRechargeOrderNo()
+	}
 	recharge := Recharge{
 		UserID:     re.UserID,
 		InviteCode: re.InviteCode,
 		Phone:      re.Phone,
 		Name:       re.Name,
-		OrderNo:    generateRechargeOrderNo(),
+		OrderNo:    orderNo,
 		Amount:     re.Amount,
 		Status:     0, // 待支付
 		CreatedAt:  time.Now(),
@@ -68,6 +74,10 @@ func (r *rechargeRepo) GetRechargeByOrderNo(ctx context.Context, orderNo string)
 }
 
 func (r *rechargeRepo) ListRecharges(ctx context.Context, userID uint32, statusFilter int32, page, pageSize uint32) ([]*biz.Recharge, uint32, error) {
+	if page == 0 || pageSize == 0 {
+		return nil, 0, status.Errorf(codes.InvalidArgument, "page and pageSize must be greater than 0")
+	}
+
 	var recharges []Recharge
 	var total int64
 
@@ -107,5 +117,7 @@ func (r *rechargeRepo) toBizRecharge(re *Recharge) *biz.Recharge {
 }
 
 func generateRechargeOrderNo() string {
-	return fmt.Sprintf("REC%d", time.Now().UnixNano())
+	b := make([]byte, 4)
+	_, _ = rand.Read(b)
+	return fmt.Sprintf("REC%d%s", time.Now().UnixNano(), hex.EncodeToString(b))
 }

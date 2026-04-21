@@ -422,6 +422,7 @@ type Data_Database struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Driver        string                 `protobuf:"bytes,1,opt,name=driver,proto3" json:"driver,omitempty"`
 	Source        string                 `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
+	SlaveSource   string                 `protobuf:"bytes,3,opt,name=slave_source,json=slaveSource,proto3" json:"slave_source,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -466,6 +467,13 @@ func (x *Data_Database) GetDriver() string {
 func (x *Data_Database) GetSource() string {
 	if x != nil {
 		return x.Source
+	}
+	return ""
+}
+
+func (x *Data_Database) GetSlaveSource() string {
+	if x != nil {
+		return x.SlaveSource
 	}
 	return ""
 }

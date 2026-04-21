@@ -7,6 +7,7 @@ import (
 	"github.com/google/wire"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/dbresolver"
 )
 
 // ProviderSet is data providers.
@@ -31,6 +32,15 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	if err := db.AutoMigrate(&SmsLogModel{}); err != nil {
 		log.Errorf("failed to migrate database: %v", err)
 		return nil, nil, err
+	}
+
+	if c.Database != nil && c.Database.SlaveSource != "" {
+		if err := db.Use(dbresolver.Register(dbresolver.Config{
+			Replicas: []gorm.Dialector{mysql.Open(c.Database.SlaveSource)},
+		})); err != nil {
+			log.Errorf("failed to register dbresolver: %v", err)
+			return nil, nil, err
+		}
 	}
 
 	cleanup := func() {

@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
-	"time"
+	"fmt"
+	"strconv"
 
 	v1 "finance/api/finance/v1"
 	"finance/internal/biz"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -15,6 +17,44 @@ type FinanceService struct {
 	v1.UnimplementedFinanceServer
 	uc  *biz.FinanceUsecase
 	log *log.Helper
+}
+
+func getCurrentUserID(ctx context.Context) (uint32, bool) {
+	md, ok := metadata.FromServerContext(ctx)
+	if !ok {
+		return 0, false
+	}
+	userIDStr := md.Get("x-md-user-id")
+	if userIDStr == "" {
+		return 0, false
+	}
+	uid, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil {
+		return 0, false
+	}
+	return uint32(uid), true
+}
+
+func checkUserOwnership(ctx context.Context, reqUserID uint32) error {
+	currentUserID, ok := getCurrentUserID(ctx)
+	if !ok || reqUserID == 0 {
+		return nil
+	}
+	if reqUserID != currentUserID {
+		return fmt.Errorf("unauthorized: user_id mismatch")
+	}
+	return nil
+}
+
+func checkInternalService(ctx context.Context) error {
+	md, ok := metadata.FromServerContext(ctx)
+	if !ok {
+		return fmt.Errorf("unauthorized: internal service only")
+	}
+	if md.Get("x-md-internal-service") == "" {
+		return fmt.Errorf("unauthorized: internal service only")
+	}
+	return nil
 }
 
 // NewFinanceService 创建财务服务
@@ -27,6 +67,9 @@ func NewFinanceService(uc *biz.FinanceUsecase, logger log.Logger) *FinanceServic
 
 // Recharge 充值
 func (s *FinanceService) Recharge(ctx context.Context, req *v1.RechargeRequest) (*v1.RechargeInfo, error) {
+	if err := checkUserOwnership(ctx, req.UserId); err != nil {
+		return nil, err
+	}
 	recharge, err := s.uc.Recharge(ctx, &biz.Recharge{
 		UserID: req.UserId,
 		Amount: req.Amount,
@@ -66,6 +109,9 @@ func (s *FinanceService) ListRecharges(ctx context.Context, req *v1.ListRecharge
 
 // Withdraw 提现
 func (s *FinanceService) Withdraw(ctx context.Context, req *v1.WithdrawRequest) (*v1.WithdrawalInfo, error) {
+	if err := checkUserOwnership(ctx, req.UserId); err != nil {
+		return nil, err
+	}
 	withdrawal, err := s.uc.Withdraw(ctx, &biz.Withdrawal{
 		UserID:   req.UserId,
 		Amount:   req.Amount,
@@ -145,11 +191,11 @@ func (s *FinanceService) ListBalanceLogs(ctx context.Context, req *v1.ListBalanc
 
 // CheckIn 签到
 func (s *FinanceService) CheckIn(ctx context.Context, req *v1.CheckInRequest) (*v1.CheckInResponse, error) {
+	if err := checkUserOwnership(ctx, req.UserId); err != nil {
+		return nil, err
+	}
 	checkIn, err := s.uc.CheckIn(ctx, &biz.CheckIn{
-		UserID:          req.UserId,
-		CheckInDate:     time.Now().Format("2006-01-02"),
-		ConsecutiveDays: 1,
-		RewardPoints:    10,
+		UserID: req.UserId,
 	})
 	if err != nil {
 		return nil, err
@@ -176,6 +222,9 @@ func (s *FinanceService) GetUserBalance(ctx context.Context, req *v1.GetUserBala
 
 // ConvertHashPower 手动算力转余额
 func (s *FinanceService) ConvertHashPower(ctx context.Context, req *v1.ConvertHashPowerRequest) (*v1.HashPowerConversionInfo, error) {
+	if err := checkUserOwnership(ctx, req.UserId); err != nil {
+		return nil, err
+	}
 	conversion, err := s.uc.ConvertHashrate(ctx, req.UserId, req.Amount)
 	if err != nil {
 		return nil, err
@@ -194,7 +243,14 @@ func (s *FinanceService) ConvertHashPower(ctx context.Context, req *v1.ConvertHa
 }
 
 // CreateBalanceLog 创建余额变动记录
+// 仅允许内部服务调用，外部用户应通过业务接口（如 Recharge/Withdraw）间接产生流水。
 func (s *FinanceService) CreateBalanceLog(ctx context.Context, req *v1.CreateBalanceLogRequest) (*v1.BalanceLogInfo, error) {
+	if err := checkInternalService(ctx); err != nil {
+		return nil, err
+	}
+	if req.Type <= 0 || req.Amount <= 0 {
+		return nil, fmt.Errorf("invalid balance log: type and amount must be greater than 0")
+	}
 	log, err := s.uc.CreateBalanceLog(ctx, &biz.BalanceLog{
 		UserID:        req.UserId,
 		Type:          req.Type,

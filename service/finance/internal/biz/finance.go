@@ -2,6 +2,8 @@ package biz
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -23,6 +25,7 @@ type Recharge struct {
 // Withdrawal 提现领域模型
 type Withdrawal struct {
 	ID          uint64
+	RequestID   string
 	UserID      uint32
 	Phone       string
 	Name        string
@@ -177,19 +180,43 @@ func NewFinanceUsecase(
 
 // Recharge 充值
 func (uc *FinanceUsecase) Recharge(ctx context.Context, r *Recharge) (*Recharge, error) {
+	if r == nil {
+		return nil, errors.New("recharge data is nil")
+	}
+	if r.Amount <= 0 {
+		return nil, fmt.Errorf("recharge amount must be greater than 0, got %.2f", r.Amount)
+	}
 	return uc.rechargeRepo.CreateRecharge(ctx, r)
 }
 
 // Withdraw 提现 - 推送到消息队列进行异步处理
 func (uc *FinanceUsecase) Withdraw(ctx context.Context, w *Withdrawal) (*Withdrawal, error) {
+	if w == nil {
+		return nil, errors.New("withdrawal data is nil")
+	}
+	if w.Amount <= 0 {
+		return nil, fmt.Errorf("withdrawal amount must be greater than 0, got %.2f", w.Amount)
+	}
+	asset, err := uc.userAssetRepo.GetUserAsset(ctx, w.UserID)
+	if err != nil {
+		return nil, err
+	}
+	if asset.Balance < w.Amount {
+		return nil, fmt.Errorf("insufficient balance: available %.2f, requested %.2f", asset.Balance, w.Amount)
+	}
+
+	// 生成唯一请求ID用于幂等控制
+	w.RequestID = fmt.Sprintf("WDR-%d-%d", w.UserID, time.Now().UnixNano())
+
 	// 推送到 RabbitMQ 消息队列
 	if err := uc.withdrawalMessageQueue.PublishWithdrawal(ctx, w); err != nil {
 		return nil, err
 	}
-	uc.log.Infof("withdrawal request queued: user_id=%d, amount=%.2f", w.UserID, w.Amount)
+	uc.log.Infof("withdrawal request queued: user_id=%d, amount=%.2f, request_id=%s", w.UserID, w.Amount, w.RequestID)
 
 	// 返回一个临时状态，实际记录由消费者创建
 	return &Withdrawal{
+		RequestID: w.RequestID,
 		UserID:    w.UserID,
 		Amount:    w.Amount,
 		BankCard:  w.BankCard,
@@ -236,8 +263,42 @@ func (uc *FinanceUsecase) CreateBalanceLog(ctx context.Context, log *BalanceLog)
 	return uc.balanceLogRepo.CreateBalanceLog(ctx, log)
 }
 
-// CheckIn 签到
+// CheckIn 签到，自动计算连续签到天数和奖励
 func (uc *FinanceUsecase) CheckIn(ctx context.Context, c *CheckIn) (*CheckIn, error) {
+	if c == nil {
+		return nil, errors.New("check-in data is nil")
+	}
+
+	lastCheckIn, err := uc.checkInRepo.GetLastCheckIn(ctx, c.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	today := time.Now().Format("2006-01-02")
+	c.CheckInDate = today
+
+	if lastCheckIn != nil {
+		lastDate, _ := time.Parse("2006-01-02", lastCheckIn.CheckInDate)
+		yesterday := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+		if lastDate.Format("2006-01-02") == yesterday {
+			c.ConsecutiveDays = lastCheckIn.ConsecutiveDays + 1
+		} else {
+			c.ConsecutiveDays = 1
+		}
+	} else {
+		c.ConsecutiveDays = 1
+	}
+
+	// 动态计算奖励
+	switch {
+	case c.ConsecutiveDays >= 7:
+		c.RewardPoints = 20.0
+	case c.ConsecutiveDays >= 3:
+		c.RewardPoints = 15.0
+	default:
+		c.RewardPoints = 10.0
+	}
+
 	return uc.checkInRepo.CheckIn(ctx, c)
 }
 

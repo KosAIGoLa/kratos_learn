@@ -17,6 +17,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"gorm.io/plugin/dbresolver"
 )
 
 // ProviderSet is data providers.
@@ -43,6 +44,9 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, ra
 		log.NewHelper(logger).Info("closing the data resources")
 		if rabbitmq != nil {
 			rabbitmq.Close()
+		}
+		if userClient != nil {
+			_ = userClient.Close()
 		}
 	}
 
@@ -79,6 +83,14 @@ func NewDB(c *conf.Data) *gorm.DB {
 	})
 	if err != nil {
 		panic("failed to connect database")
+	}
+	// 读写分离：配置 slave 数据源
+	if c.Database != nil && c.Database.SlaveSource != "" {
+		if err := db.Use(dbresolver.Register(dbresolver.Config{
+			Replicas: []gorm.Dialector{mysql.Open(c.Database.SlaveSource)},
+		})); err != nil {
+			panic("failed to register dbresolver: " + err.Error())
+		}
 	}
 	return db
 }

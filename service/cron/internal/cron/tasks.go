@@ -424,7 +424,15 @@ func (tm *TaskManager) expiredMembersCleanup() {
 				continue
 			}
 			cleanupCount++
-		} else if daysSinceExpiry > 90 {
+		} else if daysSinceExpiry <= 90 {
+			// 31-90 天：确认过期状态，等待归档
+			if err := tm.markMemberAsExpired(member.ID); err != nil {
+				tm.log.Errorf("标记会员 [%s] 过期(长期)失败: %v", member.ID, err)
+				continue
+			}
+			tm.log.Infof("会员 [%s] 已过期 %d 天，等待归档", member.ID, daysSinceExpiry)
+			cleanupCount++
+		} else {
 			// 超过 90 天：归档并删除
 			if err := tm.archiveAndDeleteMember(member); err != nil {
 				tm.log.Errorf("归档会员 [%s] 失败: %v", member.ID, err)
@@ -763,10 +771,11 @@ func (tm *TaskManager) dailyTaskReward() {
 		// 基础奖励 + 连续签到加成
 		baseReward := 5.0                                       // 基础工分奖励
 		consecutiveBonus := float64(user.ConsecutiveDays) * 0.5 // 连续签到加成
-		totalReward := baseReward + consecutiveBonus
+		reward := baseReward + consecutiveBonus
 
 		// 增加用户工分
-		user.WorkPoints += totalReward
+		user.WorkPoints += reward
+		totalReward += reward
 
 		// 更新用户工分
 		if err := tm.updateUserWorkPoints(user.ID, user.WorkPoints); err != nil {
@@ -775,7 +784,7 @@ func (tm *TaskManager) dailyTaskReward() {
 		}
 
 		// 记录奖励日志
-		tm.recordTaskReward(user.ID, "daily_checkin", totalReward, today)
+		tm.recordTaskReward(user.ID, "daily_checkin", reward, today)
 
 		rewardCount++
 	}
@@ -924,15 +933,15 @@ func (tm *TaskManager) userDailyReset() {
 
 	resetCount := 0
 	for _, user := range users {
+		// 先累加昨日工分到月度，再清零
+		user.MonthlyWorkPoints += user.DailyWorkPoints
+
 		// 重置每日工分获取状态
 		user.DailyWorkPoints = 0
 		user.DailyPointsLimitReached = false
 
 		// 重置任务完成状态
 		user.DailyTasks = []DailyTaskStatus{}
-
-		// 将昨日工分累计到月度
-		user.MonthlyWorkPoints += user.DailyWorkPoints
 
 		// 更新用户数据
 		if err := tm.updateUserDailyStats(user.ID, user.DailyWorkPoints, user.MonthlyWorkPoints); err != nil {

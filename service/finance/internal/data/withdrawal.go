@@ -70,6 +70,10 @@ func (r *withdrawalRepo) GetWithdrawal(ctx context.Context, id uint64) (*biz.Wit
 }
 
 func (r *withdrawalRepo) ListWithdrawals(ctx context.Context, userID uint32, statusFilter int32, page, pageSize uint32) ([]*biz.Withdrawal, uint32, error) {
+	if page == 0 || pageSize == 0 {
+		return nil, 0, status.Errorf(codes.InvalidArgument, "page and pageSize must be greater than 0")
+	}
+
 	var withdrawals []Withdrawal
 	var total int64
 

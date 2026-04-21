@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"gorm.io/plugin/dbresolver"
 	slog "log"
 	"os"
 	"time"
@@ -50,6 +51,13 @@ func NewDB(c *conf.Data) *gorm.DB {
 	})
 	if err != nil {
 		panic("failed to connect database")
+	}
+	if c.Database != nil && c.Database.SlaveSource != "" {
+		if err := db.Use(dbresolver.Register(dbresolver.Config{
+			Replicas: []gorm.Dialector{mysql.Open(c.Database.SlaveSource)},
+		})); err != nil {
+			panic("failed to register dbresolver: " + err.Error())
+		}
 	}
 	return db
 }
