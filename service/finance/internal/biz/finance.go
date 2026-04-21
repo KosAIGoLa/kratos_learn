@@ -61,6 +61,14 @@ type BalanceLog struct {
 	CreatedAt     time.Time
 }
 
+const (
+	BalanceLogTypeRecharge           int32 = 1
+	BalanceLogTypeWithdraw           int32 = 2
+	BalanceLogTypeIncome             int32 = 3
+	BalanceLogTypeDeduction          int32 = 4
+	BalanceLogTypeHashrateConversion int32 = 5
+)
+
 // CheckIn 签到领域模型
 type CheckIn struct {
 	ID              uint64

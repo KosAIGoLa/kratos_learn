@@ -310,6 +310,15 @@ Content-Type: application/json
 ### 獲取用戶餘額
 GET http://localhost:8102/api/v1/finance/balance/1
 
+### 手動將算力轉成餘額
+POST http://localhost:8102/api/v1/finance/hash-power/convert
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "amount": 100.00
+}
+
 ### 獲取餘額變動記錄
 GET http://localhost:8102/api/v1/finance/balance-logs?userId=1&page=1&pageSize=10
 
@@ -326,7 +335,7 @@ Content-Type: application/json
 {
   "userId": 1,
   "amount": 1000.00,
-  "paymentMethod": "alipay"
+  "channelCode": "alipay"
 }
 
 ### 根據訂單號獲取充值

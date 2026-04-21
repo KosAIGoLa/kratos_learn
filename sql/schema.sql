@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `income_logs` (
 CREATE TABLE IF NOT EXISTS `balance_logs` (
     `id` BIGINT UNSIGNED AUTO_INCREMENT,
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
-    `type` TINYINT NOT NULL COMMENT '类型: 1充值 2提现 3收益 4扣除',
+    `type` TINYINT NOT NULL COMMENT '类型: 1充值 2提现 3收益 4扣除 5算力转余额',
     `amount` DECIMAL(15,2) NOT NULL COMMENT '变动金额',
     `before_balance` DECIMAL(15,2) NOT NULL COMMENT '变动前余额',
     `after_balance` DECIMAL(15,2) NOT NULL COMMENT '变动后余额',
