@@ -30,6 +30,7 @@ const (
 	User_GetKYC_FullMethodName          = "/user.v1.User/GetKYC"
 	User_GetTeamRelation_FullMethodName = "/user.v1.User/GetTeamRelation"
 	User_GetTeamMembers_FullMethodName  = "/user.v1.User/GetTeamMembers"
+	User_AdjustUserAsset_FullMethodName = "/user.v1.User/AdjustUserAsset"
 )
 
 // UserClient is the client API for User service.
@@ -47,6 +48,7 @@ type UserClient interface {
 	GetKYC(ctx context.Context, in *GetKYCRequest, opts ...grpc.CallOption) (*KYCInfo, error)
 	GetTeamRelation(ctx context.Context, in *GetTeamRequest, opts ...grpc.CallOption) (*TeamRelationInfo, error)
 	GetTeamMembers(ctx context.Context, in *GetTeamMembersRequest, opts ...grpc.CallOption) (*TeamMembersResponse, error)
+	AdjustUserAsset(ctx context.Context, in *AdjustUserAssetRequest, opts ...grpc.CallOption) (*UserInfo, error)
 }
 
 type userClient struct {
@@ -167,6 +169,16 @@ func (c *userClient) GetTeamMembers(ctx context.Context, in *GetTeamMembersReque
 	return out, nil
 }
 
+func (c *userClient) AdjustUserAsset(ctx context.Context, in *AdjustUserAssetRequest, opts ...grpc.CallOption) (*UserInfo, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserInfo)
+	err := c.cc.Invoke(ctx, User_AdjustUserAsset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
@@ -182,6 +194,7 @@ type UserServer interface {
 	GetKYC(context.Context, *GetKYCRequest) (*KYCInfo, error)
 	GetTeamRelation(context.Context, *GetTeamRequest) (*TeamRelationInfo, error)
 	GetTeamMembers(context.Context, *GetTeamMembersRequest) (*TeamMembersResponse, error)
+	AdjustUserAsset(context.Context, *AdjustUserAssetRequest) (*UserInfo, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -224,6 +237,9 @@ func (UnimplementedUserServer) GetTeamRelation(context.Context, *GetTeamRequest)
 }
 func (UnimplementedUserServer) GetTeamMembers(context.Context, *GetTeamMembersRequest) (*TeamMembersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTeamMembers not implemented")
+}
+func (UnimplementedUserServer) AdjustUserAsset(context.Context, *AdjustUserAssetRequest) (*UserInfo, error) {
+	return nil, status.Error(codes.Unimplemented, "method AdjustUserAsset not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -444,6 +460,24 @@ func _User_GetTeamMembers_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_AdjustUserAsset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AdjustUserAssetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).AdjustUserAsset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_AdjustUserAsset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).AdjustUserAsset(ctx, req.(*AdjustUserAssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -494,6 +528,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTeamMembers",
 			Handler:    _User_GetTeamMembers_Handler,
+		},
+		{
+			MethodName: "AdjustUserAsset",
+			Handler:    _User_AdjustUserAsset_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,6 +6,24 @@ info:
     title: User API
     version: 0.0.1
 paths:
+    /api/v1/user/asset/adjust:
+        post:
+            tags:
+                - User
+            operationId: User_AdjustUserAsset
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/user.v1.AdjustUserAssetRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserInfo'
     /api/v1/user/captcha:
         get:
             tags:
@@ -225,6 +243,22 @@ paths:
                                 $ref: '#/components/schemas/user.v1.DeleteUserResponse'
 components:
     schemas:
+        user.v1.AdjustUserAssetRequest:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                balanceDelta:
+                    type: number
+                    format: double
+                workPointsDelta:
+                    type: number
+                    format: double
+                reason:
+                    type: string
+                requestId:
+                    type: string
         user.v1.DeleteUserResponse:
             type: object
             properties:

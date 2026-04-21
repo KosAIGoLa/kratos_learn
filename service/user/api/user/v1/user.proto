@@ -68,6 +68,12 @@ service User {
       get: "/api/v1/user/team/{user_id}/members"
     };
   }
+  rpc AdjustUserAsset(AdjustUserAssetRequest) returns (UserInfo) {
+    option (google.api.http) = {
+      post: "/api/v1/user/asset/adjust"
+      body: "*"
+    };
+  }
 }
 
 message UserInfo {
@@ -182,4 +188,12 @@ message GetTeamMembersRequest {
 message TeamMembersResponse {
   repeated UserInfo members = 1;
   uint32 total = 2;
+}
+
+message AdjustUserAssetRequest {
+  uint32 user_id = 1;
+  double balance_delta = 2;
+  double work_points_delta = 3;
+  string reason = 4;
+  string request_id = 5;
 }

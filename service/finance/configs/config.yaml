@@ -22,6 +22,12 @@ data:
     queue: withdrawal.queue
     routing_key: withdrawal
 
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 2s
+
 # 链路追踪 (OpenTelemetry)
 trace:
   endpoint: http://127.0.0.1:14268/api/traces

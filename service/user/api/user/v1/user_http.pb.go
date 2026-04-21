@@ -19,6 +19,7 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationUserAdjustUserAsset = "/user.v1.User/AdjustUserAsset"
 const OperationUserDeleteUser = "/user.v1.User/DeleteUser"
 const OperationUserGetCaptcha = "/user.v1.User/GetCaptcha"
 const OperationUserGetKYC = "/user.v1.User/GetKYC"
@@ -32,6 +33,7 @@ const OperationUserSubmitKYC = "/user.v1.User/SubmitKYC"
 const OperationUserUpdateUser = "/user.v1.User/UpdateUser"
 
 type UserHTTPServer interface {
+	AdjustUserAsset(context.Context, *AdjustUserAssetRequest) (*UserInfo, error)
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	GetCaptcha(context.Context, *GetCaptchaRequest) (*GetCaptchaResponse, error)
 	GetKYC(context.Context, *GetKYCRequest) (*KYCInfo, error)
@@ -58,6 +60,7 @@ func RegisterUserHTTPServer(s *http.Server, srv UserHTTPServer) {
 	r.GET("/api/v1/user/kyc/{user_id}", _User_GetKYC0_HTTP_Handler(srv))
 	r.GET("/api/v1/user/team/{user_id}", _User_GetTeamRelation0_HTTP_Handler(srv))
 	r.GET("/api/v1/user/team/{user_id}/members", _User_GetTeamMembers0_HTTP_Handler(srv))
+	r.POST("/api/v1/user/asset/adjust", _User_AdjustUserAsset0_HTTP_Handler(srv))
 }
 
 func _User_GetCaptcha0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
@@ -302,7 +305,30 @@ func _User_GetTeamMembers0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Contex
 	}
 }
 
+func _User_AdjustUserAsset0_HTTP_Handler(srv UserHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in AdjustUserAssetRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserAdjustUserAsset)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AdjustUserAsset(ctx, req.(*AdjustUserAssetRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserInfo)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserHTTPClient interface {
+	AdjustUserAsset(ctx context.Context, req *AdjustUserAssetRequest, opts ...http.CallOption) (rsp *UserInfo, err error)
 	DeleteUser(ctx context.Context, req *DeleteUserRequest, opts ...http.CallOption) (rsp *DeleteUserResponse, err error)
 	GetCaptcha(ctx context.Context, req *GetCaptchaRequest, opts ...http.CallOption) (rsp *GetCaptchaResponse, err error)
 	GetKYC(ctx context.Context, req *GetKYCRequest, opts ...http.CallOption) (rsp *KYCInfo, err error)
@@ -322,6 +348,19 @@ type UserHTTPClientImpl struct {
 
 func NewUserHTTPClient(client *http.Client) UserHTTPClient {
 	return &UserHTTPClientImpl{client}
+}
+
+func (c *UserHTTPClientImpl) AdjustUserAsset(ctx context.Context, in *AdjustUserAssetRequest, opts ...http.CallOption) (*UserInfo, error) {
+	var out UserInfo
+	pattern := "/api/v1/user/asset/adjust"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserAdjustUserAsset))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *UserHTTPClientImpl) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...http.CallOption) (*DeleteUserResponse, error) {

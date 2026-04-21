@@ -116,6 +116,44 @@ func (r *userRepo) UpdateUser(ctx context.Context, u *biz.User) (*biz.User, erro
 	return r.GetUserByID(ctx, u.ID)
 }
 
+func (r *userRepo) AdjustUserAsset(ctx context.Context, userID uint32, balanceDelta, workPointsDelta float64) (*biz.User, error) {
+	var updated *biz.User
+	err := r.data.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var user User
+		err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("id = ?", userID).
+			First(&user).Error
+		if err != nil {
+			if err == gorm.ErrRecordNotFound {
+				return status.Errorf(codes.NotFound, "用户不存在: %d", userID)
+			}
+			return status.Errorf(codes.Internal, "查询用户失败: %s", err.Error())
+		}
+
+		nextBalance := user.Balance + balanceDelta
+		nextWorkPoints := user.WorkPoints + workPointsDelta
+		if nextBalance < 0 {
+			return status.Errorf(codes.FailedPrecondition, "余额不足: current=%.2f delta=%.2f", user.Balance, balanceDelta)
+		}
+		if nextWorkPoints < 0 {
+			return status.Errorf(codes.FailedPrecondition, "工分不足: current=%.2f delta=%.2f", user.WorkPoints, workPointsDelta)
+		}
+
+		user.Balance = nextBalance
+		user.WorkPoints = nextWorkPoints
+		if err := tx.Save(&user).Error; err != nil {
+			return status.Errorf(codes.Internal, "更新用户资产失败: %s", err.Error())
+		}
+
+		updated = r.toBizUser(&user)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return updated, nil
+}
+
 func (r *userRepo) DeleteUser(ctx context.Context, id uint32) error {
 	if err := r.data.db.Delete(&User{}, id).Error; err != nil {
 		return status.Errorf(codes.Internal, "%s", err.Error())

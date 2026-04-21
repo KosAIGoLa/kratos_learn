@@ -1159,6 +1159,82 @@ func (x *TeamMembersResponse) GetTotal() uint32 {
 	return 0
 }
 
+type AdjustUserAssetRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UserId          uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	BalanceDelta    float64                `protobuf:"fixed64,2,opt,name=balance_delta,json=balanceDelta,proto3" json:"balance_delta,omitempty"`
+	WorkPointsDelta float64                `protobuf:"fixed64,3,opt,name=work_points_delta,json=workPointsDelta,proto3" json:"work_points_delta,omitempty"`
+	Reason          string                 `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
+	RequestId       string                 `protobuf:"bytes,5,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *AdjustUserAssetRequest) Reset() {
+	*x = AdjustUserAssetRequest{}
+	mi := &file_user_v1_user_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdjustUserAssetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdjustUserAssetRequest) ProtoMessage() {}
+
+func (x *AdjustUserAssetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_user_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdjustUserAssetRequest.ProtoReflect.Descriptor instead.
+func (*AdjustUserAssetRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_user_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *AdjustUserAssetRequest) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *AdjustUserAssetRequest) GetBalanceDelta() float64 {
+	if x != nil {
+		return x.BalanceDelta
+	}
+	return 0
+}
+
+func (x *AdjustUserAssetRequest) GetWorkPointsDelta() float64 {
+	if x != nil {
+		return x.WorkPointsDelta
+	}
+	return 0
+}
+
+func (x *AdjustUserAssetRequest) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *AdjustUserAssetRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 var File_user_v1_user_proto protoreflect.FileDescriptor
 
 const file_user_v1_user_proto_rawDesc = "" +
@@ -1255,7 +1331,14 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\tpage_size\x18\x04 \x01(\rR\bpageSize\"X\n" +
 	"\x13TeamMembersResponse\x12+\n" +
 	"\amembers\x18\x01 \x03(\v2\x11.user.v1.UserInfoR\amembers\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\rR\x05total2\xb6\b\n" +
+	"\x05total\x18\x02 \x01(\rR\x05total\"\xb9\x01\n" +
+	"\x16AdjustUserAssetRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\rR\x06userId\x12#\n" +
+	"\rbalance_delta\x18\x02 \x01(\x01R\fbalanceDelta\x12*\n" +
+	"\x11work_points_delta\x18\x03 \x01(\x01R\x0fworkPointsDelta\x12\x16\n" +
+	"\x06reason\x18\x04 \x01(\tR\x06reason\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x05 \x01(\tR\trequestId2\xa3\t\n" +
 	"\x04User\x12c\n" +
 	"\n" +
 	"GetCaptcha\x12\x1a.user.v1.GetCaptchaRequest\x1a\x1b.user.v1.GetCaptchaResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/v1/user/captcha\x12^\n" +
@@ -1270,7 +1353,8 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\tSubmitKYC\x12\x19.user.v1.SubmitKYCRequest\x1a\x10.user.v1.KYCInfo\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/api/v1/user/kyc\x12V\n" +
 	"\x06GetKYC\x12\x16.user.v1.GetKYCRequest\x1a\x10.user.v1.KYCInfo\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/api/v1/user/kyc/{user_id}\x12j\n" +
 	"\x0fGetTeamRelation\x12\x17.user.v1.GetTeamRequest\x1a\x19.user.v1.TeamRelationInfo\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/v1/user/team/{user_id}\x12{\n" +
-	"\x0eGetTeamMembers\x12\x1e.user.v1.GetTeamMembersRequest\x1a\x1c.user.v1.TeamMembersResponse\"+\x82\xd3\xe4\x93\x02%\x12#/api/v1/user/team/{user_id}/membersB\x15Z\x13user/api/user/v1;v1b\x06proto3"
+	"\x0eGetTeamMembers\x12\x1e.user.v1.GetTeamMembersRequest\x1a\x1c.user.v1.TeamMembersResponse\"+\x82\xd3\xe4\x93\x02%\x12#/api/v1/user/team/{user_id}/members\x12k\n" +
+	"\x0fAdjustUserAsset\x12\x1f.user.v1.AdjustUserAssetRequest\x1a\x11.user.v1.UserInfo\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/api/v1/user/asset/adjustB\x15Z\x13user/api/user/v1;v1b\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once
@@ -1284,34 +1368,35 @@ func file_user_v1_user_proto_rawDescGZIP() []byte {
 	return file_user_v1_user_proto_rawDescData
 }
 
-var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_user_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_user_v1_user_proto_goTypes = []any{
-	(*UserInfo)(nil),              // 0: user.v1.UserInfo
-	(*RegisterRequest)(nil),       // 1: user.v1.RegisterRequest
-	(*GetCaptchaRequest)(nil),     // 2: user.v1.GetCaptchaRequest
-	(*GetCaptchaResponse)(nil),    // 3: user.v1.GetCaptchaResponse
-	(*LoginRequest)(nil),          // 4: user.v1.LoginRequest
-	(*LoginResponse)(nil),         // 5: user.v1.LoginResponse
-	(*RefreshTokenRequest)(nil),   // 6: user.v1.RefreshTokenRequest
-	(*GetUserRequest)(nil),        // 7: user.v1.GetUserRequest
-	(*DeleteUserRequest)(nil),     // 8: user.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil),    // 9: user.v1.DeleteUserResponse
-	(*UpdateUserRequest)(nil),     // 10: user.v1.UpdateUserRequest
-	(*KYCInfo)(nil),               // 11: user.v1.KYCInfo
-	(*SubmitKYCRequest)(nil),      // 12: user.v1.SubmitKYCRequest
-	(*GetKYCRequest)(nil),         // 13: user.v1.GetKYCRequest
-	(*TeamRelationInfo)(nil),      // 14: user.v1.TeamRelationInfo
-	(*GetTeamRequest)(nil),        // 15: user.v1.GetTeamRequest
-	(*GetTeamMembersRequest)(nil), // 16: user.v1.GetTeamMembersRequest
-	(*TeamMembersResponse)(nil),   // 17: user.v1.TeamMembersResponse
-	(*timestamppb.Timestamp)(nil), // 18: google.protobuf.Timestamp
+	(*UserInfo)(nil),               // 0: user.v1.UserInfo
+	(*RegisterRequest)(nil),        // 1: user.v1.RegisterRequest
+	(*GetCaptchaRequest)(nil),      // 2: user.v1.GetCaptchaRequest
+	(*GetCaptchaResponse)(nil),     // 3: user.v1.GetCaptchaResponse
+	(*LoginRequest)(nil),           // 4: user.v1.LoginRequest
+	(*LoginResponse)(nil),          // 5: user.v1.LoginResponse
+	(*RefreshTokenRequest)(nil),    // 6: user.v1.RefreshTokenRequest
+	(*GetUserRequest)(nil),         // 7: user.v1.GetUserRequest
+	(*DeleteUserRequest)(nil),      // 8: user.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),     // 9: user.v1.DeleteUserResponse
+	(*UpdateUserRequest)(nil),      // 10: user.v1.UpdateUserRequest
+	(*KYCInfo)(nil),                // 11: user.v1.KYCInfo
+	(*SubmitKYCRequest)(nil),       // 12: user.v1.SubmitKYCRequest
+	(*GetKYCRequest)(nil),          // 13: user.v1.GetKYCRequest
+	(*TeamRelationInfo)(nil),       // 14: user.v1.TeamRelationInfo
+	(*GetTeamRequest)(nil),         // 15: user.v1.GetTeamRequest
+	(*GetTeamMembersRequest)(nil),  // 16: user.v1.GetTeamMembersRequest
+	(*TeamMembersResponse)(nil),    // 17: user.v1.TeamMembersResponse
+	(*AdjustUserAssetRequest)(nil), // 18: user.v1.AdjustUserAssetRequest
+	(*timestamppb.Timestamp)(nil),  // 19: google.protobuf.Timestamp
 }
 var file_user_v1_user_proto_depIdxs = []int32{
-	18, // 0: user.v1.UserInfo.created_at:type_name -> google.protobuf.Timestamp
+	19, // 0: user.v1.UserInfo.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 1: user.v1.LoginResponse.user:type_name -> user.v1.UserInfo
-	18, // 2: user.v1.KYCInfo.verified_at:type_name -> google.protobuf.Timestamp
-	18, // 3: user.v1.KYCInfo.created_at:type_name -> google.protobuf.Timestamp
-	18, // 4: user.v1.TeamRelationInfo.created_at:type_name -> google.protobuf.Timestamp
+	19, // 2: user.v1.KYCInfo.verified_at:type_name -> google.protobuf.Timestamp
+	19, // 3: user.v1.KYCInfo.created_at:type_name -> google.protobuf.Timestamp
+	19, // 4: user.v1.TeamRelationInfo.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 5: user.v1.TeamMembersResponse.members:type_name -> user.v1.UserInfo
 	2,  // 6: user.v1.User.GetCaptcha:input_type -> user.v1.GetCaptchaRequest
 	1,  // 7: user.v1.User.Register:input_type -> user.v1.RegisterRequest
@@ -1324,19 +1409,21 @@ var file_user_v1_user_proto_depIdxs = []int32{
 	13, // 14: user.v1.User.GetKYC:input_type -> user.v1.GetKYCRequest
 	15, // 15: user.v1.User.GetTeamRelation:input_type -> user.v1.GetTeamRequest
 	16, // 16: user.v1.User.GetTeamMembers:input_type -> user.v1.GetTeamMembersRequest
-	3,  // 17: user.v1.User.GetCaptcha:output_type -> user.v1.GetCaptchaResponse
-	5,  // 18: user.v1.User.Register:output_type -> user.v1.LoginResponse
-	5,  // 19: user.v1.User.Login:output_type -> user.v1.LoginResponse
-	5,  // 20: user.v1.User.RefreshToken:output_type -> user.v1.LoginResponse
-	0,  // 21: user.v1.User.GetUser:output_type -> user.v1.UserInfo
-	9,  // 22: user.v1.User.DeleteUser:output_type -> user.v1.DeleteUserResponse
-	0,  // 23: user.v1.User.UpdateUser:output_type -> user.v1.UserInfo
-	11, // 24: user.v1.User.SubmitKYC:output_type -> user.v1.KYCInfo
-	11, // 25: user.v1.User.GetKYC:output_type -> user.v1.KYCInfo
-	14, // 26: user.v1.User.GetTeamRelation:output_type -> user.v1.TeamRelationInfo
-	17, // 27: user.v1.User.GetTeamMembers:output_type -> user.v1.TeamMembersResponse
-	17, // [17:28] is the sub-list for method output_type
-	6,  // [6:17] is the sub-list for method input_type
+	18, // 17: user.v1.User.AdjustUserAsset:input_type -> user.v1.AdjustUserAssetRequest
+	3,  // 18: user.v1.User.GetCaptcha:output_type -> user.v1.GetCaptchaResponse
+	5,  // 19: user.v1.User.Register:output_type -> user.v1.LoginResponse
+	5,  // 20: user.v1.User.Login:output_type -> user.v1.LoginResponse
+	5,  // 21: user.v1.User.RefreshToken:output_type -> user.v1.LoginResponse
+	0,  // 22: user.v1.User.GetUser:output_type -> user.v1.UserInfo
+	9,  // 23: user.v1.User.DeleteUser:output_type -> user.v1.DeleteUserResponse
+	0,  // 24: user.v1.User.UpdateUser:output_type -> user.v1.UserInfo
+	11, // 25: user.v1.User.SubmitKYC:output_type -> user.v1.KYCInfo
+	11, // 26: user.v1.User.GetKYC:output_type -> user.v1.KYCInfo
+	14, // 27: user.v1.User.GetTeamRelation:output_type -> user.v1.TeamRelationInfo
+	17, // 28: user.v1.User.GetTeamMembers:output_type -> user.v1.TeamMembersResponse
+	0,  // 29: user.v1.User.AdjustUserAsset:output_type -> user.v1.UserInfo
+	18, // [18:30] is the sub-list for method output_type
+	6,  // [6:18] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -1353,7 +1440,7 @@ func file_user_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_user_proto_rawDesc), len(file_user_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

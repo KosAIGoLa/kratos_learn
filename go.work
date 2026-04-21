@@ -1,6 +1,15 @@
 go 1.26.2
 
 use (
+	./service/admin
+	./service/content
 	./service/cron
 	./service/finance
+	./service/mail
+	./service/order
+	./service/payment
+	./service/product
+	./service/sms
+	./service/system
+	./service/user
 )

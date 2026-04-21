@@ -4,6 +4,7 @@ import (
 	"context"
 	"finance/internal/biz"
 	"fmt"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"google.golang.org/grpc/codes"
@@ -11,16 +12,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
-
-type User struct {
-	ID         uint32  `gorm:"primarykey"`
-	Balance    float64 `gorm:"type:decimal(15,2)"`
-	WorkPoints float64 `gorm:"column:work_points;type:decimal(15,2)"`
-}
-
-func (User) TableName() string {
-	return "users"
-}
 
 type UserHashrate struct {
 	ID            uint32  `gorm:"primarykey"`
@@ -47,16 +38,20 @@ func NewUserAssetRepo(data *Data, logger log.Logger) biz.UserAssetRepo {
 }
 
 func (r *userAssetRepo) GetUserAsset(ctx context.Context, userID uint32) (*biz.UserAsset, error) {
-	var user User
-	if err := r.data.db.WithContext(ctx).First(&user, userID).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, status.Errorf(codes.NotFound, "user not found: %d", userID)
-		}
-		return nil, status.Errorf(codes.Internal, "failed to query user asset: %v", err)
+	if r.data.UserClient() == nil {
+		return nil, status.Error(codes.FailedPrecondition, "user client not initialized")
+	}
+
+	user, err := r.data.UserClient().GetUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found: %d", userID)
 	}
 
 	return &biz.UserAsset{
-		UserID:     user.ID,
+		UserID:     user.Id,
 		Balance:    user.Balance,
 		WorkPoints: user.WorkPoints,
 	}, nil
@@ -66,17 +61,20 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 	if amount <= 0 {
 		return nil, status.Error(codes.InvalidArgument, "conversion amount must be greater than 0")
 	}
+	if r.data.UserClient() == nil {
+		return nil, status.Error(codes.FailedPrecondition, "user client not initialized")
+	}
+
+	userAsset, err := r.GetUserAsset(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
 
 	var result *biz.HashrateConversion
-	err := r.data.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		var user User
-		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, userID).Error; err != nil {
-			if err == gorm.ErrRecordNotFound {
-				return status.Errorf(codes.NotFound, "user not found: %d", userID)
-			}
-			return status.Errorf(codes.Internal, "failed to lock user asset: %v", err)
-		}
+	requestID := fmt.Sprintf("hashrate-convert-%d-%d", userID, time.Now().UnixNano())
+	reason := buildConvertedHashrateRemark(amount)
 
+	err = r.data.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var rows []UserHashrate
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
 			Where("user_id = ? AND status = ? AND total_hashrate > 0", userID, 1).
@@ -133,22 +131,21 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 			remaining -= deduct
 		}
 
-		beforeBalance := user.Balance
-		afterBalance := beforeBalance + amount
-		if err := tx.Model(&User{}).
-			Where("id = ?", userID).
-			Update("balance", afterBalance).Error; err != nil {
-			return status.Errorf(codes.Internal, "failed to update user balance: %v", err)
+		updatedUser, err := r.data.UserClient().AdjustUserAsset(ctx, userID, amount, 0, reason, requestID)
+		if err != nil {
+			return err
+		}
+		if updatedUser == nil {
+			return status.Error(codes.Internal, "user asset adjustment returned nil response")
 		}
 
-		remark := buildConvertedHashrateRemark(amount)
 		balanceLog := &BalanceLog{
 			UserID:        userID,
 			Type:          int8(biz.BalanceLogTypeHashrateConversion),
 			Amount:        amount,
-			BeforeBalance: beforeBalance,
-			AfterBalance:  afterBalance,
-			Remark:        remark,
+			BeforeBalance: userAsset.Balance,
+			AfterBalance:  updatedUser.Balance,
+			Remark:        reason,
 		}
 		if err := tx.Create(balanceLog).Error; err != nil {
 			return status.Errorf(codes.Internal, "failed to create balance log: %v", err)
@@ -159,9 +156,9 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 			Amount:         amount,
 			BeforeHashrate: available,
 			AfterHashrate:  available - amount,
-			BeforeBalance:  beforeBalance,
-			AfterBalance:   afterBalance,
-			Remark:         remark,
+			BeforeBalance:  userAsset.Balance,
+			AfterBalance:   updatedUser.Balance,
+			Remark:         reason,
 			CreatedAt:      balanceLog.CreatedAt,
 		}
 		return nil

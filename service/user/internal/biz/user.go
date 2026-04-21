@@ -58,6 +58,7 @@ type UserRepo interface {
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
 	GetUserByInviteCode(ctx context.Context, inviteCode string) (*User, error)
 	UpdateUser(ctx context.Context, u *User) (*User, error)
+	AdjustUserAsset(ctx context.Context, userID uint32, balanceDelta, workPointsDelta float64) (*User, error)
 	DeleteUser(ctx context.Context, id uint32) error
 	UpdateWorkPoints(ctx context.Context, userID uint32, points float64) error
 }
@@ -124,6 +125,11 @@ func (uc *UserUsecase) GetUserByInviteCode(ctx context.Context, inviteCode strin
 // UpdateUser 更新用户信息
 func (uc *UserUsecase) UpdateUser(ctx context.Context, u *User) (*User, error) {
 	return uc.repo.UpdateUser(ctx, u)
+}
+
+// AdjustUserAsset 调整用户资产
+func (uc *UserUsecase) AdjustUserAsset(ctx context.Context, userID uint32, balanceDelta, workPointsDelta float64) (*User, error) {
+	return uc.repo.AdjustUserAsset(ctx, userID, balanceDelta, workPointsDelta)
 }
 
 // DeleteUser 删除用户

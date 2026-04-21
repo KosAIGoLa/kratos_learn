@@ -21,7 +21,7 @@ import (
 
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
-	NewData, NewDB, NewRedis, NewRabbitMQClient,
+	NewData, NewDB, NewRedis, NewRabbitMQClient, NewUserClient,
 	NewRechargeRepo, NewWithdrawalRepo, NewIncomeLogRepo, NewBalanceLogRepo, NewCheckInRepo, NewUserAssetRepo,
 	// 绑定 RabbitMQClient 到 biz.WithdrawalMessageQueue 接口
 	wire.Bind(new(biz.WithdrawalMessageQueue), new(*RabbitMQClient)),
@@ -32,11 +32,12 @@ type Data struct {
 	db       *gorm.DB
 	rdb      *redis.Client
 	rabbitmq *RabbitMQClient
+	user     *UserClient
 }
 
 // NewData .
-func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, rabbitmq *RabbitMQClient) (*Data, func(), error) {
-	data := &Data{db: db, rdb: rdb, rabbitmq: rabbitmq}
+func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, rabbitmq *RabbitMQClient, userClient *UserClient) (*Data, func(), error) {
+	data := &Data{db: db, rdb: rdb, rabbitmq: rabbitmq, user: userClient}
 
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
@@ -55,6 +56,10 @@ func NewData(c *conf.Data, logger log.Logger, db *gorm.DB, rdb *redis.Client, ra
 	}
 
 	return data, cleanup, nil
+}
+
+func (d *Data) UserClient() *UserClient {
+	return d.user
 }
 
 // NewDB .

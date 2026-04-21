@@ -8,7 +8,8 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   Data data = 2;
-  Trace trace = 3;
+  Registry registry = 3;
+  Trace trace = 4;
 }
 
 message Server {
@@ -49,6 +50,14 @@ message Data {
   Database database = 1;
   Redis redis = 2;
   RabbitMQ rabbitmq = 3;
+}
+
+message Registry {
+  message Etcd {
+    repeated string endpoints = 1;
+    google.protobuf.Duration dial_timeout = 2;
+  }
+  Etcd etcd = 1;
 }
 
 message Trace {

@@ -200,6 +200,15 @@ func (s *UserService) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest)
 	return s.toProtoUser(user), nil
 }
 
+// AdjustUserAsset 调整用户资产
+func (s *UserService) AdjustUserAsset(ctx context.Context, req *v1.AdjustUserAssetRequest) (*v1.UserInfo, error) {
+	user, err := s.uc.AdjustUserAsset(ctx, req.UserId, req.BalanceDelta, req.WorkPointsDelta)
+	if err != nil {
+		return nil, err
+	}
+	return s.toProtoUser(user), nil
+}
+
 func (s *UserService) toProtoUser(u *biz.User) *v1.UserInfo {
 	return &v1.UserInfo{
 		Id:         u.ID,
