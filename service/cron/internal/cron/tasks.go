@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"context"
 	"cron/internal/data"
 	"time"
 
@@ -694,73 +693,6 @@ func (tm *TaskManager) dailyHashrateSettlement() {
 	tm.log.Infof("每日算力汇总结算完成，共处理 %d 位用户", settlementCount)
 }
 
-// hashrateToBalance 算力转可提现余额
-// 公式: 可提现余额 = 算力产出 × 1:1 转换比例
-func (tm *TaskManager) hashrateToBalance() {
-	today := time.Now().Format("2006-01-02")
-	tm.log.Infof("执行算力转余额任务 [%s]...", today)
-
-	// 1. 获取所有有算力产出的用户
-	users := tm.getUsersWithHashrate()
-
-	conversionCount := 0
-	totalConverted := 0.0
-
-	for _, user := range users {
-		// 获取用户昨日算力产出
-		dailyHashrate := user.DailyHashrate
-
-		if dailyHashrate <= 0 {
-			continue
-		}
-
-		// 1:1 转换为可提现余额
-		// 公式: 可提现余额 = 算力产出 × 1:1 转换比例
-		convertAmount := dailyHashrate // 1:1 转换
-
-		// 记录转换前的余额
-		beforeBalance := user.WithdrawableBalance
-
-		// 增加用户可提现余额
-		user.WithdrawableBalance += convertAmount
-
-		// 更新用户余额
-		if err := tm.updateUserWithdrawableBalance(user.ID, user.WithdrawableBalance); err != nil {
-			tm.log.Errorf("更新用户 [%d] 余额失败: %v", user.ID, err)
-			continue
-		}
-
-		// 创建余额变动记录到 balance_logs
-		if tm.data != nil && tm.data.FinanceClient() != nil {
-			remark := "算力转换: " + today
-			err := tm.data.FinanceClient().CreateBalanceLog(
-				tm.getTaskContext(),
-				uint32(user.ID),
-				convertAmount,
-				beforeBalance,
-				user.WithdrawableBalance,
-				remark,
-			)
-			if err != nil {
-				tm.log.Errorf("记录用户 [%d] 余额变动日志失败: %v", user.ID, err)
-			}
-		}
-
-		// 记录本地转换日志
-		tm.recordBalanceConversion(user.ID, dailyHashrate, convertAmount, today)
-
-		conversionCount++
-		totalConverted += convertAmount
-	}
-
-	tm.log.Infof("算力转余额完成，共处理 %d 位用户，总转换金额: %.2f", conversionCount, totalConverted)
-}
-
-// getTaskContext 获取任务执行的上下文
-func (tm *TaskManager) getTaskContext() context.Context {
-	return context.Background()
-}
-
 // expiredMachineCleanup 过期机器清理
 func (tm *TaskManager) expiredMachineCleanup() {
 	today := time.Now().Format("2006-01-02")
@@ -1127,12 +1059,6 @@ func (tm *TaskManager) getAllActiveUsers() []*User {
 	}
 }
 
-// getUsersWithHashrate 获取有算力的用户（模拟实现）
-func (tm *TaskManager) getUsersWithHashrate() []*User {
-	// 实际实现：从数据库查询有算力产出的用户
-	return tm.getAllActiveUsers()
-}
-
 // getYesterdayCheckedInUsers 获取昨日已签到用户（模拟实现）
 func (tm *TaskManager) getYesterdayCheckedInUsers() []*User {
 	// 实际实现：从数据库查询昨日签到用户
@@ -1177,12 +1103,6 @@ func (tm *TaskManager) updateUserHashrate(userID int, totalHashrate, dailyHashra
 	return nil
 }
 
-// updateUserWithdrawableBalance 更新用户可提现余额（模拟实现）
-func (tm *TaskManager) updateUserWithdrawableBalance(userID int, balance float64) error {
-	tm.log.Infof("更新用户 [%d] 可提现余额: %.2f", userID, balance)
-	return nil
-}
-
 // getUserDailyHashrate 获取用户每日算力（模拟实现）
 func (tm *TaskManager) getUserDailyHashrate(userID int, date string) float64 {
 	// 实际实现：从数据库查询用户某日算力
@@ -1193,12 +1113,6 @@ func (tm *TaskManager) getUserDailyHashrate(userID int, date string) float64 {
 func (tm *TaskManager) recordHashrateLog(userID, machineID int, hashrate float64, hour string) {
 	tm.log.Infof("记录算力日志 - 用户[%d] 机器[%d] 时间[%s] 算力[%.2f]",
 		userID, machineID, hour, hashrate)
-}
-
-// recordBalanceConversion 记录余额转换日志（模拟实现）
-func (tm *TaskManager) recordBalanceConversion(userID int, hashrate, amount float64, date string) {
-	tm.log.Infof("记录余额转换 - 用户[%d] 算力[%.2f] 金额[%.2f] 日期[%s]",
-		userID, hashrate, amount, date)
 }
 
 // updateUserCheckinStatus 更新用户签到状态（模拟实现）
