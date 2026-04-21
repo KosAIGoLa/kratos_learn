@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -103,6 +104,7 @@ type RiskControlRepo interface {
 	GetRiskControl(ctx context.Context, id uint32) (*RiskControl, error)
 	CreateRiskControl(ctx context.Context, r *RiskControl) (*RiskControl, error)
 	UpdateRiskControl(ctx context.Context, r *RiskControl) (*RiskControl, error)
+	CheckFrequency(ctx context.Context, key string, window uint32, limit uint32) (uint32, error)
 }
 
 // DomainRepo 域名存储接口
@@ -207,7 +209,73 @@ func (uc *SystemUsecase) AddDomain(ctx context.Context, d *Domain) (*Domain, err
 
 // CheckRisk 检查风险
 func (uc *SystemUsecase) CheckRisk(ctx context.Context, typ string, userID uint32, ip string) (*RiskCheckResult, error) {
-	// TODO: 实现风控检查逻辑
+	// 1. IP白名单优先放行
+	if ip != "" {
+		whitelisted, err := uc.whitelistRepo.CheckWhitelist(ctx, ip, typ)
+		if err != nil {
+			uc.log.Errorf("check whitelist failed: %v", err)
+		} else if whitelisted {
+			return &RiskCheckResult{
+				Pass:    true,
+				Level:   "low",
+				Action:  "allow",
+				Message: "IP白名单通过",
+			}, nil
+		}
+	}
+
+	// 2. 获取启用的风控规则
+	rules, err := uc.riskControlRepo.ListRiskControls(ctx, typ, 1)
+	if err != nil {
+		uc.log.Errorf("list risk controls failed: %v", err)
+		return &RiskCheckResult{
+			Pass:    true,
+			Level:   "low",
+			Action:  "allow",
+			Message: "规则获取失败，默认放行",
+		}, nil
+	}
+	if len(rules) == 0 {
+		return &RiskCheckResult{
+			Pass:    true,
+			Level:   "low",
+			Action:  "allow",
+			Message: "无风控规则",
+		}, nil
+	}
+
+	// 3. 遍历规则进行频率检查
+	for _, rule := range rules {
+		if rule.LimitValue == 0 {
+			continue
+		}
+
+		var key string
+		if userID > 0 {
+			key = fmt.Sprintf("risk:%s:%d:%s", typ, userID, rule.Code)
+		} else {
+			key = fmt.Sprintf("risk:%s:%s:%s", typ, ip, rule.Code)
+		}
+
+		count, err := uc.riskControlRepo.CheckFrequency(ctx, key, rule.TimeWindow, rule.LimitValue)
+		if err != nil {
+			uc.log.Errorf("check frequency failed for rule %s: %v", rule.Code, err)
+			continue
+		}
+
+		if count > rule.LimitValue {
+			msg := fmt.Sprintf("触发风控规则: %s (限制 %d/%d秒, 当前 %d)",
+				rule.Name, rule.LimitValue, rule.TimeWindow, count)
+			uc.log.Warn(msg)
+			return &RiskCheckResult{
+				Pass:    false,
+				Level:   rule.Level,
+				Action:  rule.Action,
+				Message: msg,
+			}, nil
+		}
+	}
+
 	return &RiskCheckResult{
 		Pass:    true,
 		Level:   "low",

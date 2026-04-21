@@ -669,3 +669,35 @@ CREATE TABLE IF NOT EXISTS `sms_logs` (
     INDEX `idx_provider_id` (`provider_id`),
     INDEX `idx_created_at` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='短信发送记录表';
+
+-- 算力补偿记录表（由定时任务扫描并恢复算力）
+CREATE TABLE IF NOT EXISTS `hashrate_compensation_records` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
+    `amount` DECIMAL(15,2) NOT NULL COMMENT '需恢复的算力金额',
+    `request_id` VARCHAR(100) NOT NULL COMMENT '唯一请求ID',
+    `reason` VARCHAR(255) DEFAULT NULL COMMENT '补偿原因',
+    `status` TINYINT DEFAULT 0 COMMENT '状态: 0待补偿 1已补偿 2补偿失败',
+    `retry_times` INT UNSIGNED DEFAULT 0 COMMENT '重试次数',
+    `compensated_at` DATETIME DEFAULT NULL COMMENT '补偿时间',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `uk_request_id` (`request_id`),
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_status` (`status`),
+    INDEX `idx_created_at` (`created_at`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='算力补偿记录表';
+
+-- 监控告警日志表
+CREATE TABLE IF NOT EXISTS `alert_logs` (
+    `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `level` VARCHAR(20) NOT NULL COMMENT '告警级别: warning/error/critical',
+    `module` VARCHAR(50) NOT NULL COMMENT '模块',
+    `message` TEXT NOT NULL COMMENT '告警内容',
+    `detail` JSON DEFAULT NULL COMMENT '详细信息',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_level` (`level`),
+    INDEX `idx_module` (`module`),
+    INDEX `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='监控告警日志表';

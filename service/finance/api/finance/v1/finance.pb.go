@@ -1619,6 +1619,306 @@ func (x *HashPowerConversionInfo) GetCreatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type HashrateCompensationInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Amount        float64                `protobuf:"fixed64,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	RequestId     string                 `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Reason        string                 `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	Status        int32                  `protobuf:"varint,6,opt,name=status,proto3" json:"status,omitempty"`
+	RetryTimes    uint32                 `protobuf:"varint,7,opt,name=retry_times,json=retryTimes,proto3" json:"retry_times,omitempty"`
+	CompensatedAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=compensated_at,json=compensatedAt,proto3" json:"compensated_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HashrateCompensationInfo) Reset() {
+	*x = HashrateCompensationInfo{}
+	mi := &file_finance_v1_finance_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HashrateCompensationInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HashrateCompensationInfo) ProtoMessage() {}
+
+func (x *HashrateCompensationInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_finance_v1_finance_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HashrateCompensationInfo.ProtoReflect.Descriptor instead.
+func (*HashrateCompensationInfo) Descriptor() ([]byte, []int) {
+	return file_finance_v1_finance_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *HashrateCompensationInfo) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *HashrateCompensationInfo) GetUserId() uint32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *HashrateCompensationInfo) GetAmount() float64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *HashrateCompensationInfo) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *HashrateCompensationInfo) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+func (x *HashrateCompensationInfo) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *HashrateCompensationInfo) GetRetryTimes() uint32 {
+	if x != nil {
+		return x.RetryTimes
+	}
+	return 0
+}
+
+func (x *HashrateCompensationInfo) GetCompensatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompensatedAt
+	}
+	return nil
+}
+
+func (x *HashrateCompensationInfo) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type ListHashrateCompensationsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        int32                  `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
+	Limit         uint32                 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListHashrateCompensationsRequest) Reset() {
+	*x = ListHashrateCompensationsRequest{}
+	mi := &file_finance_v1_finance_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHashrateCompensationsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHashrateCompensationsRequest) ProtoMessage() {}
+
+func (x *ListHashrateCompensationsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_finance_v1_finance_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHashrateCompensationsRequest.ProtoReflect.Descriptor instead.
+func (*ListHashrateCompensationsRequest) Descriptor() ([]byte, []int) {
+	return file_finance_v1_finance_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *ListHashrateCompensationsRequest) GetStatus() int32 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ListHashrateCompensationsRequest) GetLimit() uint32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+type ListHashrateCompensationsResponse struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Records       []*HashrateCompensationInfo `protobuf:"bytes,1,rep,name=records,proto3" json:"records,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListHashrateCompensationsResponse) Reset() {
+	*x = ListHashrateCompensationsResponse{}
+	mi := &file_finance_v1_finance_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListHashrateCompensationsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListHashrateCompensationsResponse) ProtoMessage() {}
+
+func (x *ListHashrateCompensationsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_finance_v1_finance_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListHashrateCompensationsResponse.ProtoReflect.Descriptor instead.
+func (*ListHashrateCompensationsResponse) Descriptor() ([]byte, []int) {
+	return file_finance_v1_finance_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *ListHashrateCompensationsResponse) GetRecords() []*HashrateCompensationInfo {
+	if x != nil {
+		return x.Records
+	}
+	return nil
+}
+
+type CompensateHashrateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompensateHashrateRequest) Reset() {
+	*x = CompensateHashrateRequest{}
+	mi := &file_finance_v1_finance_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompensateHashrateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompensateHashrateRequest) ProtoMessage() {}
+
+func (x *CompensateHashrateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_finance_v1_finance_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompensateHashrateRequest.ProtoReflect.Descriptor instead.
+func (*CompensateHashrateRequest) Descriptor() ([]byte, []int) {
+	return file_finance_v1_finance_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *CompensateHashrateRequest) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type CompensateHashrateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompensateHashrateResponse) Reset() {
+	*x = CompensateHashrateResponse{}
+	mi := &file_finance_v1_finance_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompensateHashrateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompensateHashrateResponse) ProtoMessage() {}
+
+func (x *CompensateHashrateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_finance_v1_finance_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompensateHashrateResponse.ProtoReflect.Descriptor instead.
+func (*CompensateHashrateResponse) Descriptor() ([]byte, []int) {
+	return file_finance_v1_finance_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *CompensateHashrateResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CompensateHashrateResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_finance_v1_finance_proto protoreflect.FileDescriptor
 
 const file_finance_v1_finance_proto_rawDesc = "" +
@@ -1757,7 +2057,30 @@ const file_finance_v1_finance_proto_rawDesc = "" +
 	"\rafter_balance\x18\x06 \x01(\x01R\fafterBalance\x12\x16\n" +
 	"\x06remark\x18\a \x01(\tR\x06remark\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt2\xb4\v\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\xc9\x02\n" +
+	"\x18HashrateCompensationInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\rR\x06userId\x12\x16\n" +
+	"\x06amount\x18\x03 \x01(\x01R\x06amount\x12\x1d\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tR\trequestId\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\x05R\x06status\x12\x1f\n" +
+	"\vretry_times\x18\a \x01(\rR\n" +
+	"retryTimes\x12A\n" +
+	"\x0ecompensated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\rcompensatedAt\x129\n" +
+	"\n" +
+	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"P\n" +
+	" ListHashrateCompensationsRequest\x12\x16\n" +
+	"\x06status\x18\x01 \x01(\x05R\x06status\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\rR\x05limit\"c\n" +
+	"!ListHashrateCompensationsResponse\x12>\n" +
+	"\arecords\x18\x01 \x03(\v2$.finance.v1.HashrateCompensationInfoR\arecords\"+\n" +
+	"\x19CompensateHashrateRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x04R\x02id\"P\n" +
+	"\x1aCompensateHashrateResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xfd\r\n" +
 	"\aFinance\x12f\n" +
 	"\bRecharge\x12\x1b.finance.v1.RechargeRequest\x1a\x18.finance.v1.RechargeInfo\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/api/v1/finance/recharge\x12t\n" +
 	"\vGetRecharge\x12\x1e.finance.v1.GetRechargeRequest\x1a\x18.finance.v1.RechargeInfo\"+\x82\xd3\xe4\x93\x02%\x12#/api/v1/finance/recharge/{order_no}\x12w\n" +
@@ -1770,7 +2093,9 @@ const file_finance_v1_finance_proto_rawDesc = "" +
 	"\aCheckIn\x12\x1a.finance.v1.CheckInRequest\x1a\x1b.finance.v1.CheckInResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/finance/checkin\x12{\n" +
 	"\x0eGetUserBalance\x12!.finance.v1.GetUserBalanceRequest\x1a\x1b.finance.v1.UserBalanceInfo\")\x82\xd3\xe4\x93\x02#\x12!/api/v1/finance/balance/{user_id}\x12{\n" +
 	"\x10CreateBalanceLog\x12#.finance.v1.CreateBalanceLogRequest\x1a\x1a.finance.v1.BalanceLogInfo\"&\x82\xd3\xe4\x93\x02 :\x01*\"\x1b/api/v1/finance/balance-log\x12\x8b\x01\n" +
-	"\x10ConvertHashPower\x12#.finance.v1.ConvertHashPowerRequest\x1a#.finance.v1.HashPowerConversionInfo\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/api/v1/finance/hash-power/convertB\x1bZ\x19finance/api/finance/v1;v1b\x06proto3"
+	"\x10ConvertHashPower\x12#.finance.v1.ConvertHashPowerRequest\x1a#.finance.v1.HashPowerConversionInfo\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/api/v1/finance/hash-power/convert\x12\xa8\x01\n" +
+	"\x19ListHashrateCompensations\x12,.finance.v1.ListHashrateCompensationsRequest\x1a-.finance.v1.ListHashrateCompensationsResponse\".\x82\xd3\xe4\x93\x02(\x12&/api/v1/finance/hashrate-compensations\x12\x9b\x01\n" +
+	"\x12CompensateHashrate\x12%.finance.v1.CompensateHashrateRequest\x1a&.finance.v1.CompensateHashrateResponse\"6\x82\xd3\xe4\x93\x020:\x01*\"+/api/v1/finance/hashrate-compensations/{id}B\x1bZ\x19finance/api/finance/v1;v1b\x06proto3"
 
 var (
 	file_finance_v1_finance_proto_rawDescOnce sync.Once
@@ -1784,73 +2109,85 @@ func file_finance_v1_finance_proto_rawDescGZIP() []byte {
 	return file_finance_v1_finance_proto_rawDescData
 }
 
-var file_finance_v1_finance_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_finance_v1_finance_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_finance_v1_finance_proto_goTypes = []any{
-	(*RechargeInfo)(nil),            // 0: finance.v1.RechargeInfo
-	(*RechargeRequest)(nil),         // 1: finance.v1.RechargeRequest
-	(*GetRechargeRequest)(nil),      // 2: finance.v1.GetRechargeRequest
-	(*ListRechargesRequest)(nil),    // 3: finance.v1.ListRechargesRequest
-	(*ListRechargesResponse)(nil),   // 4: finance.v1.ListRechargesResponse
-	(*WithdrawalInfo)(nil),          // 5: finance.v1.WithdrawalInfo
-	(*WithdrawRequest)(nil),         // 6: finance.v1.WithdrawRequest
-	(*GetWithdrawalRequest)(nil),    // 7: finance.v1.GetWithdrawalRequest
-	(*ListWithdrawalsRequest)(nil),  // 8: finance.v1.ListWithdrawalsRequest
-	(*ListWithdrawalsResponse)(nil), // 9: finance.v1.ListWithdrawalsResponse
-	(*IncomeLogInfo)(nil),           // 10: finance.v1.IncomeLogInfo
-	(*ListIncomeLogsRequest)(nil),   // 11: finance.v1.ListIncomeLogsRequest
-	(*ListIncomeLogsResponse)(nil),  // 12: finance.v1.ListIncomeLogsResponse
-	(*BalanceLogInfo)(nil),          // 13: finance.v1.BalanceLogInfo
-	(*ListBalanceLogsRequest)(nil),  // 14: finance.v1.ListBalanceLogsRequest
-	(*ListBalanceLogsResponse)(nil), // 15: finance.v1.ListBalanceLogsResponse
-	(*CheckInRequest)(nil),          // 16: finance.v1.CheckInRequest
-	(*CheckInResponse)(nil),         // 17: finance.v1.CheckInResponse
-	(*UserBalanceInfo)(nil),         // 18: finance.v1.UserBalanceInfo
-	(*GetUserBalanceRequest)(nil),   // 19: finance.v1.GetUserBalanceRequest
-	(*CreateBalanceLogRequest)(nil), // 20: finance.v1.CreateBalanceLogRequest
-	(*ConvertHashPowerRequest)(nil), // 21: finance.v1.ConvertHashPowerRequest
-	(*HashPowerConversionInfo)(nil), // 22: finance.v1.HashPowerConversionInfo
-	(*timestamppb.Timestamp)(nil),   // 23: google.protobuf.Timestamp
+	(*RechargeInfo)(nil),                      // 0: finance.v1.RechargeInfo
+	(*RechargeRequest)(nil),                   // 1: finance.v1.RechargeRequest
+	(*GetRechargeRequest)(nil),                // 2: finance.v1.GetRechargeRequest
+	(*ListRechargesRequest)(nil),              // 3: finance.v1.ListRechargesRequest
+	(*ListRechargesResponse)(nil),             // 4: finance.v1.ListRechargesResponse
+	(*WithdrawalInfo)(nil),                    // 5: finance.v1.WithdrawalInfo
+	(*WithdrawRequest)(nil),                   // 6: finance.v1.WithdrawRequest
+	(*GetWithdrawalRequest)(nil),              // 7: finance.v1.GetWithdrawalRequest
+	(*ListWithdrawalsRequest)(nil),            // 8: finance.v1.ListWithdrawalsRequest
+	(*ListWithdrawalsResponse)(nil),           // 9: finance.v1.ListWithdrawalsResponse
+	(*IncomeLogInfo)(nil),                     // 10: finance.v1.IncomeLogInfo
+	(*ListIncomeLogsRequest)(nil),             // 11: finance.v1.ListIncomeLogsRequest
+	(*ListIncomeLogsResponse)(nil),            // 12: finance.v1.ListIncomeLogsResponse
+	(*BalanceLogInfo)(nil),                    // 13: finance.v1.BalanceLogInfo
+	(*ListBalanceLogsRequest)(nil),            // 14: finance.v1.ListBalanceLogsRequest
+	(*ListBalanceLogsResponse)(nil),           // 15: finance.v1.ListBalanceLogsResponse
+	(*CheckInRequest)(nil),                    // 16: finance.v1.CheckInRequest
+	(*CheckInResponse)(nil),                   // 17: finance.v1.CheckInResponse
+	(*UserBalanceInfo)(nil),                   // 18: finance.v1.UserBalanceInfo
+	(*GetUserBalanceRequest)(nil),             // 19: finance.v1.GetUserBalanceRequest
+	(*CreateBalanceLogRequest)(nil),           // 20: finance.v1.CreateBalanceLogRequest
+	(*ConvertHashPowerRequest)(nil),           // 21: finance.v1.ConvertHashPowerRequest
+	(*HashPowerConversionInfo)(nil),           // 22: finance.v1.HashPowerConversionInfo
+	(*HashrateCompensationInfo)(nil),          // 23: finance.v1.HashrateCompensationInfo
+	(*ListHashrateCompensationsRequest)(nil),  // 24: finance.v1.ListHashrateCompensationsRequest
+	(*ListHashrateCompensationsResponse)(nil), // 25: finance.v1.ListHashrateCompensationsResponse
+	(*CompensateHashrateRequest)(nil),         // 26: finance.v1.CompensateHashrateRequest
+	(*CompensateHashrateResponse)(nil),        // 27: finance.v1.CompensateHashrateResponse
+	(*timestamppb.Timestamp)(nil),             // 28: google.protobuf.Timestamp
 }
 var file_finance_v1_finance_proto_depIdxs = []int32{
-	23, // 0: finance.v1.RechargeInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 0: finance.v1.RechargeInfo.created_at:type_name -> google.protobuf.Timestamp
 	0,  // 1: finance.v1.ListRechargesResponse.recharges:type_name -> finance.v1.RechargeInfo
-	23, // 2: finance.v1.WithdrawalInfo.processed_at:type_name -> google.protobuf.Timestamp
-	23, // 3: finance.v1.WithdrawalInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 2: finance.v1.WithdrawalInfo.processed_at:type_name -> google.protobuf.Timestamp
+	28, // 3: finance.v1.WithdrawalInfo.created_at:type_name -> google.protobuf.Timestamp
 	5,  // 4: finance.v1.ListWithdrawalsResponse.withdrawals:type_name -> finance.v1.WithdrawalInfo
-	23, // 5: finance.v1.IncomeLogInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 5: finance.v1.IncomeLogInfo.created_at:type_name -> google.protobuf.Timestamp
 	10, // 6: finance.v1.ListIncomeLogsResponse.income_logs:type_name -> finance.v1.IncomeLogInfo
-	23, // 7: finance.v1.BalanceLogInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 7: finance.v1.BalanceLogInfo.created_at:type_name -> google.protobuf.Timestamp
 	13, // 8: finance.v1.ListBalanceLogsResponse.balance_logs:type_name -> finance.v1.BalanceLogInfo
-	23, // 9: finance.v1.HashPowerConversionInfo.created_at:type_name -> google.protobuf.Timestamp
-	1,  // 10: finance.v1.Finance.Recharge:input_type -> finance.v1.RechargeRequest
-	2,  // 11: finance.v1.Finance.GetRecharge:input_type -> finance.v1.GetRechargeRequest
-	3,  // 12: finance.v1.Finance.ListRecharges:input_type -> finance.v1.ListRechargesRequest
-	6,  // 13: finance.v1.Finance.Withdraw:input_type -> finance.v1.WithdrawRequest
-	7,  // 14: finance.v1.Finance.GetWithdrawal:input_type -> finance.v1.GetWithdrawalRequest
-	8,  // 15: finance.v1.Finance.ListWithdrawals:input_type -> finance.v1.ListWithdrawalsRequest
-	11, // 16: finance.v1.Finance.ListIncomeLogs:input_type -> finance.v1.ListIncomeLogsRequest
-	14, // 17: finance.v1.Finance.ListBalanceLogs:input_type -> finance.v1.ListBalanceLogsRequest
-	16, // 18: finance.v1.Finance.CheckIn:input_type -> finance.v1.CheckInRequest
-	19, // 19: finance.v1.Finance.GetUserBalance:input_type -> finance.v1.GetUserBalanceRequest
-	20, // 20: finance.v1.Finance.CreateBalanceLog:input_type -> finance.v1.CreateBalanceLogRequest
-	21, // 21: finance.v1.Finance.ConvertHashPower:input_type -> finance.v1.ConvertHashPowerRequest
-	0,  // 22: finance.v1.Finance.Recharge:output_type -> finance.v1.RechargeInfo
-	0,  // 23: finance.v1.Finance.GetRecharge:output_type -> finance.v1.RechargeInfo
-	4,  // 24: finance.v1.Finance.ListRecharges:output_type -> finance.v1.ListRechargesResponse
-	5,  // 25: finance.v1.Finance.Withdraw:output_type -> finance.v1.WithdrawalInfo
-	5,  // 26: finance.v1.Finance.GetWithdrawal:output_type -> finance.v1.WithdrawalInfo
-	9,  // 27: finance.v1.Finance.ListWithdrawals:output_type -> finance.v1.ListWithdrawalsResponse
-	12, // 28: finance.v1.Finance.ListIncomeLogs:output_type -> finance.v1.ListIncomeLogsResponse
-	15, // 29: finance.v1.Finance.ListBalanceLogs:output_type -> finance.v1.ListBalanceLogsResponse
-	17, // 30: finance.v1.Finance.CheckIn:output_type -> finance.v1.CheckInResponse
-	18, // 31: finance.v1.Finance.GetUserBalance:output_type -> finance.v1.UserBalanceInfo
-	13, // 32: finance.v1.Finance.CreateBalanceLog:output_type -> finance.v1.BalanceLogInfo
-	22, // 33: finance.v1.Finance.ConvertHashPower:output_type -> finance.v1.HashPowerConversionInfo
-	22, // [22:34] is the sub-list for method output_type
-	10, // [10:22] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	28, // 9: finance.v1.HashPowerConversionInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 10: finance.v1.HashrateCompensationInfo.compensated_at:type_name -> google.protobuf.Timestamp
+	28, // 11: finance.v1.HashrateCompensationInfo.created_at:type_name -> google.protobuf.Timestamp
+	23, // 12: finance.v1.ListHashrateCompensationsResponse.records:type_name -> finance.v1.HashrateCompensationInfo
+	1,  // 13: finance.v1.Finance.Recharge:input_type -> finance.v1.RechargeRequest
+	2,  // 14: finance.v1.Finance.GetRecharge:input_type -> finance.v1.GetRechargeRequest
+	3,  // 15: finance.v1.Finance.ListRecharges:input_type -> finance.v1.ListRechargesRequest
+	6,  // 16: finance.v1.Finance.Withdraw:input_type -> finance.v1.WithdrawRequest
+	7,  // 17: finance.v1.Finance.GetWithdrawal:input_type -> finance.v1.GetWithdrawalRequest
+	8,  // 18: finance.v1.Finance.ListWithdrawals:input_type -> finance.v1.ListWithdrawalsRequest
+	11, // 19: finance.v1.Finance.ListIncomeLogs:input_type -> finance.v1.ListIncomeLogsRequest
+	14, // 20: finance.v1.Finance.ListBalanceLogs:input_type -> finance.v1.ListBalanceLogsRequest
+	16, // 21: finance.v1.Finance.CheckIn:input_type -> finance.v1.CheckInRequest
+	19, // 22: finance.v1.Finance.GetUserBalance:input_type -> finance.v1.GetUserBalanceRequest
+	20, // 23: finance.v1.Finance.CreateBalanceLog:input_type -> finance.v1.CreateBalanceLogRequest
+	21, // 24: finance.v1.Finance.ConvertHashPower:input_type -> finance.v1.ConvertHashPowerRequest
+	24, // 25: finance.v1.Finance.ListHashrateCompensations:input_type -> finance.v1.ListHashrateCompensationsRequest
+	26, // 26: finance.v1.Finance.CompensateHashrate:input_type -> finance.v1.CompensateHashrateRequest
+	0,  // 27: finance.v1.Finance.Recharge:output_type -> finance.v1.RechargeInfo
+	0,  // 28: finance.v1.Finance.GetRecharge:output_type -> finance.v1.RechargeInfo
+	4,  // 29: finance.v1.Finance.ListRecharges:output_type -> finance.v1.ListRechargesResponse
+	5,  // 30: finance.v1.Finance.Withdraw:output_type -> finance.v1.WithdrawalInfo
+	5,  // 31: finance.v1.Finance.GetWithdrawal:output_type -> finance.v1.WithdrawalInfo
+	9,  // 32: finance.v1.Finance.ListWithdrawals:output_type -> finance.v1.ListWithdrawalsResponse
+	12, // 33: finance.v1.Finance.ListIncomeLogs:output_type -> finance.v1.ListIncomeLogsResponse
+	15, // 34: finance.v1.Finance.ListBalanceLogs:output_type -> finance.v1.ListBalanceLogsResponse
+	17, // 35: finance.v1.Finance.CheckIn:output_type -> finance.v1.CheckInResponse
+	18, // 36: finance.v1.Finance.GetUserBalance:output_type -> finance.v1.UserBalanceInfo
+	13, // 37: finance.v1.Finance.CreateBalanceLog:output_type -> finance.v1.BalanceLogInfo
+	22, // 38: finance.v1.Finance.ConvertHashPower:output_type -> finance.v1.HashPowerConversionInfo
+	25, // 39: finance.v1.Finance.ListHashrateCompensations:output_type -> finance.v1.ListHashrateCompensationsResponse
+	27, // 40: finance.v1.Finance.CompensateHashrate:output_type -> finance.v1.CompensateHashrateResponse
+	27, // [27:41] is the sub-list for method output_type
+	13, // [13:27] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_finance_v1_finance_proto_init() }
@@ -1864,7 +2201,7 @@ func file_finance_v1_finance_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_finance_v1_finance_proto_rawDesc), len(file_finance_v1_finance_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

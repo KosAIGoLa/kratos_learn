@@ -101,6 +101,28 @@ type HashrateConversion struct {
 	CreatedAt      time.Time
 }
 
+// HashrateCompensation 算力补偿记录
+type HashrateCompensation struct {
+	ID            uint64
+	UserID        uint32
+	Amount        float64
+	RequestID     string
+	Reason        string
+	Status        int8
+	RetryTimes    uint32
+	CompensatedAt *time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+}
+
+// HashrateCompensationRepo 算力补偿记录存储接口
+type HashrateCompensationRepo interface {
+	CreateCompensationRecord(ctx context.Context, record *HashrateCompensation) error
+	ListPendingCompensations(ctx context.Context, limit int) ([]*HashrateCompensation, error)
+	MarkCompensated(ctx context.Context, id uint64) error
+	IncrementRetryTimes(ctx context.Context, id uint64) error
+}
+
 // RechargeRepo 充值存储接口
 type RechargeRepo interface {
 	CreateRecharge(ctx context.Context, r *Recharge) (*Recharge, error)
@@ -141,18 +163,20 @@ type CheckInRepo interface {
 type UserAssetRepo interface {
 	GetUserAsset(ctx context.Context, userID uint32) (*UserAsset, error)
 	ConvertHashrate(ctx context.Context, userID uint32, amount float64) (*HashrateConversion, error)
+	RestoreHashrate(ctx context.Context, userID uint32, amount float64, requestID string) error
 }
 
 // FinanceUsecase 财务用例
 type FinanceUsecase struct {
-	rechargeRepo           RechargeRepo
-	withdrawalRepo         WithdrawalRepo
-	withdrawalMessageQueue WithdrawalMessageQueue
-	incomeLogRepo          IncomeLogRepo
-	balanceLogRepo         BalanceLogRepo
-	checkInRepo            CheckInRepo
-	userAssetRepo          UserAssetRepo
-	log                    *log.Helper
+	rechargeRepo             RechargeRepo
+	withdrawalRepo           WithdrawalRepo
+	withdrawalMessageQueue   WithdrawalMessageQueue
+	incomeLogRepo            IncomeLogRepo
+	balanceLogRepo           BalanceLogRepo
+	checkInRepo              CheckInRepo
+	userAssetRepo            UserAssetRepo
+	hashrateCompensationRepo HashrateCompensationRepo
+	log                      *log.Helper
 }
 
 // NewFinanceUsecase 创建财务用例
@@ -164,17 +188,19 @@ func NewFinanceUsecase(
 	balanceLogRepo BalanceLogRepo,
 	checkInRepo CheckInRepo,
 	userAssetRepo UserAssetRepo,
+	hashrateCompensationRepo HashrateCompensationRepo,
 	logger log.Logger,
 ) *FinanceUsecase {
 	return &FinanceUsecase{
-		rechargeRepo:           rechargeRepo,
-		withdrawalRepo:         withdrawalRepo,
-		withdrawalMessageQueue: withdrawalMessageQueue,
-		incomeLogRepo:          incomeLogRepo,
-		balanceLogRepo:         balanceLogRepo,
-		checkInRepo:            checkInRepo,
-		userAssetRepo:          userAssetRepo,
-		log:                    log.NewHelper(logger),
+		rechargeRepo:             rechargeRepo,
+		withdrawalRepo:           withdrawalRepo,
+		withdrawalMessageQueue:   withdrawalMessageQueue,
+		incomeLogRepo:            incomeLogRepo,
+		balanceLogRepo:           balanceLogRepo,
+		checkInRepo:              checkInRepo,
+		userAssetRepo:            userAssetRepo,
+		hashrateCompensationRepo: hashrateCompensationRepo,
+		log:                      log.NewHelper(logger),
 	}
 }
 
@@ -314,4 +340,28 @@ func (uc *FinanceUsecase) GetUserBalance(ctx context.Context, userID uint32) (fl
 // ConvertHashrate 手动将算力转换为余额
 func (uc *FinanceUsecase) ConvertHashrate(ctx context.Context, userID uint32, amount float64) (*HashrateConversion, error) {
 	return uc.userAssetRepo.ConvertHashrate(ctx, userID, amount)
+}
+
+// ListPendingHashrateCompensations 查询待补偿的算力记录
+func (uc *FinanceUsecase) ListPendingHashrateCompensations(ctx context.Context, limit int) ([]*HashrateCompensation, error) {
+	return uc.hashrateCompensationRepo.ListPendingCompensations(ctx, limit)
+}
+
+// CompensateHashrate 执行算力补偿（恢复算力并标记记录为已补偿）
+func (uc *FinanceUsecase) CompensateHashrate(ctx context.Context, record *HashrateCompensation) error {
+	// 1. 恢复用户算力
+	if err := uc.userAssetRepo.RestoreHashrate(ctx, record.UserID, record.Amount, record.RequestID); err != nil {
+		// 增加重试次数
+		_ = uc.hashrateCompensationRepo.IncrementRetryTimes(ctx, record.ID)
+		return err
+	}
+
+	// 2. 标记补偿记录为已补偿
+	if err := uc.hashrateCompensationRepo.MarkCompensated(ctx, record.ID); err != nil {
+		uc.log.Errorf("failed to mark compensation record %d as compensated: %v", record.ID, err)
+		return err
+	}
+
+	uc.log.Infof("hashrate compensation completed: user=%d, amount=%.2f, request_id=%s", record.UserID, record.Amount, record.RequestID)
+	return nil
 }

@@ -111,7 +111,10 @@ func (r *productRepo) UpdateProduct(ctx context.Context, p *biz.Product) (*biz.P
 }
 
 func (r *productRepo) DeleteProduct(ctx context.Context, id uint32) error {
-	return r.data.db.Delete(&Product{}, id).Error
+	if err := r.data.db.Delete(&Product{}, id).Error; err != nil {
+		return status.Errorf(codes.Internal, "%s", err.Error())
+	}
+	return nil
 }
 
 func (r *productRepo) toBizProduct(p *Product) *biz.Product {

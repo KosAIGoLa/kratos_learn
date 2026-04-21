@@ -112,6 +112,53 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/finance.v1.HashPowerConversionInfo'
+    /api/v1/finance/hashrate-compensations:
+        get:
+            tags:
+                - Finance
+            operationId: Finance_ListHashrateCompensations
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.ListHashrateCompensationsResponse'
+    /api/v1/finance/hashrate-compensations/{id}:
+        post:
+            tags:
+                - Finance
+            operationId: Finance_CompensateHashrate
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/finance.v1.CompensateHashrateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/finance.v1.CompensateHashrateResponse'
     /api/v1/finance/income-logs:
         get:
             tags:
@@ -330,6 +377,18 @@ components:
                 rewardPoints:
                     type: number
                     format: double
+        finance.v1.CompensateHashrateRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+        finance.v1.CompensateHashrateResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                message:
+                    type: string
         finance.v1.ConvertHashPowerRequest:
             type: object
             properties:
@@ -388,6 +447,33 @@ components:
                 createdAt:
                     type: string
                     format: date-time
+        finance.v1.HashrateCompensationInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                amount:
+                    type: number
+                    format: double
+                requestId:
+                    type: string
+                reason:
+                    type: string
+                status:
+                    type: integer
+                    format: int32
+                retryTimes:
+                    type: integer
+                    format: uint32
+                compensatedAt:
+                    type: string
+                    format: date-time
+                createdAt:
+                    type: string
+                    format: date-time
         finance.v1.IncomeLogInfo:
             type: object
             properties:
@@ -424,6 +510,13 @@ components:
                 total:
                     type: integer
                     format: uint32
+        finance.v1.ListHashrateCompensationsResponse:
+            type: object
+            properties:
+                records:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/finance.v1.HashrateCompensationInfo'
         finance.v1.ListIncomeLogsResponse:
             type: object
             properties:

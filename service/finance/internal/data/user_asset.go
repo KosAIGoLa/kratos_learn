@@ -25,15 +25,17 @@ func (UserHashrate) TableName() string {
 }
 
 type userAssetRepo struct {
-	data *Data
-	log  *log.Helper
+	data             *Data
+	compensationRepo biz.HashrateCompensationRepo
+	log              *log.Helper
 }
 
 // NewUserAssetRepo 创建用户资产仓库
-func NewUserAssetRepo(data *Data, logger log.Logger) biz.UserAssetRepo {
+func NewUserAssetRepo(data *Data, compensationRepo biz.HashrateCompensationRepo, logger log.Logger) biz.UserAssetRepo {
 	return &userAssetRepo{
-		data: data,
-		log:  log.NewHelper(logger),
+		data:             data,
+		compensationRepo: compensationRepo,
+		log:              log.NewHelper(logger),
 	}
 }
 
@@ -125,9 +127,18 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 	// Step 2: 跨服务 gRPC 调用（在本地事务外执行）
 	updatedUser, err := r.data.UserClient().AdjustUserAsset(ctx, userID, amount, 0, reason, requestID)
 	if err != nil {
-		// gRPC 失败：算力已扣但余额未增，需补偿机制恢复算力
-		// TODO: 增加补偿记录表，由定时任务扫描并恢复算力
-		return nil, status.Errorf(codes.Internal, "user asset adjustment failed after hashrate deducted, manual compensation may be needed: %v", err)
+		// gRPC 失败：算力已扣但余额未增，写入补偿记录表，由定时任务扫描并恢复算力
+		compErr := r.compensationRepo.CreateCompensationRecord(ctx, &biz.HashrateCompensation{
+			UserID:    userID,
+			Amount:    amount,
+			RequestID: requestID,
+			Reason:    reason,
+			Status:    0,
+		})
+		if compErr != nil {
+			r.log.Errorf("failed to create hashrate compensation record for user %d: %v", userID, compErr)
+		}
+		return nil, status.Errorf(codes.Internal, "user asset adjustment failed after hashrate deducted, compensation record created: %v", err)
 	}
 	if updatedUser == nil {
 		return nil, status.Error(codes.Internal, "user asset adjustment returned nil response")
@@ -144,8 +155,17 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 		CreatedAt:     time.Now(),
 	}
 	if err := r.data.db.WithContext(ctx).Create(balanceLog).Error; err != nil {
-		// 日志创建失败不影响核心数据一致性，记录告警即可
-		// TODO: 增加监控告警，及时发现缺失日志
+		// 日志创建失败不影响核心数据一致性，记录告警日志和监控告警表
+		r.log.Errorf("[ALERT] balance log creation failed after hashrate conversion: user_id=%d, amount=%.2f, err=%v", userID, amount, err)
+		alert := map[string]interface{}{
+			"level":   "warning",
+			"module":  "finance.hashrate_conversion",
+			"message": fmt.Sprintf("balance log creation failed: user_id=%d, amount=%.2f", userID, amount),
+			"detail":  fmt.Sprintf("error: %v", err),
+		}
+		if dbErr := r.data.db.WithContext(ctx).Table("alert_logs").Create(alert).Error; dbErr != nil {
+			r.log.Errorf("[ALERT] failed to write alert log: %v", dbErr)
+		}
 	}
 
 	return &biz.HashrateConversion{
@@ -161,6 +181,27 @@ func (r *userAssetRepo) ConvertHashrate(ctx context.Context, userID uint32, amou
 }
 
 const convertedHashrateRemarkPrefix = "手动算力转换"
+
+func (r *userAssetRepo) RestoreHashrate(ctx context.Context, userID uint32, amount float64, requestID string) error {
+	var row UserHashrate
+	if err := r.data.db.WithContext(ctx).
+		Where("user_id = ? AND status = ?", userID, 1).
+		Order("id ASC").
+		First(&row).Error; err != nil {
+		return status.Errorf(codes.Internal, "failed to find user hashrate record for restore: %v", err)
+	}
+
+	nextHashrate := row.TotalHashrate + amount
+	if err := r.data.db.WithContext(ctx).
+		Model(&UserHashrate{}).
+		Where("id = ?", row.ID).
+		Update("total_hashrate", nextHashrate).Error; err != nil {
+		return status.Errorf(codes.Internal, "failed to restore user hashrate: %v", err)
+	}
+
+	r.log.Infof("hashrate restored for user %d, request %s, amount %.2f", userID, requestID, amount)
+	return nil
+}
 
 func buildConvertedHashrateRemark(amount float64) string {
 	return fmt.Sprintf("%s %.2f", convertedHashrateRemarkPrefix, amount)

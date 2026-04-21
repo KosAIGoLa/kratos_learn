@@ -1,6 +1,7 @@
 package cron
 
 import (
+	"context"
 	"cron/internal/data"
 	"time"
 
@@ -116,6 +117,11 @@ func (tm *TaskManager) RegisterTasks() error {
 		return err
 	}
 
+	// 17. 算力补偿任务 - 每5分钟执行一次，扫描并恢复失败补偿的算力
+	if err := tm.scheduler.AddTask("hashrate_compensation", "0 */5 * * * *", tm.hashrateCompensation); err != nil {
+		return err
+	}
+
 	tm.log.Info("所有定时任务注册完成")
 	return nil
 }
@@ -161,6 +167,42 @@ func (tm *TaskManager) cleanupTempData() {
 func (tm *TaskManager) cleanupExpiredCache() {
 	tm.log.Info("清理过期缓存...")
 	// 清理 Redis 过期键等
+}
+
+// hashrateCompensation 算力补偿任务
+// 每5分钟扫描一次，恢复因 gRPC 失败导致的算力扣减
+func (tm *TaskManager) hashrateCompensation() {
+	tm.log.Info("执行算力补偿任务...")
+	if tm.data == nil || tm.data.FinanceClient() == nil {
+		tm.log.Warn("finance client not available, skipping hashrate compensation")
+		return
+	}
+
+	ctx := context.Background()
+	records, err := tm.data.FinanceClient().ListPendingHashrateCompensations(ctx, 100)
+	if err != nil {
+		tm.log.Errorf("获取待补偿算力记录失败: %v", err)
+		return
+	}
+	if len(records) == 0 {
+		tm.log.Info("没有待补偿的算力记录")
+		return
+	}
+
+	compensatedCount := 0
+	failedCount := 0
+	for _, record := range records {
+		tm.log.Infof("处理算力补偿: user_id=%d, amount=%.2f, request_id=%s", record.UserId, record.Amount, record.RequestId)
+		if err := tm.data.FinanceClient().CompensateHashrate(ctx, record.Id); err != nil {
+			tm.log.Errorf("算力补偿失败 [%d]: %v", record.Id, err)
+			failedCount++
+			continue
+		}
+		compensatedCount++
+		tm.log.Infof("算力补偿成功 [%d]: user_id=%d, amount=%.2f", record.Id, record.UserId, record.Amount)
+	}
+
+	tm.log.Infof("算力补偿任务完成: 成功 %d 条, 失败 %d 条", compensatedCount, failedCount)
 }
 
 // generateDailyReport 生成日报表

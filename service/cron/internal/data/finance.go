@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cron/internal/conf"
@@ -96,4 +97,42 @@ func (c *FinanceClient) GetUserBalance(ctx context.Context, userID uint32) (floa
 		return 0, err
 	}
 	return resp.Balance, nil
+}
+
+// ListPendingHashrateCompensations 查询待补偿的算力记录
+func (c *FinanceClient) ListPendingHashrateCompensations(ctx context.Context, limit int) ([]*financev1.HashrateCompensationInfo, error) {
+	if c.client == nil {
+		c.log.Warn("finance client not initialized, skipping ListPendingHashrateCompensations")
+		return nil, nil
+	}
+
+	resp, err := c.client.ListHashrateCompensations(ctx, &financev1.ListHashrateCompensationsRequest{
+		Status: 0,
+		Limit:  uint32(limit),
+	})
+	if err != nil {
+		c.log.Errorf("list pending hashrate compensations failed: %v", err)
+		return nil, err
+	}
+	return resp.Records, nil
+}
+
+// CompensateHashrate 执行算力补偿
+func (c *FinanceClient) CompensateHashrate(ctx context.Context, id uint64) error {
+	if c.client == nil {
+		c.log.Warn("finance client not initialized, skipping CompensateHashrate")
+		return nil
+	}
+
+	resp, err := c.client.CompensateHashrate(ctx, &financev1.CompensateHashrateRequest{
+		Id: id,
+	})
+	if err != nil {
+		c.log.Errorf("compensate hashrate failed: %v", err)
+		return err
+	}
+	if !resp.Success {
+		return fmt.Errorf("compensate hashrate failed: %s", resp.Message)
+	}
+	return nil
 }

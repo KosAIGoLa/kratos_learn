@@ -92,6 +92,17 @@ func (r *riskControlRepo) CreateRiskControl(ctx context.Context, c *biz.RiskCont
 	return r.toBizControl(&control), nil
 }
 
+func (r *riskControlRepo) CheckFrequency(ctx context.Context, key string, window uint32, limit uint32) (uint32, error) {
+	pipe := r.data.rdb.Pipeline()
+	incr := pipe.Incr(ctx, key)
+	pipe.Expire(ctx, key, time.Duration(window)*time.Second)
+	_, err := pipe.Exec(ctx)
+	if err != nil {
+		return 0, status.Errorf(codes.Internal, "redis pipeline failed: %s", err.Error())
+	}
+	return uint32(incr.Val()), nil
+}
+
 func (r *riskControlRepo) UpdateRiskControl(ctx context.Context, c *biz.RiskControl) (*biz.RiskControl, error) {
 	updates := map[string]interface{}{}
 	if c.Name != "" {

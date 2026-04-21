@@ -242,6 +242,70 @@ func (s *FinanceService) ConvertHashPower(ctx context.Context, req *v1.ConvertHa
 	}, nil
 }
 
+// ListHashrateCompensations 查询算力补偿记录列表
+func (s *FinanceService) ListHashrateCompensations(ctx context.Context, req *v1.ListHashrateCompensationsRequest) (*v1.ListHashrateCompensationsResponse, error) {
+	if err := checkInternalService(ctx); err != nil {
+		return nil, err
+	}
+	limit := int(req.Limit)
+	if limit <= 0 {
+		limit = 100
+	}
+	records, err := s.uc.ListPendingHashrateCompensations(ctx, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var resp []*v1.HashrateCompensationInfo
+	for _, r := range records {
+		item := &v1.HashrateCompensationInfo{
+			Id:         r.ID,
+			UserId:     r.UserID,
+			Amount:     r.Amount,
+			RequestId:  r.RequestID,
+			Reason:     r.Reason,
+			Status:     int32(r.Status),
+			RetryTimes: r.RetryTimes,
+			CreatedAt:  timestamppb.New(r.CreatedAt),
+		}
+		if r.CompensatedAt != nil {
+			item.CompensatedAt = timestamppb.New(*r.CompensatedAt)
+		}
+		resp = append(resp, item)
+	}
+	return &v1.ListHashrateCompensationsResponse{Records: resp}, nil
+}
+
+// CompensateHashrate 执行算力补偿
+func (s *FinanceService) CompensateHashrate(ctx context.Context, req *v1.CompensateHashrateRequest) (*v1.CompensateHashrateResponse, error) {
+	if err := checkInternalService(ctx); err != nil {
+		return nil, err
+	}
+	records, err := s.uc.ListPendingHashrateCompensations(ctx, 1)
+	if err != nil {
+		return nil, err
+	}
+	if len(records) == 0 {
+		return &v1.CompensateHashrateResponse{Success: false, Message: "no pending compensation found"}, nil
+	}
+
+	var target *biz.HashrateCompensation
+	for _, r := range records {
+		if r.ID == req.Id {
+			target = r
+			break
+		}
+	}
+	if target == nil {
+		return &v1.CompensateHashrateResponse{Success: false, Message: "compensation record not found or already processed"}, nil
+	}
+
+	if err := s.uc.CompensateHashrate(ctx, target); err != nil {
+		return &v1.CompensateHashrateResponse{Success: false, Message: err.Error()}, nil
+	}
+	return &v1.CompensateHashrateResponse{Success: true, Message: "compensation completed"}, nil
+}
+
 // CreateBalanceLog 创建余额变动记录
 // 仅允许内部服务调用，外部用户应通过业务接口（如 Recharge/Withdraw）间接产生流水。
 func (s *FinanceService) CreateBalanceLog(ctx context.Context, req *v1.CreateBalanceLogRequest) (*v1.BalanceLogInfo, error) {

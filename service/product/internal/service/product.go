@@ -90,7 +90,10 @@ func (s *ProductService) UpdateProduct(ctx context.Context, req *v1.UpdateProduc
 
 // DeleteProduct 删除产品
 func (s *ProductService) DeleteProduct(ctx context.Context, req *v1.DeleteProductRequest) (*v1.DeleteProductResponse, error) {
-	// TODO: 实现删除逻辑
+	err := s.uc.DeleteProduct(ctx, req.Id)
+	if err != nil {
+		return nil, err
+	}
 	return &v1.DeleteProductResponse{Success: true}, nil
 }
 

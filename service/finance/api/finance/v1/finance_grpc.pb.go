@@ -19,18 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Finance_Recharge_FullMethodName         = "/finance.v1.Finance/Recharge"
-	Finance_GetRecharge_FullMethodName      = "/finance.v1.Finance/GetRecharge"
-	Finance_ListRecharges_FullMethodName    = "/finance.v1.Finance/ListRecharges"
-	Finance_Withdraw_FullMethodName         = "/finance.v1.Finance/Withdraw"
-	Finance_GetWithdrawal_FullMethodName    = "/finance.v1.Finance/GetWithdrawal"
-	Finance_ListWithdrawals_FullMethodName  = "/finance.v1.Finance/ListWithdrawals"
-	Finance_ListIncomeLogs_FullMethodName   = "/finance.v1.Finance/ListIncomeLogs"
-	Finance_ListBalanceLogs_FullMethodName  = "/finance.v1.Finance/ListBalanceLogs"
-	Finance_CheckIn_FullMethodName          = "/finance.v1.Finance/CheckIn"
-	Finance_GetUserBalance_FullMethodName   = "/finance.v1.Finance/GetUserBalance"
-	Finance_CreateBalanceLog_FullMethodName = "/finance.v1.Finance/CreateBalanceLog"
-	Finance_ConvertHashPower_FullMethodName = "/finance.v1.Finance/ConvertHashPower"
+	Finance_Recharge_FullMethodName                  = "/finance.v1.Finance/Recharge"
+	Finance_GetRecharge_FullMethodName               = "/finance.v1.Finance/GetRecharge"
+	Finance_ListRecharges_FullMethodName             = "/finance.v1.Finance/ListRecharges"
+	Finance_Withdraw_FullMethodName                  = "/finance.v1.Finance/Withdraw"
+	Finance_GetWithdrawal_FullMethodName             = "/finance.v1.Finance/GetWithdrawal"
+	Finance_ListWithdrawals_FullMethodName           = "/finance.v1.Finance/ListWithdrawals"
+	Finance_ListIncomeLogs_FullMethodName            = "/finance.v1.Finance/ListIncomeLogs"
+	Finance_ListBalanceLogs_FullMethodName           = "/finance.v1.Finance/ListBalanceLogs"
+	Finance_CheckIn_FullMethodName                   = "/finance.v1.Finance/CheckIn"
+	Finance_GetUserBalance_FullMethodName            = "/finance.v1.Finance/GetUserBalance"
+	Finance_CreateBalanceLog_FullMethodName          = "/finance.v1.Finance/CreateBalanceLog"
+	Finance_ConvertHashPower_FullMethodName          = "/finance.v1.Finance/ConvertHashPower"
+	Finance_ListHashrateCompensations_FullMethodName = "/finance.v1.Finance/ListHashrateCompensations"
+	Finance_CompensateHashrate_FullMethodName        = "/finance.v1.Finance/CompensateHashrate"
 )
 
 // FinanceClient is the client API for Finance service.
@@ -49,6 +51,8 @@ type FinanceClient interface {
 	GetUserBalance(ctx context.Context, in *GetUserBalanceRequest, opts ...grpc.CallOption) (*UserBalanceInfo, error)
 	CreateBalanceLog(ctx context.Context, in *CreateBalanceLogRequest, opts ...grpc.CallOption) (*BalanceLogInfo, error)
 	ConvertHashPower(ctx context.Context, in *ConvertHashPowerRequest, opts ...grpc.CallOption) (*HashPowerConversionInfo, error)
+	ListHashrateCompensations(ctx context.Context, in *ListHashrateCompensationsRequest, opts ...grpc.CallOption) (*ListHashrateCompensationsResponse, error)
+	CompensateHashrate(ctx context.Context, in *CompensateHashrateRequest, opts ...grpc.CallOption) (*CompensateHashrateResponse, error)
 }
 
 type financeClient struct {
@@ -179,6 +183,26 @@ func (c *financeClient) ConvertHashPower(ctx context.Context, in *ConvertHashPow
 	return out, nil
 }
 
+func (c *financeClient) ListHashrateCompensations(ctx context.Context, in *ListHashrateCompensationsRequest, opts ...grpc.CallOption) (*ListHashrateCompensationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListHashrateCompensationsResponse)
+	err := c.cc.Invoke(ctx, Finance_ListHashrateCompensations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financeClient) CompensateHashrate(ctx context.Context, in *CompensateHashrateRequest, opts ...grpc.CallOption) (*CompensateHashrateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompensateHashrateResponse)
+	err := c.cc.Invoke(ctx, Finance_CompensateHashrate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FinanceServer is the server API for Finance service.
 // All implementations must embed UnimplementedFinanceServer
 // for forward compatibility.
@@ -195,6 +219,8 @@ type FinanceServer interface {
 	GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalanceInfo, error)
 	CreateBalanceLog(context.Context, *CreateBalanceLogRequest) (*BalanceLogInfo, error)
 	ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error)
+	ListHashrateCompensations(context.Context, *ListHashrateCompensationsRequest) (*ListHashrateCompensationsResponse, error)
+	CompensateHashrate(context.Context, *CompensateHashrateRequest) (*CompensateHashrateResponse, error)
 	mustEmbedUnimplementedFinanceServer()
 }
 
@@ -240,6 +266,12 @@ func (UnimplementedFinanceServer) CreateBalanceLog(context.Context, *CreateBalan
 }
 func (UnimplementedFinanceServer) ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error) {
 	return nil, status.Error(codes.Unimplemented, "method ConvertHashPower not implemented")
+}
+func (UnimplementedFinanceServer) ListHashrateCompensations(context.Context, *ListHashrateCompensationsRequest) (*ListHashrateCompensationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListHashrateCompensations not implemented")
+}
+func (UnimplementedFinanceServer) CompensateHashrate(context.Context, *CompensateHashrateRequest) (*CompensateHashrateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CompensateHashrate not implemented")
 }
 func (UnimplementedFinanceServer) mustEmbedUnimplementedFinanceServer() {}
 func (UnimplementedFinanceServer) testEmbeddedByValue()                 {}
@@ -478,6 +510,42 @@ func _Finance_ConvertHashPower_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Finance_ListHashrateCompensations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListHashrateCompensationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).ListHashrateCompensations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_ListHashrateCompensations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).ListHashrateCompensations(ctx, req.(*ListHashrateCompensationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Finance_CompensateHashrate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompensateHashrateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinanceServer).CompensateHashrate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Finance_CompensateHashrate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinanceServer).CompensateHashrate(ctx, req.(*CompensateHashrateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Finance_ServiceDesc is the grpc.ServiceDesc for Finance service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -532,6 +600,14 @@ var Finance_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ConvertHashPower",
 			Handler:    _Finance_ConvertHashPower_Handler,
+		},
+		{
+			MethodName: "ListHashrateCompensations",
+			Handler:    _Finance_ListHashrateCompensations_Handler,
+		},
+		{
+			MethodName: "CompensateHashrate",
+			Handler:    _Finance_CompensateHashrate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

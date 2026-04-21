@@ -20,12 +20,14 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationFinanceCheckIn = "/finance.v1.Finance/CheckIn"
+const OperationFinanceCompensateHashrate = "/finance.v1.Finance/CompensateHashrate"
 const OperationFinanceConvertHashPower = "/finance.v1.Finance/ConvertHashPower"
 const OperationFinanceCreateBalanceLog = "/finance.v1.Finance/CreateBalanceLog"
 const OperationFinanceGetRecharge = "/finance.v1.Finance/GetRecharge"
 const OperationFinanceGetUserBalance = "/finance.v1.Finance/GetUserBalance"
 const OperationFinanceGetWithdrawal = "/finance.v1.Finance/GetWithdrawal"
 const OperationFinanceListBalanceLogs = "/finance.v1.Finance/ListBalanceLogs"
+const OperationFinanceListHashrateCompensations = "/finance.v1.Finance/ListHashrateCompensations"
 const OperationFinanceListIncomeLogs = "/finance.v1.Finance/ListIncomeLogs"
 const OperationFinanceListRecharges = "/finance.v1.Finance/ListRecharges"
 const OperationFinanceListWithdrawals = "/finance.v1.Finance/ListWithdrawals"
@@ -34,12 +36,14 @@ const OperationFinanceWithdraw = "/finance.v1.Finance/Withdraw"
 
 type FinanceHTTPServer interface {
 	CheckIn(context.Context, *CheckInRequest) (*CheckInResponse, error)
+	CompensateHashrate(context.Context, *CompensateHashrateRequest) (*CompensateHashrateResponse, error)
 	ConvertHashPower(context.Context, *ConvertHashPowerRequest) (*HashPowerConversionInfo, error)
 	CreateBalanceLog(context.Context, *CreateBalanceLogRequest) (*BalanceLogInfo, error)
 	GetRecharge(context.Context, *GetRechargeRequest) (*RechargeInfo, error)
 	GetUserBalance(context.Context, *GetUserBalanceRequest) (*UserBalanceInfo, error)
 	GetWithdrawal(context.Context, *GetWithdrawalRequest) (*WithdrawalInfo, error)
 	ListBalanceLogs(context.Context, *ListBalanceLogsRequest) (*ListBalanceLogsResponse, error)
+	ListHashrateCompensations(context.Context, *ListHashrateCompensationsRequest) (*ListHashrateCompensationsResponse, error)
 	ListIncomeLogs(context.Context, *ListIncomeLogsRequest) (*ListIncomeLogsResponse, error)
 	ListRecharges(context.Context, *ListRechargesRequest) (*ListRechargesResponse, error)
 	ListWithdrawals(context.Context, *ListWithdrawalsRequest) (*ListWithdrawalsResponse, error)
@@ -61,6 +65,8 @@ func RegisterFinanceHTTPServer(s *http.Server, srv FinanceHTTPServer) {
 	r.GET("/api/v1/finance/balance/{user_id}", _Finance_GetUserBalance0_HTTP_Handler(srv))
 	r.POST("/api/v1/finance/balance-log", _Finance_CreateBalanceLog0_HTTP_Handler(srv))
 	r.POST("/api/v1/finance/hash-power/convert", _Finance_ConvertHashPower0_HTTP_Handler(srv))
+	r.GET("/api/v1/finance/hashrate-compensations", _Finance_ListHashrateCompensations0_HTTP_Handler(srv))
+	r.POST("/api/v1/finance/hashrate-compensations/{id}", _Finance_CompensateHashrate0_HTTP_Handler(srv))
 }
 
 func _Finance_Recharge0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
@@ -315,14 +321,60 @@ func _Finance_ConvertHashPower0_HTTP_Handler(srv FinanceHTTPServer) func(ctx htt
 	}
 }
 
+func _Finance_ListHashrateCompensations0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListHashrateCompensationsRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFinanceListHashrateCompensations)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListHashrateCompensations(ctx, req.(*ListHashrateCompensationsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListHashrateCompensationsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Finance_CompensateHashrate0_HTTP_Handler(srv FinanceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CompensateHashrateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFinanceCompensateHashrate)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CompensateHashrate(ctx, req.(*CompensateHashrateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*CompensateHashrateResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type FinanceHTTPClient interface {
 	CheckIn(ctx context.Context, req *CheckInRequest, opts ...http.CallOption) (rsp *CheckInResponse, err error)
+	CompensateHashrate(ctx context.Context, req *CompensateHashrateRequest, opts ...http.CallOption) (rsp *CompensateHashrateResponse, err error)
 	ConvertHashPower(ctx context.Context, req *ConvertHashPowerRequest, opts ...http.CallOption) (rsp *HashPowerConversionInfo, err error)
 	CreateBalanceLog(ctx context.Context, req *CreateBalanceLogRequest, opts ...http.CallOption) (rsp *BalanceLogInfo, err error)
 	GetRecharge(ctx context.Context, req *GetRechargeRequest, opts ...http.CallOption) (rsp *RechargeInfo, err error)
 	GetUserBalance(ctx context.Context, req *GetUserBalanceRequest, opts ...http.CallOption) (rsp *UserBalanceInfo, err error)
 	GetWithdrawal(ctx context.Context, req *GetWithdrawalRequest, opts ...http.CallOption) (rsp *WithdrawalInfo, err error)
 	ListBalanceLogs(ctx context.Context, req *ListBalanceLogsRequest, opts ...http.CallOption) (rsp *ListBalanceLogsResponse, err error)
+	ListHashrateCompensations(ctx context.Context, req *ListHashrateCompensationsRequest, opts ...http.CallOption) (rsp *ListHashrateCompensationsResponse, err error)
 	ListIncomeLogs(ctx context.Context, req *ListIncomeLogsRequest, opts ...http.CallOption) (rsp *ListIncomeLogsResponse, err error)
 	ListRecharges(ctx context.Context, req *ListRechargesRequest, opts ...http.CallOption) (rsp *ListRechargesResponse, err error)
 	ListWithdrawals(ctx context.Context, req *ListWithdrawalsRequest, opts ...http.CallOption) (rsp *ListWithdrawalsResponse, err error)
@@ -343,6 +395,19 @@ func (c *FinanceHTTPClientImpl) CheckIn(ctx context.Context, in *CheckInRequest,
 	pattern := "/api/v1/finance/checkin"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFinanceCheckIn))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FinanceHTTPClientImpl) CompensateHashrate(ctx context.Context, in *CompensateHashrateRequest, opts ...http.CallOption) (*CompensateHashrateResponse, error) {
+	var out CompensateHashrateResponse
+	pattern := "/api/v1/finance/hashrate-compensations/{id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFinanceCompensateHashrate))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
@@ -421,6 +486,19 @@ func (c *FinanceHTTPClientImpl) ListBalanceLogs(ctx context.Context, in *ListBal
 	pattern := "/api/v1/finance/balance-logs"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationFinanceListBalanceLogs))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *FinanceHTTPClientImpl) ListHashrateCompensations(ctx context.Context, in *ListHashrateCompensationsRequest, opts ...http.CallOption) (*ListHashrateCompensationsResponse, error) {
+	var out ListHashrateCompensationsResponse
+	pattern := "/api/v1/finance/hashrate-compensations"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationFinanceListHashrateCompensations))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
