@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+package report.v1;
+
+option go_package = "report/api/report/v1;v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Report {
+  // 订单报表
+  rpc GetOrderReport(GetOrderReportRequest) returns (OrderReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/orders"
+    };
+  }
+  
+  // 用户报表
+  rpc GetUserReport(GetUserReportRequest) returns (UserReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/users"
+    };
+  }
+  
+  // 销售报表
+  rpc GetSalesReport(GetSalesReportRequest) returns (SalesReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/sales"
+    };
+  }
+  
+  // 商品报表
+  rpc GetProductReport(GetProductReportRequest) returns (ProductReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/products"
+    };
+  }
+  
+  // 导出订单报表到Excel
+  rpc ExportOrderReport(ExportOrderReportRequest) returns (ExportReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/orders/export"
+    };
+  }
+  
+  // 导出用户报表到Excel
+  rpc ExportUserReport(ExportUserReportRequest) returns (ExportReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/users/export"
+    };
+  }
+  
+  // 导出销售报表到Excel
+  rpc ExportSalesReport(ExportSalesReportRequest) returns (ExportReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/sales/export"
+    };
+  }
+  
+  // 导出商品报表到Excel
+  rpc ExportProductReport(ExportProductReportRequest) returns (ExportReportResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/reports/products/export"
+    };
+  }
+}
+
+// 订单报表请求
+message GetOrderReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  int32 status = 3;
+  uint32 page = 4;
+  uint32 page_size = 5;
+}
+
+// 订单报表响应
+message OrderReportResponse {
+  repeated OrderReportItem items = 1;
+  uint32 total = 2;
+  double total_amount = 3;
+  uint32 total_orders = 4;
+}
+
+// 订单报表项
+message OrderReportItem {
+  uint64 order_id = 1;
+  string order_no = 2;
+  uint32 user_id = 3;
+  string user_name = 4;
+  string product_name = 5;
+  double amount = 6;
+  int32 status = 7;
+  google.protobuf.Timestamp created_at = 8;
+}
+
+// 用户报表请求
+message GetUserReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+// 用户报表响应
+message UserReportResponse {
+  repeated UserReportItem items = 1;
+  uint32 total = 2;
+  uint32 total_users = 3;
+  uint32 active_users = 4;
+}
+
+// 用户报表项
+message UserReportItem {
+  uint32 user_id = 1;
+  string username = 2;
+  string email = 3;
+  string phone = 4;
+  uint32 order_count = 5;
+  double total_amount = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp last_login = 8;
+}
+
+// 销售报表请求
+message GetSalesReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  string group_by = 3; // day, week, month
+}
+
+// 销售报表响应
+message SalesReportResponse {
+  repeated SalesReportItem items = 1;
+  double total_sales = 2;
+  uint32 total_orders = 3;
+  double avg_order_value = 4;
+}
+
+// 销售报表项
+message SalesReportItem {
+  string period = 1; // 日期/周/月
+  double sales_amount = 2;
+  uint32 order_count = 3;
+  uint32 product_count = 4;
+}
+
+// 商品报表请求
+message GetProductReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+}
+
+// 商品报表响应
+message ProductReportResponse {
+  repeated ProductReportItem items = 1;
+  uint32 total = 2;
+}
+
+// 商品报表项
+message ProductReportItem {
+  uint32 product_id = 1;
+  string product_name = 2;
+  uint32 sales_count = 3;
+  double sales_amount = 4;
+  uint32 stock_quantity = 5;
+}
+
+// 导出订单报表请求
+message ExportOrderReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  int32 status = 3;
+  string format = 4; // xlsx, csv
+}
+
+// 导出用户报表请求
+message ExportUserReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  string format = 3;
+}
+
+// 导出销售报表请求
+message ExportSalesReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  string group_by = 3;
+  string format = 4;
+}
+
+// 导出商品报表请求
+message ExportProductReportRequest {
+  google.protobuf.Timestamp start_date = 1;
+  google.protobuf.Timestamp end_date = 2;
+  string format = 3;
+}
+
+// 导出报表响应
+message ExportReportResponse {
+  string download_url = 1;
+  string file_name = 2;
+  int64 file_size = 3;
+  bytes file_data = 4; // 直接返回文件数据
+}

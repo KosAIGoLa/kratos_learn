@@ -1,0 +1,425 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Report API
+    version: 0.0.1
+paths:
+    /api/v1/reports/orders:
+        get:
+            tags:
+                - Report
+            description: 订单报表
+            operationId: Report_GetOrderReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.OrderReportResponse'
+    /api/v1/reports/orders/export:
+        get:
+            tags:
+                - Report
+            description: 导出订单报表到Excel
+            operationId: Report_ExportOrderReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: status
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: format
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.ExportReportResponse'
+    /api/v1/reports/products:
+        get:
+            tags:
+                - Report
+            description: 商品报表
+            operationId: Report_GetProductReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.ProductReportResponse'
+    /api/v1/reports/products/export:
+        get:
+            tags:
+                - Report
+            description: 导出商品报表到Excel
+            operationId: Report_ExportProductReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: format
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.ExportReportResponse'
+    /api/v1/reports/sales:
+        get:
+            tags:
+                - Report
+            description: 销售报表
+            operationId: Report_GetSalesReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: groupBy
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.SalesReportResponse'
+    /api/v1/reports/sales/export:
+        get:
+            tags:
+                - Report
+            description: 导出销售报表到Excel
+            operationId: Report_ExportSalesReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: groupBy
+                  in: query
+                  schema:
+                    type: string
+                - name: format
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.ExportReportResponse'
+    /api/v1/reports/users:
+        get:
+            tags:
+                - Report
+            description: 用户报表
+            operationId: Report_GetUserReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.UserReportResponse'
+    /api/v1/reports/users/export:
+        get:
+            tags:
+                - Report
+            description: 导出用户报表到Excel
+            operationId: Report_ExportUserReport
+            parameters:
+                - name: startDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: endDate
+                  in: query
+                  schema:
+                    type: string
+                    format: date-time
+                - name: format
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/report.v1.ExportReportResponse'
+components:
+    schemas:
+        report.v1.ExportReportResponse:
+            type: object
+            properties:
+                downloadUrl:
+                    type: string
+                fileName:
+                    type: string
+                fileSize:
+                    type: string
+                fileData:
+                    type: string
+                    format: bytes
+            description: 导出报表响应
+        report.v1.OrderReportItem:
+            type: object
+            properties:
+                orderId:
+                    type: string
+                orderNo:
+                    type: string
+                userId:
+                    type: integer
+                    format: uint32
+                userName:
+                    type: string
+                productName:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                status:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                    format: date-time
+            description: 订单报表项
+        report.v1.OrderReportResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/report.v1.OrderReportItem'
+                total:
+                    type: integer
+                    format: uint32
+                totalAmount:
+                    type: number
+                    format: double
+                totalOrders:
+                    type: integer
+                    format: uint32
+            description: 订单报表响应
+        report.v1.ProductReportItem:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: uint32
+                productName:
+                    type: string
+                salesCount:
+                    type: integer
+                    format: uint32
+                salesAmount:
+                    type: number
+                    format: double
+                stockQuantity:
+                    type: integer
+                    format: uint32
+            description: 商品报表项
+        report.v1.ProductReportResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/report.v1.ProductReportItem'
+                total:
+                    type: integer
+                    format: uint32
+            description: 商品报表响应
+        report.v1.SalesReportItem:
+            type: object
+            properties:
+                period:
+                    type: string
+                salesAmount:
+                    type: number
+                    format: double
+                orderCount:
+                    type: integer
+                    format: uint32
+                productCount:
+                    type: integer
+                    format: uint32
+            description: 销售报表项
+        report.v1.SalesReportResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/report.v1.SalesReportItem'
+                totalSales:
+                    type: number
+                    format: double
+                totalOrders:
+                    type: integer
+                    format: uint32
+                avgOrderValue:
+                    type: number
+                    format: double
+            description: 销售报表响应
+        report.v1.UserReportItem:
+            type: object
+            properties:
+                userId:
+                    type: integer
+                    format: uint32
+                username:
+                    type: string
+                email:
+                    type: string
+                phone:
+                    type: string
+                orderCount:
+                    type: integer
+                    format: uint32
+                totalAmount:
+                    type: number
+                    format: double
+                createdAt:
+                    type: string
+                    format: date-time
+                lastLogin:
+                    type: string
+                    format: date-time
+            description: 用户报表项
+        report.v1.UserReportResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/report.v1.UserReportItem'
+                total:
+                    type: integer
+                    format: uint32
+                totalUsers:
+                    type: integer
+                    format: uint32
+                activeUsers:
+                    type: integer
+                    format: uint32
+            description: 用户报表响应
+tags:
+    - name: Report

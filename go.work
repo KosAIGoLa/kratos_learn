@@ -12,4 +12,5 @@ use (
 	./service/sms
 	./service/system
 	./service/user
+	service/report
 )
