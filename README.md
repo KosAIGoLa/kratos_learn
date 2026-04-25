@@ -37,6 +37,7 @@
 | mail | 8109 | 9109 | 郵件服務 |
 | sms | 8110 | 9110 | 短信服務 |
 | cron | 8111 | 9111 | 定時任務服務 |
+| report | 8007 | 9007 | 報表服務（訂單、用戶、銷售、商品報表 + Excel 導出） |
 
 ---
 
@@ -63,7 +64,8 @@ my-front-app/
 │   ├── admin/                 # 管理員服務（含菜單、角色、日誌管理）
 │   ├── mail/                  # 郵件服務
 │   ├── sms/                   # 短信服務
-│   └── cron/                  # 定時任務服務
+│   ├── cron/                  # 定時任務服務
+│   └── report/                # 報表服務
 ├── third_party/               # 第三方 proto 文件
 ├── schema.sql                 # 數據庫結構
 ├── all_post.http              # HTTP 測試請求集合
@@ -138,6 +140,7 @@ cd service/user && go run cmd/server/main.go
 | admin | `admins`, `menus`, `roles`, `role_menus`, `admin_roles`, `admin_logs` |
 | payment | `payment_channels`, `payment_api_logs` |
 | system | `system_configs`, `profit_sharing_rules`, `risk_controls`, `domains`, `whitelist_ips` |
+| report | 複用 `orders`, `users`, `products` 等表進行報表統計 |
 
 ---
 
@@ -157,6 +160,7 @@ all_post.http
 ├── Admin Service (8108)       # 管理員、角色、菜單、日誌
 ├── Mail Service (8109)        # 郵件發送服務
 ├── SMS Service (8110)         # 短信發送服務
+├── Report Service (8007)      # 報表服務
 └── Swagger UI 訪問地址        # http://localhost:{port}/q/
 ```
 
@@ -171,6 +175,7 @@ all_post.http
 - Admin: http://localhost:8108/q/
 - Mail: http://localhost:8109/q/
 - SMS: http://localhost:8110/q/
+- Report: http://localhost:8007/q/
 
 ### gRPC 測試
 
@@ -213,6 +218,7 @@ brew install grpcurl
 - Mail: `localhost:9109`
 - SMS: `localhost:9110`
 - Cron: `localhost:9111`
+- Report: `localhost:9007`
 
 ---
 
@@ -296,6 +302,12 @@ etcdctl get --prefix /microservices/
 - 分潤規則配置
 - 風控規則
 - 域名白名單
+
+### 報表系統
+- 訂單報表（明細查詢、統計、Excel 導出）
+- 用戶報表（消費統計、活躍度分析）
+- 銷售報表（日/周/月趨勢分析）
+- 商品報表（銷售排行、庫存分析）
 
 ### 管理員系統
 - 管理員登錄（JWT Token）
