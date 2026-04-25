@@ -47,7 +47,7 @@ type IncomeLog struct {
 	Source     string
 	SourceType int32
 	Amount     float64
-	RelatedID  uint32
+	RelatedID  uint64
 	CreatedAt  time.Time
 }
 
@@ -60,7 +60,7 @@ type BalanceLog struct {
 	BeforeBalance float64
 	AfterBalance  float64
 	Remark        string
-	RelatedID     uint32
+	RelatedID     uint64
 	CreatedAt     time.Time
 }
 

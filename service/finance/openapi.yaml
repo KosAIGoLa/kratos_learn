@@ -355,8 +355,7 @@ components:
                 remark:
                     type: string
                 relatedId:
-                    type: integer
-                    format: uint32
+                    type: string
                 createdAt:
                     type: string
                     format: date-time
@@ -419,8 +418,7 @@ components:
                 remark:
                     type: string
                 relatedId:
-                    type: integer
-                    format: uint32
+                    type: string
         finance.v1.HashPowerConversionInfo:
             type: object
             properties:
@@ -495,8 +493,7 @@ components:
                     type: number
                     format: double
                 relatedId:
-                    type: integer
-                    format: uint32
+                    type: string
                 createdAt:
                     type: string
                     format: date-time

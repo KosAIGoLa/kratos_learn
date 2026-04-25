@@ -73,6 +73,16 @@ func (s *ContentService) GetNews(ctx context.Context, req *v1.GetNewsRequest) (*
 
 // CreateNews 创建新闻
 func (s *ContentService) CreateNews(ctx context.Context, req *v1.CreateNewsRequest) (*v1.NewsInfo, error) {
+	var adminID *uint32
+	if req.AdminId > 0 {
+		adminID = &req.AdminId
+	}
+
+	var publishTime time.Time
+	if req.PublishTime != nil {
+		publishTime = req.PublishTime.AsTime()
+	}
+
 	news, err := s.uc.CreateNews(ctx, &biz.News{
 		Title:       req.Title,
 		Summary:     req.Summary,
@@ -81,10 +91,17 @@ func (s *ContentService) CreateNews(ctx context.Context, req *v1.CreateNewsReque
 		Category:    req.Category,
 		Type:        req.Type,
 		Author:      req.Author,
-		AdminID:     req.AdminId,
+		AdminID:     adminID,
 		Sort:        req.Sort,
 		IsTop:       req.IsTop,
-		PublishTime: req.PublishTime.AsTime(),
+		PublishTime: publishTime,
+		ExpireTime: func() *time.Time {
+			if req.ExpireTime != nil {
+				t := req.ExpireTime.AsTime()
+				return &t
+			}
+			return nil
+		}(),
 	})
 	if err != nil {
 		return nil, err

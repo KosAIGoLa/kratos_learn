@@ -20,7 +20,7 @@ type IncomeLog struct {
 	Source     string  `gorm:"type:varchar(100);not null"`
 	SourceType int8    `gorm:"index:idx_source_type;not null"`
 	Amount     float64 `gorm:"type:decimal(10,2);not null"`
-	RelatedID  uint32  `gorm:"index:idx_related_id"`
+	RelatedID  uint64  `gorm:"index:idx_related_id"`
 	CreatedAt  time.Time
 }
 

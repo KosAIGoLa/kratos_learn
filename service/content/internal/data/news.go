@@ -21,7 +21,7 @@ type News struct {
 	Category    string    `gorm:"index:idx_category;type:varchar(30);default:'announcement'"`
 	Type        string    `gorm:"index:idx_type;type:varchar(20);default:'normal'"`
 	Author      string    `gorm:"type:varchar(50);default:'admin'"`
-	AdminID     uint32    `gorm:"index:idx_admin_id"`
+	AdminID     *uint32   `gorm:"index:idx_admin_id"`
 	ViewCount   uint32    `gorm:"default:0"`
 	Sort        int32     `gorm:"index:idx_sort;default:0"`
 	Status      int8      `gorm:"index:idx_status;default:1"`
@@ -86,6 +86,10 @@ func (r *newsRepo) GetNews(ctx context.Context, id uint32) (*biz.News, error) {
 }
 
 func (r *newsRepo) CreateNews(ctx context.Context, n *biz.News) (*biz.News, error) {
+	publishTime := n.PublishTime
+	if publishTime.IsZero() {
+		publishTime = time.Now()
+	}
 	news := News{
 		Title:       n.Title,
 		Summary:     n.Summary,
@@ -97,7 +101,7 @@ func (r *newsRepo) CreateNews(ctx context.Context, n *biz.News) (*biz.News, erro
 		AdminID:     n.AdminID,
 		Sort:        n.Sort,
 		IsTop:       int8(n.IsTop),
-		PublishTime: n.PublishTime,
+		PublishTime: publishTime,
 		ExpireTime:  n.ExpireTime,
 		Status:      1,
 	}
@@ -112,11 +116,23 @@ func (r *newsRepo) UpdateNews(ctx context.Context, n *biz.News) (*biz.News, erro
 	if n.Title != "" {
 		updates["title"] = n.Title
 	}
+	if n.Summary != "" {
+		updates["summary"] = n.Summary
+	}
 	if n.Content != "" {
 		updates["content"] = n.Content
 	}
+	if n.CoverImage != "" {
+		updates["cover_image"] = n.CoverImage
+	}
 	if n.Status >= 0 {
 		updates["status"] = n.Status
+	}
+	if n.IsTop == 0 || n.IsTop == 1 {
+		updates["is_top"] = n.IsTop
+	}
+	if n.ExpireTime != nil {
+		updates["expire_time"] = n.ExpireTime
 	}
 	if err := r.data.db.Model(&News{}).Where("id = ?", n.ID).Updates(updates).Error; err != nil {
 		return nil, err

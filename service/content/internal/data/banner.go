@@ -108,6 +108,9 @@ func (r *bannerRepo) UpdateBanner(ctx context.Context, b *biz.Banner) (*biz.Bann
 	if b.Link != "" {
 		updates["link"] = b.Link
 	}
+	if b.Sort != 0 {
+		updates["sort"] = b.Sort
+	}
 	if b.Status >= 0 {
 		updates["status"] = b.Status
 	}

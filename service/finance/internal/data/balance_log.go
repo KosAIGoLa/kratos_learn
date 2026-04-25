@@ -19,7 +19,7 @@ type BalanceLog struct {
 	BeforeBalance float64 `gorm:"type:decimal(15,2);not null"`
 	AfterBalance  float64 `gorm:"type:decimal(15,2);not null"`
 	Remark        string  `gorm:"type:varchar(255)"`
-	RelatedID     uint32  `gorm:"index:idx_related_id"`
+	RelatedID     uint64  `gorm:"index:idx_related_id"`
 	CreatedAt     time.Time
 }
 

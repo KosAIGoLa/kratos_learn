@@ -17,7 +17,7 @@ type News struct {
 	Category    string
 	Type        string
 	Author      string
-	AdminID     uint32
+	AdminID     *uint32
 	ViewCount   uint32
 	Sort        int32
 	Status      int32

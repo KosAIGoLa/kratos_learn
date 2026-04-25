@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS `recharges` (
     `name` VARCHAR(50) NOT NULL COMMENT '姓名',
     `order_no` VARCHAR(50) NOT NULL UNIQUE COMMENT '订单号',
     `amount` DECIMAL(10,2) NOT NULL COMMENT '充值金额',
-    `status` TINYINT DEFAULT 1 COMMENT '状态: 1成功 0失败',
+    `status` TINYINT DEFAULT 0 COMMENT '状态: 0待支付 1成功 2失败',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_order_no` (`order_no`),
@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `income_logs` (
     `source` VARCHAR(100) NOT NULL COMMENT '收益来源',
     `source_type` TINYINT NOT NULL COMMENT '来源类型: 1订单 2团队 3奖励',
     `amount` DECIMAL(10,2) NOT NULL COMMENT '收益金额',
-    `related_id` INT UNSIGNED DEFAULT NULL COMMENT '关联订单/记录ID',
+    `related_id` BIGINT UNSIGNED DEFAULT NULL COMMENT '关联订单/记录ID',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     INDEX `idx_user_id` (`user_id`),
@@ -205,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `balance_logs` (
     `before_balance` DECIMAL(15,2) NOT NULL COMMENT '变动前余额',
     `after_balance` DECIMAL(15,2) NOT NULL COMMENT '变动后余额',
     `remark` VARCHAR(255) DEFAULT NULL COMMENT '备注',
-    `related_id` INT UNSIGNED DEFAULT NULL COMMENT '关联ID',
+    `related_id` BIGINT UNSIGNED DEFAULT NULL COMMENT '关联ID',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
     INDEX `idx_user_id` (`user_id`),
@@ -361,19 +361,35 @@ CREATE TABLE IF NOT EXISTS `system_configs` (
 
 -- 初始化配置: 限制提款最少工分
 INSERT INTO `system_configs` (`key`, `value`, `description`, `group`) VALUES
-('withdrawal.min_work_points', '100', '限制提款最少工分数', 'withdrawal');
+('withdrawal.min_work_points', '100', '限制提款最少工分数', 'withdrawal')
+ON DUPLICATE KEY UPDATE
+`value` = VALUES(`value`),
+`description` = VALUES(`description`),
+`group` = VALUES(`group`);
 
 -- 初始化配置: 邀请好友奖励工分
 INSERT INTO `system_configs` (`key`, `value`, `description`, `group`) VALUES
-('invite.reward_work_points', '10', '邀请好友奖励工分数', 'invite');
+('invite.reward_work_points', '10', '邀请好友奖励工分数', 'invite')
+ON DUPLICATE KEY UPDATE
+`value` = VALUES(`value`),
+`description` = VALUES(`description`),
+`group` = VALUES(`group`);
 
 -- 初始化配置: 首充奖励工分
 INSERT INTO `system_configs` (`key`, `value`, `description`, `group`) VALUES
-('recharge.first_reward_work_points', '50', '首充奖励工分数', 'recharge');
+('recharge.first_reward_work_points', '50', '首充奖励工分数', 'recharge')
+ON DUPLICATE KEY UPDATE
+`value` = VALUES(`value`),
+`description` = VALUES(`description`),
+`group` = VALUES(`group`);
 
 -- 初始化配置: 单笔最大提取金额
 INSERT INTO `system_configs` (`key`, `value`, `description`, `group`) VALUES
-('withdrawal.max_amount', '5000', '单笔最大提取金额', 'withdrawal');
+('withdrawal.max_amount', '5000', '单笔最大提取金额', 'withdrawal')
+ON DUPLICATE KEY UPDATE
+`value` = VALUES(`value`),
+`description` = VALUES(`description`),
+`group` = VALUES(`group`);
 
 -- 分账规则表
 CREATE TABLE IF NOT EXISTS `profit_sharing_rules` (
@@ -397,10 +413,23 @@ CREATE TABLE IF NOT EXISTS `profit_sharing_rules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='分账规则表';
 
 -- 初始化分账规则示例
-INSERT INTO `profit_sharing_rules` (`name`, `type`, `level`, `ratio`, `fixed_amount`, `unit`, `description`) VALUES
-('一级团队订单分润', 'order', 1, 0.1000, 0.00, 'point', '一级团队成员下单，上级获得10%工分'),
-('二级团队订单分润', 'order', 2, 0.0500, 0.00, 'point', '二级团队成员下单，上上级获得5%工分'),
-('一级团队充值分润', 'recharge', 1, 0.0500, 0.00, 'point', '一级团队成员充值，上级获得5%工分');
+INSERT INTO `profit_sharing_rules` (`name`, `type`, `level`, `ratio`, `fixed_amount`, `unit`, `description`)
+SELECT '一级团队订单分润', 'order', 1, 0.1000, 0.00, 'point', '一级团队成员下单，上级获得10%工分'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `profit_sharing_rules` WHERE `name` = '一级团队订单分润'
+);
+
+INSERT INTO `profit_sharing_rules` (`name`, `type`, `level`, `ratio`, `fixed_amount`, `unit`, `description`)
+SELECT '二级团队订单分润', 'order', 2, 0.0500, 0.00, 'point', '二级团队成员下单，上上级获得5%工分'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `profit_sharing_rules` WHERE `name` = '二级团队订单分润'
+);
+
+INSERT INTO `profit_sharing_rules` (`name`, `type`, `level`, `ratio`, `fixed_amount`, `unit`, `description`)
+SELECT '一级团队充值分润', 'recharge', 1, 0.0500, 0.00, 'point', '一级团队成员充值，上级获得5%工分'
+WHERE NOT EXISTS (
+    SELECT 1 FROM `profit_sharing_rules` WHERE `name` = '一级团队充值分润'
+);
 
 -- 风控配置表
 CREATE TABLE IF NOT EXISTS `risk_controls` (
@@ -409,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `risk_controls` (
     `code` VARCHAR(50) NOT NULL UNIQUE COMMENT '规则编码',
     `type` VARCHAR(30) NOT NULL COMMENT '风控类型: login登录/withdrawal提现/recharge充值/trade交易/ip_limitIP限制/device_limit设备限制',
     `level` VARCHAR(20) NOT NULL DEFAULT 'medium' COMMENT '风险等级: low低/medium中/high高/critical严重',
-    `trigger_condition` JSON NOT NULL COMMENT '触发条件配置',
+    `trigger_condition` TEXT NOT NULL COMMENT '触发条件配置(JSON字符串)',
     `action` VARCHAR(50) NOT NULL COMMENT '处置动作: block拦截/verify验证/sms通知/email通知/log记录',
     `limit_value` INT UNSIGNED DEFAULT NULL COMMENT '限制阈值',
     `time_window` INT UNSIGNED DEFAULT 3600 COMMENT '时间窗口(秒)',
@@ -485,7 +514,7 @@ CREATE TABLE IF NOT EXISTS `user_hashrates` (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
     `machine_id` INT UNSIGNED NOT NULL COMMENT '矿机ID',
-    `purchase_order_id` INT UNSIGNED NOT NULL COMMENT '购买订单ID',
+    `purchase_order_id` BIGINT UNSIGNED NOT NULL COMMENT '购买订单ID',
     `quantity` INT UNSIGNED NOT NULL COMMENT '购买数量',
     `total_hashrate` DECIMAL(15,2) NOT NULL COMMENT '总算力',
     `start_date` DATE NOT NULL COMMENT '生效日期',
@@ -529,15 +558,15 @@ CREATE TABLE IF NOT EXISTS `admin_logs` (
     `description` VARCHAR(255) NOT NULL COMMENT '操作描述',
     `request_method` VARCHAR(10) COMMENT '请求方法: GET/POST/PUT/DELETE',
     `request_url` VARCHAR(255) COMMENT '请求URL',
-    `request_params` JSON COMMENT '请求参数',
+    `request_params` TEXT COMMENT '请求参数(JSON字符串)',
     `response_code` INT COMMENT '响应状态码',
     `response_message` VARCHAR(255) COMMENT '响应消息',
     `ip` VARCHAR(45) NOT NULL COMMENT 'IP地址',
     `user_agent` VARCHAR(500) COMMENT '浏览器UA',
     `device` VARCHAR(255) COMMENT '设备信息',
     `target_id` INT UNSIGNED COMMENT '操作目标ID',
-    `before_data` JSON COMMENT '操作前数据',
-    `after_data` JSON COMMENT '操作后数据',
+    `before_data` TEXT COMMENT '操作前数据(JSON字符串)',
+    `after_data` TEXT COMMENT '操作后数据(JSON字符串)',
     `execution_time` INT UNSIGNED COMMENT '执行时间(毫秒)',
     `status` TINYINT DEFAULT 1 COMMENT '状态: 1成功 0失败',
     `fail_reason` VARCHAR(255) COMMENT '失败原因',
@@ -695,7 +724,7 @@ CREATE TABLE IF NOT EXISTS `alert_logs` (
     `level` VARCHAR(20) NOT NULL COMMENT '告警级别: warning/error/critical',
     `module` VARCHAR(50) NOT NULL COMMENT '模块',
     `message` TEXT NOT NULL COMMENT '告警内容',
-    `detail` JSON DEFAULT NULL COMMENT '详细信息',
+    `detail` TEXT DEFAULT NULL COMMENT '详细信息',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX `idx_level` (`level`),
     INDEX `idx_module` (`module`),

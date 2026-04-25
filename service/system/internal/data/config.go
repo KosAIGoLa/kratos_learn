@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"system/internal/biz"
 )
@@ -61,7 +62,18 @@ func (r *configRepo) SetConfig(ctx context.Context, c *biz.SystemConfig) (*biz.S
 		Description: c.Description,
 		Group:       c.Group,
 	}
-	if err := r.data.db.Save(&config).Error; err != nil {
+	if err := r.data.db.WithContext(ctx).Clauses(clause.OnConflict{
+		Columns: []clause.Column{{Name: "key"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"value",
+			"description",
+			"group",
+			"updated_at",
+		}),
+	}).Create(&config).Error; err != nil {
+		return nil, status.Errorf(codes.Internal, "%s", err.Error())
+	}
+	if err := r.data.db.WithContext(ctx).Where("key = ?", c.Key).First(&config).Error; err != nil {
 		return nil, status.Errorf(codes.Internal, "%s", err.Error())
 	}
 	return &biz.SystemConfig{

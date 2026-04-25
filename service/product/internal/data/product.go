@@ -101,7 +101,10 @@ func (r *productRepo) UpdateProduct(ctx context.Context, p *biz.Product) (*biz.P
 	if p.Price > 0 {
 		updates["price"] = p.Price
 	}
-	if p.Status != 0 {
+	if p.Description != "" {
+		updates["description"] = p.Description
+	}
+	if p.Status == 0 || p.Status == 1 {
 		updates["status"] = p.Status
 	}
 	if err := r.data.db.Model(&Product{}).Where("id = ?", p.ID).Updates(updates).Error; err != nil {

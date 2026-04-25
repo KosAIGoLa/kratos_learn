@@ -17,8 +17,8 @@ type SystemConfig struct {
 	ID          uint32 `gorm:"primarykey"`
 	Key         string `gorm:"uniqueIndex:idx_key;type:varchar(50);not null"`
 	Value       string `gorm:"type:varchar(500);not null"`
-	Description string `gorm:"type:varchar(200)"`
-	Group       string `gorm:"index:idx_group;type:varchar(50)"`
+	Description string `gorm:"type:varchar(255)"`
+	Group       string `gorm:"index:idx_group;type:varchar(30);default:'default'"`
 }
 
 // configRepo 配置仓库

@@ -720,7 +720,7 @@ type IncomeLogInfo struct {
 	Source        string                 `protobuf:"bytes,5,opt,name=source,proto3" json:"source,omitempty"`
 	SourceType    int32                  `protobuf:"varint,6,opt,name=source_type,json=sourceType,proto3" json:"source_type,omitempty"`
 	Amount        float64                `protobuf:"fixed64,7,opt,name=amount,proto3" json:"amount,omitempty"`
-	RelatedId     uint32                 `protobuf:"varint,8,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
+	RelatedId     uint64                 `protobuf:"varint,8,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -805,7 +805,7 @@ func (x *IncomeLogInfo) GetAmount() float64 {
 	return 0
 }
 
-func (x *IncomeLogInfo) GetRelatedId() uint32 {
+func (x *IncomeLogInfo) GetRelatedId() uint64 {
 	if x != nil {
 		return x.RelatedId
 	}
@@ -948,7 +948,7 @@ type BalanceLogInfo struct {
 	BeforeBalance float64                `protobuf:"fixed64,5,opt,name=before_balance,json=beforeBalance,proto3" json:"before_balance,omitempty"`
 	AfterBalance  float64                `protobuf:"fixed64,6,opt,name=after_balance,json=afterBalance,proto3" json:"after_balance,omitempty"`
 	Remark        string                 `protobuf:"bytes,7,opt,name=remark,proto3" json:"remark,omitempty"`
-	RelatedId     uint32                 `protobuf:"varint,8,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
+	RelatedId     uint64                 `protobuf:"varint,8,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1033,7 +1033,7 @@ func (x *BalanceLogInfo) GetRemark() string {
 	return ""
 }
 
-func (x *BalanceLogInfo) GetRelatedId() uint32 {
+func (x *BalanceLogInfo) GetRelatedId() uint64 {
 	if x != nil {
 		return x.RelatedId
 	}
@@ -1383,7 +1383,7 @@ type CreateBalanceLogRequest struct {
 	BeforeBalance float64                `protobuf:"fixed64,4,opt,name=before_balance,json=beforeBalance,proto3" json:"before_balance,omitempty"`
 	AfterBalance  float64                `protobuf:"fixed64,5,opt,name=after_balance,json=afterBalance,proto3" json:"after_balance,omitempty"`
 	Remark        string                 `protobuf:"bytes,6,opt,name=remark,proto3" json:"remark,omitempty"`
-	RelatedId     uint32                 `protobuf:"varint,7,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
+	RelatedId     uint64                 `protobuf:"varint,7,opt,name=related_id,json=relatedId,proto3" json:"related_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1460,7 +1460,7 @@ func (x *CreateBalanceLogRequest) GetRemark() string {
 	return ""
 }
 
-func (x *CreateBalanceLogRequest) GetRelatedId() uint32 {
+func (x *CreateBalanceLogRequest) GetRelatedId() uint64 {
 	if x != nil {
 		return x.RelatedId
 	}
@@ -1990,7 +1990,7 @@ const file_finance_v1_finance_proto_rawDesc = "" +
 	"sourceType\x12\x16\n" +
 	"\x06amount\x18\a \x01(\x01R\x06amount\x12\x1d\n" +
 	"\n" +
-	"related_id\x18\b \x01(\rR\trelatedId\x129\n" +
+	"related_id\x18\b \x01(\x04R\trelatedId\x129\n" +
 	"\n" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"\x82\x01\n" +
 	"\x15ListIncomeLogsRequest\x12\x17\n" +
@@ -2012,7 +2012,7 @@ const file_finance_v1_finance_proto_rawDesc = "" +
 	"\rafter_balance\x18\x06 \x01(\x01R\fafterBalance\x12\x16\n" +
 	"\x06remark\x18\a \x01(\tR\x06remark\x12\x1d\n" +
 	"\n" +
-	"related_id\x18\b \x01(\rR\trelatedId\x129\n" +
+	"related_id\x18\b \x01(\x04R\trelatedId\x129\n" +
 	"\n" +
 	"created_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"v\n" +
 	"\x16ListBalanceLogsRequest\x12\x17\n" +
@@ -2044,7 +2044,7 @@ const file_finance_v1_finance_proto_rawDesc = "" +
 	"\rafter_balance\x18\x05 \x01(\x01R\fafterBalance\x12\x16\n" +
 	"\x06remark\x18\x06 \x01(\tR\x06remark\x12\x1d\n" +
 	"\n" +
-	"related_id\x18\a \x01(\rR\trelatedId\"J\n" +
+	"related_id\x18\a \x01(\x04R\trelatedId\"J\n" +
 	"\x17ConvertHashPowerRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\rR\x06userId\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\x01R\x06amount\"\xb9\x02\n" +

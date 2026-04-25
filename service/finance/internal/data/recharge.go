@@ -24,7 +24,7 @@ type Recharge struct {
 	Name       string  `gorm:"type:varchar(50);not null"`
 	OrderNo    string  `gorm:"uniqueIndex:uk_order_no;type:varchar(50);not null"`
 	Amount     float64 `gorm:"type:decimal(10,2);not null"`
-	Status     int8    `gorm:"index:idx_status;default:1"`
+	Status     int8    `gorm:"index:idx_status;default:0"`
 	CreatedAt  time.Time
 }
 

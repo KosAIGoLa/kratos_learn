@@ -165,7 +165,7 @@ message IncomeLogInfo {
   string source = 5;
   int32 source_type = 6;
   double amount = 7;
-  uint32 related_id = 8;
+  uint64 related_id = 8;
   google.protobuf.Timestamp created_at = 9;
 }
 
@@ -189,7 +189,7 @@ message BalanceLogInfo {
   double before_balance = 5;
   double after_balance = 6;
   string remark = 7;
-  uint32 related_id = 8;
+  uint64 related_id = 8;
   google.protobuf.Timestamp created_at = 9;
 }
 
@@ -232,7 +232,7 @@ message CreateBalanceLogRequest {
   double before_balance = 4;
   double after_balance = 5;
   string remark = 6;
-  uint32 related_id = 7;
+  uint64 related_id = 7;
 }
 
 message ConvertHashPowerRequest {
