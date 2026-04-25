@@ -1,0 +1,3 @@
+./product.pb.go
+./product_grpc.pb.go
+./product_http.pb.go

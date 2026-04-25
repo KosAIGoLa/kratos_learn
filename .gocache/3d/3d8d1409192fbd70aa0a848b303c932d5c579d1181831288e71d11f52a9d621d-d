@@ -1,0 +1,5 @@
+./grpc_api_configuration.go
+./openapi_configuration.go
+./registry.go
+./services.go
+./types.go

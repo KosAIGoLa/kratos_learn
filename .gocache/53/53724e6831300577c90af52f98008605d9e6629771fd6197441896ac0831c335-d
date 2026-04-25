@@ -1,0 +1,5 @@
+./doc.go
+./generator.go
+./helpers.go
+./template.go
+./types.go

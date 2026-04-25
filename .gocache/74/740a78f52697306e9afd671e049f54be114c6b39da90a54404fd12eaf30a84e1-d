@@ -1,0 +1,12 @@
+./dir_unix.go
+./doc.go
+./filereader.go
+./fileutil.go
+./lock.go
+./lock_flock.go
+./lock_unix.go
+./preallocate.go
+./preallocate_darwin.go
+./purge.go
+./read_dir.go
+./sync_darwin.go

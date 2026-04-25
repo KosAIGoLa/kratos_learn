@@ -86,6 +86,16 @@ data:
     write_timeout: 0.2s
 ```
 
+### 服务注册 (Etcd)
+在 `configs/config.yaml` 中配置 Etcd：
+```yaml
+registry:
+  etcd:
+    endpoints:
+      - 127.0.0.1:2379
+    dial_timeout: 5s
+```
+
 ## 数据库表依赖
 
 报表服务需要以下数据库表：
