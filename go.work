@@ -9,8 +9,8 @@ use (
 	./service/order
 	./service/payment
 	./service/product
+	./service/report
 	./service/sms
 	./service/system
 	./service/user
-	service/report
 )
